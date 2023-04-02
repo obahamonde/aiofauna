@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "aiofauna"
+version = "0.0.1"
+description = "A developer friendly yet versatile asynchronous Object-Document Mapper for FaunaDB"
+authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pydantic = {extras = ["dotenv","email"], version = "^1.10.7"}
+aiohttp = "^3.8.4"
+iso8601 = "^1.1.0"
+
+[tool.poetry.dev-dependencies]
+aiohttp-devtools = "^1.0.post0"
+autopep8 = "^2.0.2"
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
