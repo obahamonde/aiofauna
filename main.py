@@ -1,5 +1,12 @@
 from aiofauna import *
+import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class env:
+    FAUNA_SECRET = os.environ["FAUNA_SECRET"]
 
 html = """
 <!DOCTYPE html>
@@ -75,11 +82,10 @@ async def sse_handler(request: Request) -> Response:
     """SSE handler."""
     async with sse_response(request) as resp:
         while True:
-            _ = (await Client(env.fauna_secret).query(q.now()))["@ts"]
+            _ = (await Client(env.FAUNA_SECRET).query(q.now()))["@ts"] # type: ignore
             await resp.send(f"{_}")
             await asyncio.sleep(1)
-
-
+            
 async def create_app():
 
     """Create application."""

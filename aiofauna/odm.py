@@ -7,11 +7,7 @@ from __future__ import annotations
 
 import asyncio
 
-from os import environ
-
 from typing import List, Optional, Any, Callable
-
-from pydantic import BaseSettings, BaseConfig, Field
 
 from aiofauna import query as q
 
@@ -20,47 +16,6 @@ from aiofauna.errors import AioFaunaException
 from aiofauna.json import JSONModel  # pylint: disable=no-name-in-module
 
 from aiofauna.client import AsyncFaunaClient
-
-
-class Environment(BaseSettings):
-
-    """Environment variables"""
-
-    fauna_secret: str = Field(..., env="FAUNA_SECRET")
-
-    class Config(BaseConfig):
-
-        env_file = ".env"
-
-        env_file_encoding = "utf-8"
-
-    def __init__(self, **data: Any) -> None:
-
-        super().__init__(**data)
-        if not self.fauna_secret:
-
-            try:
-
-                self.fauna_secret = environ["FAUNA_SECRET"]
-
-            except KeyError:
-
-                while self.fauna_secret is None:
-
-                    print("FAUNA_SECRET not found in environment variables")
-
-                    secret = input("Please enter your FaunaDB secret: ")
-
-                    if isinstance(secret, str):
-
-                        self.fauna_secret = secret
-                    else:
-
-                        print("Invalid FaunaDB secret. Please try again.")
-                        continue
-
-
-env = Environment()
 
 
 class AsyncFaunaModel(JSONModel):
@@ -156,7 +111,7 @@ class AsyncFaunaModel(JSONModel):
             An instance of AsyncFaunaClient.
         """
 
-        return AsyncFaunaClient(secret=env.fauna_secret)
+        return AsyncFaunaClient() # pylint: disable=no-value-for-parameter
 
     @classmethod
     def q(cls) -> Callable:
@@ -285,30 +240,6 @@ class AsyncFaunaModel(JSONModel):
             print(exc)
 
             return False
-            """
-
-            Handles any exception that occurs during the exists check.
-
-
-            Parameters:
-            -----------
-
-            exc: Exception
-
-                The exception raised.
-
-
-            Returns:
-            --------
-
-            None:
-
-                None.
-            """
-
-            print(exc)
-
-            raise exc
 
     @classmethod
     async def find_unique(cls, field: str, value: Any) -> Optional[AsyncFaunaModel]:
@@ -350,27 +281,6 @@ class AsyncFaunaModel(JSONModel):
             )
 
         except AioFaunaException as exc:
-            """
-
-            Handles any exception that occurs during the unique search.
-
-
-            Parameters:
-            -----------
-
-            exc: Exception
-
-                The exception raised.
-
-
-            Returns:
-            --------
-
-            None:
-
-                None.
-            """
-
             print(exc)
 
             return None
@@ -471,26 +381,6 @@ class AsyncFaunaModel(JSONModel):
             )
 
         except AioFaunaException as exc:
-            """
-
-            Handles any exception that occurs during the find process.
-
-
-            Parameters:
-            -----------
-
-            exc: Exception
-
-                The exception raised.
-
-
-            Returns:
-            --------
-
-            None:
-
-                None.
-            """
 
             print(exc)
 
@@ -538,27 +428,7 @@ class AsyncFaunaModel(JSONModel):
             ]
 
         except AioFaunaException as exc:
-            """
-
-            Handles any exception that occurs during the find all process.
-
-
-            Parameters:
-            -----------
-
-            exc: Exception
-
-                The exception raised.
-
-
-            Returns:
-            --------
-
-            None:
-
-                None.
-            """
-
+            
             print(exc)
 
             return None
@@ -653,7 +523,7 @@ class AsyncFaunaModel(JSONModel):
                 if field.field_info.extra.get("unique"):
 
                     instance = await self.find_unique(
-                        field.name, self.dict()[field.name]
+                        field.name, self.dict()[field.name] # type: ignore
                     )
                     if instance:
                         return instance
@@ -748,7 +618,7 @@ class AsyncFaunaModel(JSONModel):
 
                 return await self.create()
 
-            return await self.update(self.ref, **self.dict())
+            return await self.update(self.ref, **self.dict()) # type: ignore
 
         except AioFaunaException as exc:
 
