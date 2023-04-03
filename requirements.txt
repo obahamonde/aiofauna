@@ -1,15 +1,39 @@
-aiohttp==3.8.4; python_version >= "3.6"
-aiosignal==1.3.1; python_version >= "3.7"
-async-timeout==4.0.2; python_version >= "3.6"
-asynctest==0.13.0; python_version < "3.8" and python_version >= "3.6"
-attrs==22.2.0; python_version >= "3.6"
-charset-normalizer==3.1.0; python_full_version >= "3.7.0" and python_version >= "3.6"
-dnspython==2.3.0; python_version >= "3.7" and python_version < "4.0"
-email-validator==1.3.1; python_version >= "3.7"
-frozenlist==1.3.3; python_version >= "3.7"
-idna==3.4; python_version >= "3.7"
-multidict==6.0.4; python_version >= "3.7"
-pydantic==1.10.7; python_version >= "3.7"
-python-dotenv==0.21.1; python_version >= "3.7"
-typing-extensions==4.5.0; python_version < "3.8" and python_version >= "3.7"
-yarl==1.8.2; python_version >= "3.7"
+aiohttp==3.8.4
+aiohttp-devtools @ file:///C:/Users/pc/.cache/pypoetry/artifacts/e5/59/c3/43904500d5d095b6682a72105f2c5f5d74344186c5d59d058dbe7a1ee7/aiohttp_devtools-1.0.post0-py37.py38.py39.py310-none-any.whl
+aiohttp-jinja2 @ file:///C:/Users/pc/.cache/pypoetry/artifacts/1b/c1/9f/0723f6cfb6f5abd3f654ae2bd4e99011be206b125e2ab1fca7896f5baf/aiohttp_jinja2-1.5.1-py3-none-any.whl
+aiohttp-sse @ file:///C:/Users/pc/.cache/pypoetry/artifacts/e3/f7/3a/c595278c1a45e986e0a1d18b75841671714db0ca8420926348e2246586/aiohttp_sse-2.1.0-py3-none-any.whl
+aioredis==2.0.1
+aiosignal==1.3.1
+anyio @ file:///C:/Users/pc/.cache/pypoetry/artifacts/b3/68/4c/44b7502facb872ba0c18d619e01faa0dc483b109e0eb04fc46c6110d87/anyio-3.6.2-py3-none-any.whl
+asttokens @ file:///C:/Users/pc/.cache/pypoetry/artifacts/4d/32/54/06d2a60c5ae6d35658b8bc0e77dc59d146924ff31a711aa6c629891c64/asttokens-2.2.1-py2.py3-none-any.whl
+async-timeout==4.0.2
+attrs==22.2.0
+autopep8 @ file:///C:/Users/pc/.cache/pypoetry/artifacts/49/ec/69/ff02acd04478f6cd9deaa8c765e6d06ede654719a5ff49acb304c858f5/autopep8-2.0.2-py2.py3-none-any.whl
+charset-normalizer==3.1.0
+click @ file:///C:/Users/pc/.cache/pypoetry/artifacts/9d/ca/2f/bc3cc4a294e96f355d01d24ac6fefdde4c6286f9f63b7ce1c91d5f0c22/click-8.1.3-py3-none-any.whl
+colorama @ file:///C:/Users/pc/.cache/pypoetry/artifacts/e1/7c/08/68d8d4b76f219a6e0582a6a30ff5685087ac47b46fdad55560af3d449d/colorama-0.4.6-py2.py3-none-any.whl
+devtools @ file:///C:/Users/pc/.cache/pypoetry/artifacts/91/40/79/3cdeaff6cf695e08c9ff643ede6dc88f8db4d41668ee72829fe6790384/devtools-0.10.0-py3-none-any.whl
+dnspython==2.3.0
+email-validator==1.3.1
+exceptiongroup==1.1.1
+executing @ file:///C:/Users/pc/.cache/pypoetry/artifacts/13/99/ae/1db1e500f3c2be49bad232e1a81eea29ff53e4bd08e596c27228d92a4a/executing-1.2.0-py2.py3-none-any.whl
+frozenlist==1.3.3
+idna==3.4
+iniconfig==2.0.0
+iso8601 @ file:///C:/Users/pc/.cache/pypoetry/artifacts/3e/d0/a4/bb402eefca6fc73f870963eed3f72c129290c87b87a3b97fa121bb4391/iso8601-1.1.0-py3-none-any.whl
+Jinja2 @ file:///C:/Users/pc/.cache/pypoetry/artifacts/03/94/a8/08397f6fc37e01c8e8b6a33b514be99392ee894e8bff66c3a428238373/Jinja2-3.1.2-py3-none-any.whl
+MarkupSafe @ file:///C:/Users/pc/.cache/pypoetry/artifacts/cd/e1/8e/e768385edca22b9f564f50c82ffa775df0cea75da84767184cb525be8a/MarkupSafe-2.1.2-cp39-cp39-win_amd64.whl
+multidict==6.0.4
+packaging==23.0
+pluggy==1.0.0
+pycodestyle @ file:///C:/Users/pc/.cache/pypoetry/artifacts/3d/63/e4/3824e379d258d69c2005ec4abb4d0db0f533cbe97454dfaad79572eac1/pycodestyle-2.10.0-py2.py3-none-any.whl
+pydantic==1.10.7
+Pygments @ file:///C:/Users/pc/.cache/pypoetry/artifacts/07/23/3f/b97143177af3228d9882576de8939d20a00fa08cea49acb7eb5c45b703/Pygments-2.14.0-py3-none-any.whl
+pytest==7.2.2
+python-dotenv @ file:///C:/Users/pc/.cache/pypoetry/artifacts/4d/29/fd/bb05c977d28ecc8675b5a2a23cba33a7f0f4e663190e42a2a1aa699e79/python_dotenv-0.21.1-py3-none-any.whl
+six @ file:///C:/Users/pc/.cache/pypoetry/artifacts/08/9f/47/c16ae03035fc69eaf100ea39657a49baaeef714e25a52575710c34cd48/six-1.16.0-py2.py3-none-any.whl
+sniffio @ file:///C:/Users/pc/.cache/pypoetry/artifacts/df/e8/7c/0fc32f1c45dbbd45dc31acd39983b0f60fdd804c913bc3352dfc9e095c/sniffio-1.3.0-py3-none-any.whl
+tomli @ file:///C:/Users/pc/.cache/pypoetry/artifacts/73/7c/d9/9f2752fc5b05f9176c6f3adc6484be1cec75a68925b8c5fe39d6493a07/tomli-2.0.1-py3-none-any.whl
+typing_extensions==4.5.0
+watchgod @ file:///C:/Users/pc/.cache/pypoetry/artifacts/b3/84/a2/0d852151a9a1d0e404888768d96654f511fde70394ec33983cb87aa526/watchgod-0.8.2-py3-none-any.whl
+yarl==1.8.2

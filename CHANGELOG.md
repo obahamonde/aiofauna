@@ -9,7 +9,13 @@
 
 - Replaced how the `FAUNA_SECRET` is loaded
 
-## [0.0.3] - 2023-05-01
+## [0.0.3] - 2023-04-02
 
 - Added aiohtpp-sse
 - Added aiohttp-jinja2
+- Added README.md
+
+## [0.0.4] - 2023-04-03
+
+- Removed aiohttp-jinja2
+- Added app module with response decorators and custom `web.Application` class

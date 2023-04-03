@@ -2,7 +2,7 @@
 README.md
 """
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 __author__ = "@obahamonde [GitHub]"
 __license__ = "MIT"
 
@@ -30,4 +30,4 @@ from aiofauna.errors import AioFaunaException
 from aiofauna.json import FaunaJSONEncoder, to_json
 from aiofauna.odm import AsyncFaunaModel as Model
 from aiohttp_sse import sse_response
-import aiohttp_jinja2
+from aiofauna.app import *
