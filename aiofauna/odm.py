@@ -111,7 +111,7 @@ class AsyncFaunaModel(JSONModel):
             An instance of AsyncFaunaClient.
         """
 
-        return AsyncFaunaClient() # pylint: disable=no-value-for-parameter
+        return AsyncFaunaClient()  # pylint: disable=no-value-for-parameter
 
     @classmethod
     def q(cls) -> Callable:
@@ -428,7 +428,7 @@ class AsyncFaunaModel(JSONModel):
             ]
 
         except AioFaunaException as exc:
-            
+
             print(exc)
 
             return None
@@ -523,7 +523,7 @@ class AsyncFaunaModel(JSONModel):
                 if field.field_info.extra.get("unique"):
 
                     instance = await self.find_unique(
-                        field.name, self.dict()[field.name] # type: ignore
+                        field.name, self.dict()[field.name]  # type: ignore
                     )
                     if instance:
                         return instance
@@ -618,7 +618,7 @@ class AsyncFaunaModel(JSONModel):
 
                 return await self.create()
 
-            return await self.update(self.ref, **self.dict()) # type: ignore
+            return await self.update(self.ref, **self.dict())  # type: ignore
 
         except AioFaunaException as exc:
 

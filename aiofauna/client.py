@@ -16,7 +16,6 @@ from aiofauna.objects import Expr
 from aiofauna.json import FaunaJSONEncoder
 
 
-
 def to_json(obj: Expr) -> str:
     """
 
@@ -42,9 +41,7 @@ def to_json(obj: Expr) -> str:
         A JSON string representing the FaunaDB query.
     """
 
-
     return FaunaJSONEncoder().encode(obj)
-
 
 
 class AsyncFaunaClient(object):
@@ -80,62 +77,47 @@ class AsyncFaunaClient(object):
 
     secret: str
 
-
-    def __init__(self, secret: Optional[str]=None) -> None:
-
+    def __init__(self, secret: Optional[str] = None) -> None:
 
         if secret is None:
-            
+
             try:
                 import os
-                
+
                 self.secret = os.environ["FAUNA_SECRET"]
-                
+
             except KeyError:
-                
-                    
-                
-                
-                
+
                 try:
 
                     with open(".env", "r", encoding="utf-8") as file:
-                        
 
-                        txt  = file.read()
-                        
+                        txt = file.read()
 
-                        for key, val in dict([i.split("=") for i in txt.split("\n")]).items():
-                            
+                        for key, val in dict(
+                            [i.split("=") for i in txt.split("\n")]
+                        ).items():
 
                             if "FAUNA_SECRET" in key:
-                                
 
                                 self.secret = val
-                                
 
                                 break
-                
 
-                except: # pylint: disable=bare-except
-                    
+                except:  # pylint: disable=bare-except
 
                     while secret is None:
-                        
 
                         _secret = input("Please enter your FaunaDB secret: ")
-                        
 
                         if _secret:
 
-
                             self.secret = _secret
-                            
 
-                            break                       
-        
+                            break
+
         else:
-            
+
             self.secret = secret
 
     async def query(self, expr: Expr) -> Any:
@@ -165,44 +147,28 @@ class AsyncFaunaClient(object):
             A FaunaDB response.
         """
 
-
         async with ClientSession() as session:
 
-
             async with session.post(
-
                 "https://db.fauna.com",
-
                 data=to_json(expr),
-
                 headers={
-
                     "Authorization": f"Bearer {self.secret}",
-
                     "Content-type": "application/json",
-
                     "Accept": "application/json",
-
                 },
-
             ) as response:
                 try:
 
-
                     data = await response.json()
-
 
                     return data["resource"]
 
-
                 except AioFaunaException as exc:
-
 
                     print(exc)
 
-
                     return None
-
 
     async def stream(self, expr: Expr) -> AsyncGenerator[Any, None]:
         """
@@ -228,37 +194,22 @@ class AsyncFaunaClient(object):
                 An Event Stream Generator.
         """
 
-
         async with ClientSession() as session:
 
             async with session.post(
-
                 "https://db.fauna.com",
-
                 data=to_json(expr),
-
                 headers={
-
                     "Authorization": f"Bearer {self.secret}",
-
                     "Content-type": "application/json",
-
                     "Accept": "text/event-stream",
-
                     "Keep-Alive": "timeout=5, max=900",
-
                     "Connection": "keep-alive",
-
                     "Cache-Control": "no-cache",
-
                     "X-Last-Seen-Txn": "0",
-
                     "X-Request-By": "aiofauna",
-
                     "X-Query-By": "aiofauna",
-
                 },
-
             ) as response:
 
                 with io.StringIO() as buffer:
@@ -278,4 +229,3 @@ class AsyncFaunaClient(object):
                                 buffer.seek(0)
 
                                 buffer.truncate()
-

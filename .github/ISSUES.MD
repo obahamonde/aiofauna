@@ -1,0 +1,6 @@
+ # webknjaz
+ @obahamonde 
+ `This seems quite raw and possibly needs to go through (software) design improvements. We don't have a formal policy for adopting external projects but yours does not look ready. I've posted some comments about the most trivial shortcomings in your commits there.`
+`Strictly speaking, to fulfill your motivation, the project does not have to be under aio-libs. But if you want to move it here, at least set up the CI/linting similar to https://github.com/aio-libs/aiomysql/blob/master/.github/workflows/ci-cd.yml and write some docs/README. Make sure not to use * imports in examples since it makes it impossible for a casual reader to promptly see where some variables/objects are coming from.`
+`You may also want to set up setuptools-scm or a similar integration (like hatch-vcs) for SCM-based version management.`
+`FWIW, I've invited you to the triagers so you can help with the issue queue and when you polish your thing, drop me a message on Matrix + give me the privileges needed for the repo transfer on GH.`

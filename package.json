@@ -1,5 +1,7 @@
 {
     "scripts":{
-        "dev": "adev runserver --livereload"
+        "dev": "adev runserver --livereload",
+        "build": "poetry build",
+        "deploy": "poetry publish --build"
     }
 }

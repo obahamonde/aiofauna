@@ -4,11 +4,10 @@ title: AioFauna
 
 # AioFauna
 
-
-
  🚀 Introducing aiofauna: A powerful library to supercharge your FaunaDB experience with modern async Python frameworks! 🔥
 
 🌟 Features:
+
 ✅ Async/await coroutines: Leverage the power of async programming for enhanced 
 performance and responsiveness.
 
@@ -32,3 +31,9 @@ performance and responsiveness.
 ⚙️  If you are using a synchronous framework check out [Faudantic](https://github.com/obahamonde/faudantic) for a similar experience with FaunaDB and Pydantic.
 
 📚 [Documentation](https://aiofauna.smartpro.solutions)
+
+📦 [PyPi](https://pypi.org/project/aiofauna/)
+
+📦 [GitHub](https://github.com/obahamonde/aiofauna)
+
+📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Stream data in real-time to your clients) 

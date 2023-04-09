@@ -3,20 +3,28 @@ Types used in queries and responses.
 See the `docs <https://app.fauna.com/documentation/reference/queryapi#simple-type>`__.
 """
 from datetime import datetime
-
-# pylint: disable=redefined-builtin
 from iso8601 import parse_date
 from aiofauna.deprecated import deprecated
 from aiofauna.query import Expr
 
-
 class Ref(Expr):
     """
-  FaunaDB ref. See the `docs <https://app.fauna.com/documentation/reference/queryapi#special-type>`__.
+    ```python
+    Ref(id, cls=None, db=None)
+    ```
+    A reference to a document in a collection or index.
+    
+    :param id: The document's ID.
+    :param cls: The collection or index class.
+    :param db: The database.
 
-  A simple wrapper around a string which can be extracted using ``ref.value``.
-  Queries that require a Ref will not work if you just pass in a string.
-  """
+    `Ref` 
+    
+    Is a special type in FaunaDB. It is used to represent a document in a collection or index.
+    
+    It is serialized to JSON as an object with the `@ref` key. Passing the `id` to the response. 
+    
+    """
 
     def __init__(self, id, cls=None, db=None):
         if id is None:

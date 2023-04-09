@@ -1,11 +1,14 @@
+import asyncio
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 from datetime import date, datetime
 from json import JSONEncoder, dumps, loads
+from typing import overload
+from typing_extensions import override
 from iso8601 import parse_date
-from pydantic import BaseModel
+from pydantic import BaseModel # pylint: disable=no-name-in-module
 from aiofauna.objects import FaunaTime, Native, Query, Ref, SetRef
 from aiofauna.query import Expr
-
+from aiohttp.web import Request, Response
 
 def parse_json(json_string):
     """
@@ -90,48 +93,168 @@ def to_json(dct, pretty=True, sort_keys=True):
 
 class FaunaJSONEncoder(JSONEncoder):
     """
+    Encodes objects to Fauna-compatible JSON format.
 
-    JSON encoder that converts :any:`_Expr` into a request body.
+    Methods:
+    -------
+    default(obj):
+        Encodes the given object in Fauna-compatible JSON format.
+
+    Attributes:
+    ----------
+    No public attributes.
     """
 
+    @override
     def default(self, obj):
+        
+        """
+        Encodes the given object in Fauna-compatible JSON format.
+
+        Parameters:
+        ----------
+        obj: any
+            The object to be encoded.
+
+        Returns:
+        -------
+        dict
+            The encoded object in Fauna-compatible JSON format.
+        """
 
         if isinstance(obj, (Ref, SetRef, FaunaTime, Query)):
-
             return obj.to_fauna_json()
-
         if isinstance(obj, Expr):
-
             return obj.to_fauna_json()
         elif isinstance(obj, datetime):
-
             return FaunaTime(obj).to_fauna_json()
         elif isinstance(obj, date):
-
             return {"@date": obj.isoformat()}
         elif isinstance(obj, (bytes, bytearray)):
-
             return {"@bytes": urlsafe_b64encode(obj).decode("utf-8")}
         elif isinstance(obj, BaseModel):
             return obj.dict()
-        else:
-
-            return JSONEncoder.default(self, obj)
+        elif isinstance(obj, Request):
+            # Swagger UI
+            if obj.content_type in ("application/json", "application/x-www-form-urlencoded"):
+                data = parse_json_or_none(obj.content.read_nowait().decode())
+                if data:
+                    return {
+                        "method": obj.method,
+                        "path": obj.path,
+                        "headers": dict(obj.headers),
+                        "body": data,
+                    }
+            elif obj.content_type == "multipart/form-data":
+                data = {}
+                for k,v in asyncio.run(obj.post()):
+                    _v = None
+                    try:
+                        _v = loads(v)
+                    except ValueError:
+                        _v = "file"
+                    data[k] = v
+            else:
+                data = None
+                return {
+                    "method": obj.method,
+                    "query_params": dict(obj.query),
+                    "path_params": dict(obj.match_info),
+                    "headers": dict(obj.headers),
+                    "body": data,
+                }
+            
 
 
 class JSONModel(BaseModel):
+    """
+    A model class for JSON serialization and deserialization.
+
+    Methods:
+    -------
+    to_dict(**kwargs):
+        Returns the model's attributes as a dictionary.
+
+    to_json(**kwargs) -> str:
+        Returns the model's attributes as a JSON string.
+
+    dict(**kwargs):
+        Alias for to_dict() method.
+
+    json(**kwargs) -> str:
+        Alias for to_json() method.
+
+    Attributes:
+    ----------
+    No public attributes.
+    """
+
     def to_dict(self, **kwargs):
+        """
+        Returns the model's attributes as a dictionary.
+
+        Parameters:
+        ----------
+        **kwargs:
+            Optional keyword arguments that can be passed to BaseModel.dict() method.
+
+        Returns:
+        -------
+        dict
+            The model's attributes as a dictionary.
+        """
 
         return parse_json_or_none(self.to_json(**kwargs))
 
     def to_json(self, **kwargs) -> str:
+        """
+        Returns the model's attributes as a JSON string.
+
+        Parameters:
+        ----------
+        **kwargs:
+            Optional keyword arguments that can be passed to BaseModel.dict() method.
+
+        Returns:
+        -------
+        str
+            The model's attributes as a JSON string.
+        """
 
         return to_json(super().dict(**kwargs))
 
+    @override
     def dict(self, **kwargs):
+        """
+        Alias for to_dict() method.
+
+        Parameters:
+        ----------
+        **kwargs:
+            Optional keyword arguments that can be passed to BaseModel.dict() method.
+
+        Returns:
+        -------
+        dict
+            The model's attributes as a dictionary.
+        """
 
         return self.to_dict(**kwargs)
-
+    
+    @override
     def json(self, **kwargs) -> str:
+        """
+        Alias for to_json() method.
+
+        Parameters:
+        ----------
+        **kwargs:
+            Optional keyword arguments that can be passed to BaseModel.dict() method.
+
+        Returns:
+        -------
+        str
+            The model's attributes as a JSON string.
+        """
 
         return self.to_json(**kwargs)

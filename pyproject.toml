@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.0.4"
+version = "0.0.6"
 description = "A developer friendly yet versatile asynchronous Object-Document Mapper for FaunaDB"
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 
