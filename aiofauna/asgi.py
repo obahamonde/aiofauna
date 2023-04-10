@@ -52,6 +52,7 @@ def aioasgi(app: App) -> ASGIApp:
         
         ```
     """
+
     async def asgi(scope: Scope, receive: Receive, send: Send) -> None:
         nonlocal app
         if scope["type"] != "http":
@@ -79,7 +80,7 @@ def aioasgi(app: App) -> ASGIApp:
             body=body,
         )
 
-        response = await app._handle(request) # pylint: disable=protected-access
+        response = await app._handle(request)  # pylint: disable=protected-access
 
         body_length = response.body_length
 
@@ -87,16 +88,18 @@ def aioasgi(app: App) -> ASGIApp:
 
         while body_length:
             if response.chunked:
-                writer = response._payload_writer # pylint: disable=protected-access
+                writer = response._payload_writer  # pylint: disable=protected-access
                 if writer is None:
-                    response_body = response._content_dict # pylint: disable=protected-access
+                    response_body = (
+                        response._content_dict
+                    )  # pylint: disable=protected-access
                     break
                 buffer_size = writer.buffer_size
                 with io.BytesIO() as buffer:
                     while buffer_size:
                         await writer.drain()
-                        chunk = response._body # pylint: disable=protected-access
-                        if not chunk: # pylint: disable=protected-access
+                        chunk = response._body  # pylint: disable=protected-access
+                        if not chunk:  # pylint: disable=protected-access
                             break
                         if isinstance(chunk, bytes):
                             buffer.write(chunk)
@@ -109,7 +112,9 @@ def aioasgi(app: App) -> ASGIApp:
                     response_body += buffer.getvalue()
                     body_length -= len(response_body)
             else:
-                response_body = response._content_dict # pylint: disable=protected-access
+                response_body = (
+                    response._content_dict
+                )  # pylint: disable=protected-access
                 break
 
         await send(

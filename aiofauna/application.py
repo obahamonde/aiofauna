@@ -13,7 +13,6 @@ from aiohttp.web import (
 from aiohttp import ClientSession
 from typing import Callable, Coroutine
 from functools import wraps
-from aiofauna.meta import parse_to_response
 
 
 class App(Application):

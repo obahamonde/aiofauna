@@ -82,43 +82,23 @@ class AsyncFaunaClient(object):
         if secret is None:
 
             try:
+
                 import os
+                from dotenv import load_dotenv
+
+                load_dotenv()
 
                 self.secret = os.environ["FAUNA_SECRET"]
 
-            except KeyError:
+            except AioFaunaException as exc:
 
-                try:
+                print(
+                    "Please provide a secret key or set the FAUNA_SECRET environment variable."
+                )
 
-                    with open(".env", "r", encoding="utf-8") as file:
+                print(exc)
 
-                        txt = file.read()
-
-                        for key, val in dict(
-                            [i.split("=") for i in txt.split("\n")]
-                        ).items():
-
-                            if "FAUNA_SECRET" in key:
-
-                                self.secret = val
-
-                                break
-
-                except:  # pylint: disable=bare-except
-
-                    while secret is None:
-
-                        _secret = input("Please enter your FaunaDB secret: ")
-
-                        if _secret:
-
-                            self.secret = _secret
-
-                            break
-
-        else:
-
-            self.secret = secret
+                return None
 
     async def query(self, expr: Expr) -> Any:
         """

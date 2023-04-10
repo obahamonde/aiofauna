@@ -27,7 +27,7 @@ class AsyncFaunaModel(JSONModel):
     Attributes:
     -----------
 
-    ref: Optional[str]
+    ref: Optional[int]
 
         The FaunaDB reference ID of the model instance.
 
@@ -51,7 +51,7 @@ class AsyncFaunaModel(JSONModel):
 
         Creates a collection and indexes for the model if they don't exist in FaunaDB.
 
-    exists(ref: str) -> bool:
+    exists(ref: int) -> bool:
 
         Checks if a document exists in FaunaDB.
 
@@ -63,7 +63,7 @@ class AsyncFaunaModel(JSONModel):
 
         Finds documents in FaunaDB by a field.
 
-    find(ref: str) -> Optional[AsyncFaunaModel]:
+    find(ref: int) -> Optional[AsyncFaunaModel]:
 
         Finds a document in FaunaDB by its ID.
 
@@ -79,7 +79,7 @@ class AsyncFaunaModel(JSONModel):
 
         Creates a new document in FaunaDB.
 
-    update(ref: str, **kwargs) -> Optional[AsyncFaunaModel]:
+    update(ref: int, **kwargs) -> Optional[AsyncFaunaModel]:
 
         Updates a document in FaunaDB.
 
@@ -92,7 +92,7 @@ class AsyncFaunaModel(JSONModel):
         Runs a query in FaunaDB.
     """
 
-    ref: Optional[str] = None
+    ref: Optional[int] = None
 
     ts: Optional[int] = None
 
@@ -228,7 +228,7 @@ class AsyncFaunaModel(JSONModel):
             return None
 
     @classmethod
-    async def exists(cls, ref: str) -> bool:
+    async def exists(cls, ref: int) -> bool:
         """
 
         Checks if a document exists in FaunaDB.
@@ -236,7 +236,7 @@ class AsyncFaunaModel(JSONModel):
 
         Parameters:
         -----------
-        ref: str
+        ref: int
 
             The reference ID of the document to check.
 
@@ -368,7 +368,7 @@ class AsyncFaunaModel(JSONModel):
             return None
 
     @classmethod
-    async def find(cls, ref: str) -> Optional[AsyncFaunaModel]:
+    async def find(cls, ref: int) -> Optional[AsyncFaunaModel]:
         """
 
         Finds a document in FaunaDB by its ID.
@@ -376,7 +376,7 @@ class AsyncFaunaModel(JSONModel):
 
         Parameters:
         -----------
-        ref: str
+        ref: int
 
             The reference ID of the document to find.
 
@@ -498,7 +498,7 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def delete(cls, ref: str) -> bool:
+    async def delete(cls, ref: int) -> bool:
 
         """Delete a document by id"""
 
@@ -568,7 +568,7 @@ class AsyncFaunaModel(JSONModel):
             return None
 
     @classmethod
-    async def update(cls, ref: str, **kwargs) -> Optional[AsyncFaunaModel]:
+    async def update(cls, ref: int, **kwargs) -> Optional[AsyncFaunaModel]:
         """
 
         Creates a new document in FaunaDB.
