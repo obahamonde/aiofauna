@@ -4,7 +4,6 @@ Flaskaesque helper functions for aiohttp.
 from functools import wraps
 from aiohttp import web
 from jinja2 import Environment, FileSystemLoader
-from bs4 import BeautifulSoup
 
 def jsonify(func):
     """
@@ -66,8 +65,4 @@ def render_template(template_name, **kwargs):
     """    
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template(template_name).render(**kwargs)
-    template = BeautifulSoup(template, "html.parser")
-    template = template.find_all("template")[0]
-    template = template.decode_contents()
-    template = template.encode("utf-8")
-    return web.Response(body=template, content_type="text/html")
+    return web.Response(body=template.encode(), content_type="text/html")

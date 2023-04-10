@@ -23,3 +23,11 @@
 ## [0.0.6] - 2023-04-09
 
 - Fixed some bugs on `AioClient` prompting for a new token
+
+## [0.0.7] - 2023-04-09
+
+- Fixed `render_template` bugs leading to not parsing the template into the response body
+
+## [0.0.9] - 2023-04-10
+
+- Added `oneOf` constraint for `AioModel` to avoid excesive use of enums, Union and if statements.
