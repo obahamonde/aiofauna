@@ -2,7 +2,7 @@
 README.md
 """
 
-__version__ = "0.0.7"
+__version__ = "0.0.9"
 __author__ = "obahamonde"
 __license__ = "MIT"
 
@@ -22,7 +22,14 @@ from aiohttp.web import (
     json_response,
 )
 from aiohttp.web_middlewares import middleware
-from pydantic import BaseModel, BaseSettings, BaseConfig, EmailStr, HttpUrl, validator  # pylint: disable=no-name-in-module
+from pydantic import (
+    BaseModel,
+    BaseSettings,
+    BaseConfig,
+    EmailStr,
+    HttpUrl,
+    validator,
+)  # pylint: disable=no-name-in-module
 from aiohttp_sse import sse_response
 from aiofauna.client import ClientSession as AioSession, AsyncFaunaClient as AioClient
 from aiofauna.errors import AioFaunaException as AioException
@@ -31,3 +38,4 @@ from aiofauna.json import FaunaJSONEncoder, to_json
 from aiofauna.odm import AsyncFaunaModel as AioModel
 from aiofauna.application import App as AioApp
 from aiofauna.helpers import jsonify, redirect, render_template
+from aiofauna.asgi import aioasgi

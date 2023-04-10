@@ -96,23 +96,22 @@ class AsyncFaunaModel(JSONModel):
 
     ts: Optional[int] = None
 
-
     def __init__(self, **data: Any) -> None:
 
         for field in self.__fields__.values():
 
             try:
-                
+
                 one_of = field.field_info.extra.get("oneOf")
-                
+
                 if isinstance(one_of, list):
-                
+
                     if data.get(field.name) not in one_of:
-                    
+
                         raise ValueError(f"{field.name} must be one of {one_of}")
-                    
+
             except KeyError:
-                
+
                 continue
 
         super().__init__(**data)

@@ -8,12 +8,13 @@ from aiohttp.web import (
     TCPSite,
     Request,
     Response,
-    json_response
+    json_response,
 )
 from aiohttp import ClientSession
 from typing import Callable, Coroutine
 from functools import wraps
 from aiofauna.meta import parse_to_response
+
 
 class App(Application):
     """
@@ -51,7 +52,7 @@ class App(Application):
         self.jinja_env.variable_start_string = "${"
         self.jinja_env.variable_end_string = "}"
         self.jinja_env.auto_reload = True
-        
+
     def route(self, method: str, path: str, **kwargs):
         """
         Decorator to define a route and its corresponding handler function.
@@ -69,8 +70,10 @@ class App(Application):
             @wraps(func)
             def wrapper(*args, **kwargs):
                 return func(*args, **kwargs)
+
             self.router.add_route(method, path, wrapper, **kwargs)
             return wrapper
+
         return decorator
 
     def get(self, path: str, **kwargs):
@@ -255,7 +258,7 @@ class App(Application):
         self.router.add_route(method, path, func, **kwargs)
         return self
 
-    async def listen(self, host:bool=False, port: int = 8000, **kwargs):
+    async def listen(self, host: bool = False, port: int = 8000, **kwargs):
 
         """
         
@@ -279,5 +282,3 @@ class App(Application):
         await site.start()
         while True:
             await asyncio.sleep(1)
-            
-            

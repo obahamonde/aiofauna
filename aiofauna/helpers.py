@@ -5,6 +5,7 @@ from functools import wraps
 from aiohttp import web
 from jinja2 import Environment, FileSystemLoader
 
+
 def jsonify(func):
     """
     Decorator to convert the result of an asynchronous function to a JSON response.
@@ -15,12 +16,14 @@ def jsonify(func):
     Returns:
         callable: A wrapped version of the input function that returns a JSON response.
     """
+
     @wraps(func)
     async def wrapper(request):
         try:
             return web.json_response(await func(request))
         except Exception as e:
             return web.json_response(func(request))
+
     return wrapper
 
 
@@ -62,7 +65,7 @@ def render_template(template_name, **kwargs):
 
     Returns:
         web.Response: An HTTP response with the rendered template as its body and content type set to "text/html".
-    """    
+    """
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template(template_name).render(**kwargs)
     return web.Response(body=template.encode(), content_type="text/html")

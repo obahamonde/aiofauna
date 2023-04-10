@@ -31,3 +31,7 @@
 ## [0.0.9] - 2023-04-10
 
 - Added `oneOf` constraint for `AioModel` to avoid excesive use of enums, Union and if statements.
+
+## [0.0.10] - 2023-04-10
+
+- Added `asgi` module with the `aioasgi` middleware function in order to support ASGI based servers like `uvicorn` and `hypercorn`

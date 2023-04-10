@@ -5,10 +5,11 @@ from json import JSONEncoder, dumps, loads
 from typing import overload
 from typing_extensions import override
 from iso8601 import parse_date
-from pydantic import BaseModel # pylint: disable=no-name-in-module
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from aiofauna.objects import FaunaTime, Native, Query, Ref, SetRef
 from aiofauna.query import Expr
 from aiohttp.web import Request, Response
+
 
 def parse_json(json_string):
     """
@@ -107,7 +108,7 @@ class FaunaJSONEncoder(JSONEncoder):
 
     @override
     def default(self, obj):
-        
+
         """
         Encodes the given object in Fauna-compatible JSON format.
 
@@ -136,7 +137,10 @@ class FaunaJSONEncoder(JSONEncoder):
             return obj.dict()
         elif isinstance(obj, Request):
             # Swagger UI
-            if obj.content_type in ("application/json", "application/x-www-form-urlencoded"):
+            if obj.content_type in (
+                "application/json",
+                "application/x-www-form-urlencoded",
+            ):
                 data = parse_json_or_none(obj.content.read_nowait().decode())
                 if data:
                     return {
@@ -147,7 +151,7 @@ class FaunaJSONEncoder(JSONEncoder):
                     }
             elif obj.content_type == "multipart/form-data":
                 data = {}
-                for k,v in asyncio.run(obj.post()):
+                for k, v in asyncio.run(obj.post()):
                     _v = None
                     try:
                         _v = loads(v)
@@ -163,7 +167,6 @@ class FaunaJSONEncoder(JSONEncoder):
                     "headers": dict(obj.headers),
                     "body": data,
                 }
-            
 
 
 class JSONModel(BaseModel):
@@ -240,7 +243,7 @@ class JSONModel(BaseModel):
         """
 
         return self.to_dict(**kwargs)
-    
+
     @override
     def json(self, **kwargs) -> str:
         """

@@ -7,6 +7,7 @@ from iso8601 import parse_date
 from aiofauna.deprecated import deprecated
 from aiofauna.query import Expr
 
+
 class Ref(Expr):
     """
     ```python

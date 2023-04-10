@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.0.9"
-description = "A developer friendly yet versatile asynchronous Object-Document Mapper for FaunaDB"
+version = "0.0.10"
+description = "A developer friendly yet versatile asynchronous Object-Document Mapper for FaunaDB, comes with an Http Framework out of the box."
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 
 [tool.poetry.dependencies]
