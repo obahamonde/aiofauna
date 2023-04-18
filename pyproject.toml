@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.0.18"
+version = "0.0.19"
 description = "A developer friendly yet versatile asynchronous Object-Document Mapper for FaunaDB, comes with an Http Framework out of the box."
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 license = "MIT"

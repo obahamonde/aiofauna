@@ -40,3 +40,8 @@
 ## [0.0.13] - 2023-04-17
 
 - Added `Api` class with automatic documentation generation and inference of the request and response models from the function signature.
+
+## [0.0.19] - 2023-04-18
+
+- Added `/docs` endpoint that redirects to the swagger UI
+- Added `jsonable_encoder` on `api` module to parse all the types that are not JSON serializable.

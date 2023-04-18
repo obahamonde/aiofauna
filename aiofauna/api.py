@@ -291,11 +291,68 @@ class Api(Application):
             response = jsonable_encoder(self.openapi)
             return json_response(response)
 
-    async def server_swagger_ui(self, request: Request) -> Response:
-        with open(
-            os.path.join(os.path.dirname(__file__), "swagger_ui/index.html")
-        ) as f:
-            html = f.read()
+        @self.get("/docs")
+        async def docs():
+            html = """<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>AioFauna</title>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui.css" >
+                <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-32x32.png" sizes="32x32" />
+                <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-16x16.png" sizes="16x16" />
+                <style>
+                html
+                {
+                    box-sizing: border-box;
+                    overflow: -moz-scrollbars-vertical;
+                    overflow-y: scroll;
+                }
+
+                *,
+                *:before,
+                *:after
+                {
+                    box-sizing: inherit;
+                }
+
+                body
+                {
+                    margin:0;
+                    background: #fafafa;
+                }
+                </style>
+            </head>
+
+            <body>
+                <div id="swagger-ui"></div>
+
+                <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-bundle.js"> </script>
+                <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-standalone-preset.js"> </script>
+                <script>
+                window.onload = function() {
+                // Begin Swagger UI call region
+                const ui = SwaggerUIBundle({
+                    url: "/openapi.json",
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                    ],
+                    plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                    ],
+                    layout: "StandaloneLayout"
+                })
+                // End Swagger UI call region
+
+                window.ui = ui
+                }
+            </script>
+            </body>
+            </html>
+            """
             return Response(body=html.encode(), content_type="text/html")
 
     def document(self, path: str, method: str):
@@ -385,8 +442,6 @@ class Api(Application):
         return decorator
 
     async def listen(self, host: str = "0.0.0.0", port: int = 8000, **kwargs):
-
-        self.router.add_get("/docs", self.server_swagger_ui)
 
         cors = aiohttp_cors.setup(
             self,
