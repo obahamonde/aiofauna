@@ -72,6 +72,7 @@ def render_template(template_name, **kwargs):
     template = env.get_template(template_name).render(**kwargs)
     return web.Response(body=template.encode(), content_type="text/html")
 
+
 def upload_files(func):
     """
     Decorator to handler file uploading in an asynchronous function.
@@ -82,9 +83,9 @@ def upload_files(func):
     Returns:
         callable: A wrapped version of the input function that returns a JSON response.
     """
-    
+
     @wraps(func)
-    async def wrapper(request:web.Request):
+    async def wrapper(request: web.Request):
         file_payload = await request.post()
         files = {}
         for key, value in file_payload.items():
@@ -93,4 +94,5 @@ def upload_files(func):
         if asyncio.iscoroutinefunction(func):
             return await func(request, files)
         return func(request, files)
+
     return wrapper

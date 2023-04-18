@@ -504,12 +504,14 @@ class AsyncFaunaModel(JSONModel):
 
         try:
 
-            return await cls.q()(q.delete(q.ref(q.collection(cls.__name__.lower())),ref))
+            return await cls.q()(
+                q.delete(q.ref(q.collection(cls.__name__.lower())), ref)
+            )
 
         except AioFaunaException as exc:
 
             raise AioFaunaException(exc)
-        
+
     async def create(self) -> Optional[AsyncFaunaModel]:
         """
 
