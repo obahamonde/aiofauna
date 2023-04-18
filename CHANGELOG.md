@@ -35,3 +35,9 @@
 ## [0.0.10] - 2023-04-10
 
 - Added `asgi` module with the `aioasgi` middleware function in order to support ASGI based servers like `uvicorn` and `hypercorn`
+
+## [0.0.12] - 2023-04-10
+
+## [0.0.13] - 2023-04-17
+
+- Added `Api` class with automatic documentation generation and inference of the request and response models from the function signature.

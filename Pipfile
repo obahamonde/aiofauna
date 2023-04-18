@@ -11,6 +11,15 @@ jinja2 = "*"
 aiohttp-sse = "*"
 
 [dev-packages]
+pytest = "*"
+pylint = "*"
+black = "*"
+isort = "*"
+mypy = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+pytest-aiohttp = "*"
+aiohttp-devtools = "*"
 
 [requires]
 python_version = "^3.7"

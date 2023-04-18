@@ -1,8 +1,10 @@
 """
 Flaskaesque helper functions for aiohttp.
 """
+import asyncio
 from functools import wraps
 from aiohttp import web
+from aiohttp.web_request import FileField
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -69,3 +71,26 @@ def render_template(template_name, **kwargs):
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template(template_name).render(**kwargs)
     return web.Response(body=template.encode(), content_type="text/html")
+
+def upload_files(func):
+    """
+    Decorator to handler file uploading in an asynchronous function.
+
+    Args:
+        func (callable): The asynchronous function to be wrapped.
+
+    Returns:
+        callable: A wrapped version of the input function that returns a JSON response.
+    """
+    
+    @wraps(func)
+    async def wrapper(request:web.Request):
+        file_payload = await request.post()
+        files = {}
+        for key, value in file_payload.items():
+            if isinstance(value, FileField):
+                files[key] = value
+        if asyncio.iscoroutinefunction(func):
+            return await func(request, files)
+        return func(request, files)
+    return wrapper

@@ -92,9 +92,9 @@ class AsyncFaunaModel(JSONModel):
         Runs a query in FaunaDB.
     """
 
-    ref: Optional[int] = None
+    ref: Optional[float] = None
 
-    ts: Optional[int] = None
+    ts: Optional[float] = None
 
     def __init__(self, **data: Any) -> None:
 
@@ -228,7 +228,7 @@ class AsyncFaunaModel(JSONModel):
             return None
 
     @classmethod
-    async def exists(cls, ref: int) -> bool:
+    async def exists(cls, ref: float) -> bool:
         """
 
         Checks if a document exists in FaunaDB.
@@ -368,7 +368,7 @@ class AsyncFaunaModel(JSONModel):
             return None
 
     @classmethod
-    async def find(cls, ref: int) -> Optional[AsyncFaunaModel]:
+    async def find(cls, ref: float) -> Optional[AsyncFaunaModel]:
         """
 
         Finds a document in FaunaDB by its ID.
@@ -498,22 +498,18 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def delete(cls, ref: int) -> bool:
+    async def delete(cls, ref: float) -> bool:
 
         """Delete a document by id"""
 
         try:
 
-            await cls.q()(q.delete(q.ref(q.collection(cls.__name__.lower()), ref)))
-
-            return True
+            return await cls.q()(q.delete(q.ref(q.collection(cls.__name__.lower())),ref))
 
         except AioFaunaException as exc:
 
-            print(exc)
-
-            return False
-
+            raise AioFaunaException(exc)
+        
     async def create(self) -> Optional[AsyncFaunaModel]:
         """
 
@@ -568,7 +564,7 @@ class AsyncFaunaModel(JSONModel):
             return None
 
     @classmethod
-    async def update(cls, ref: int, **kwargs) -> Optional[AsyncFaunaModel]:
+    async def update(cls, ref: float, **kwargs) -> Optional[AsyncFaunaModel]:
         """
 
         Creates a new document in FaunaDB.
