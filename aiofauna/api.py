@@ -132,7 +132,7 @@ def jsonable_encoder(
     return custom_encoder().default(obj)
 
 
-def extract_parameters_without_request(params: dict):
+def extract_parameters_without_request(params: dict, path: str):
 
     """
     
@@ -145,9 +145,14 @@ def extract_parameters_without_request(params: dict):
     for name, param in params.items():
         type_ = param.annotation
 
-        if type_ in (str, int, float, bool):
+        if type_ in (str, int, float, bool) and name:
+            if f"{{{name}}}" in path:
+                param_location = "path"
+            else:
+                param_location = "query"
+
             open_api_params[name] = {
-                "in": "query",
+                "in": param_location,
                 "name": name,
                 "required": True,
                 "schema": {"type": type_, "default": param.default, "required": True},
@@ -173,13 +178,10 @@ def extract_parameters_without_request(params: dict):
                 "schema": {"type": "file", "default": param.default, "required": True},
             }
 
-        elif issubclass(type_, Request):
-            continue
-
         else:
             continue
 
-    return {}, open_api_params
+    return open_api_params
 
 
 def update_open_api(
@@ -366,7 +368,7 @@ class Api(Application):
         def decorator(func):
             sig = signature(func)
             params = sig.parameters
-            _, open_api_params = extract_parameters_without_request(params.copy())
+            open_api_params = extract_parameters_without_request(params.copy(), path)
             self._route_open_api_params[(path, method)] = open_api_params
             update_open_api(self.openapi, path, method, func, open_api_params)
 
