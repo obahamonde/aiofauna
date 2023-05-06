@@ -1,5 +1,8 @@
 import io
 
+import os
+
+from dotenv import load_dotenv
 
 from typing import Any, AsyncGenerator, Optional
 
@@ -7,14 +10,15 @@ from typing import Any, AsyncGenerator, Optional
 from aiohttp import ClientSession
 
 
-from aiofauna.errors import AioFaunaException
+from .errors import AioFaunaException
 
 
-from aiofauna.objects import Expr
+from .objects import Expr
 
 
-from aiofauna.json import FaunaJSONEncoder
+from .json import FaunaJSONEncoder
 
+load_dotenv()
 
 def to_json(obj: Expr) -> str:
     """
@@ -75,30 +79,13 @@ class AsyncFaunaClient(object):
         The response will be deserialized by the `FaunaModel` class from orm module.
     """
 
-    secret: str
-
-    def __init__(self, secret: Optional[str] = None) -> None:
+    def __init__(self, secret = None):
 
         if secret is None:
 
-            try:
-
-                import os
-                from dotenv import load_dotenv
-
-                load_dotenv()
-
-                self.secret = os.environ["FAUNA_SECRET"]
-
-            except AioFaunaException as exc:
-
-                print(
-                    "Please provide a secret key or set the FAUNA_SECRET environment variable."
-                )
-
-                print(exc)
-
-                return None
+           secret = os.getenv("FAUNA_SECRET")
+           
+        self.secret = secret
 
     async def query(self, expr: Expr) -> Any:
         """
@@ -135,7 +122,7 @@ class AsyncFaunaClient(object):
                 headers={
                     "Authorization": f"Bearer {self.secret}",
                     "Content-type": "application/json",
-                    "Accept": "application/json",
+                    "Accept": "application/json"
                 },
             ) as response:
                 try:

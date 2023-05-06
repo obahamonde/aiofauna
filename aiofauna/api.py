@@ -1,5 +1,5 @@
 """REST API Module with automatic OpenAPI generation."""
-import os
+import json
 import base64
 import asyncio
 from typing import (
@@ -9,8 +9,8 @@ from typing import (
 from inspect import signature
 from uuid import UUID
 from datetime import datetime, date, time
+from functools import singledispatch
 from enum import Enum
-import aiohttp_cors
 from aiohttp.web import (
     Application,
     Request,
@@ -19,9 +19,11 @@ from aiohttp.web import (
     AppRunner,
     TCPSite,
 )
+from json import JSONDecoder
 from aiohttp.web_request import FileField
-from aiofauna.odm import AsyncFaunaModel as BaseModel
-from aiofauna.json import FaunaJSONEncoder as JSONEncoder
+from .odm import AsyncFaunaModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
+from .json import FaunaJSONEncoder as JSONEncoder, to_json, parse_json_or_none
 
 
 def jsonable_encoder(
@@ -39,14 +41,14 @@ def jsonable_encoder(
     This function is used by Aiofauna to convert objects to JSON-serializable objects.
 
     It supports all the types supported by the standard json library, plus:
-    
+
     * datetime.datetime
     * datetime.date
     * datetime.time
     * uuid.UUID
     * enum.Enum
     * pydantic.BaseModel
-    
+
     """
 
     if custom_encoder is None:
@@ -54,7 +56,7 @@ def jsonable_encoder(
     if obj == str:
         return "string"
     if obj in (int, float):
-        return "number"
+        return "integer"
     if obj == bool:
         return "boolean"
     if obj == None:
@@ -132,12 +134,9 @@ def jsonable_encoder(
     return custom_encoder().default(obj)
 
 
-def extract_parameters_without_request(params: dict, path: str):
-
+def extract_params(params: dict, path: str):
     """
-    
-    Helper function to extract parameters from a function without the request parameter.
-    
+    FastAPIesque function to extract the parameters of a function outside of the request context.
     """
 
     open_api_params = {}
@@ -158,16 +157,12 @@ def extract_parameters_without_request(params: dict, path: str):
                 "schema": {"type": type_, "default": param.default, "required": True},
             }
 
-        elif issubclass(type_, BaseModel):
+        elif issubclass(type_, (BaseModel, AsyncFaunaModel)):
             open_api_params[name] = {
                 "in": "body",
                 "name": name,
                 "required": True,
-                "schema": {
-                    "type": "object",
-                    "default": param.default,
-                    "required": True,
-                },
+                "schema": type_.schema(),
             }
 
         elif issubclass(type_, FileField):
@@ -191,92 +186,174 @@ def update_open_api(
     func: Any,
     open_api_params: Dict[str, Any],
 ) -> None:
-
     """
-
     Helper function to update the open_api dictionary with the parameters of a function.
-    
     """
+    if path in ["/openapi.json", "/docs"]:
+        return
 
-    open_api["paths"].setdefault(path, {})[method.lower()] = {
-        "summary": func.__name__,
-        "description": func.__doc__,
-        "parameters": list(open_api_params.values()),
-        "responses": {"200": {"description": "OK"}},
-    }
+    if method in ("GET", "HEAD", "DELETE"):
+        open_api["paths"].setdefault(path, {})[method.lower()] = {
+            "summary": func.__name__,
+            "description": func.__doc__,
+            "parameters": list(open_api_params.values()),
+            "responses": {"200": {"description": "OK"}},
+        }
+    elif method in ("POST", "PUT", "PATCH"):
+        _scalars = []
+        _body = None
+        for param in open_api_params.values():
+            if isinstance(param["schema"], dict):
+                if "type" in param["schema"] and param["schema"]["type"] != "object":
+                    _scalars.append(param)
+                else:
+                    _body = {
+                        "content": {"application/json": {"schema": param["schema"]}}
+                    }
+            else:
+                continue
+
+        if _body:
+            open_api["paths"].setdefault(path, {})[method.lower()] = {
+                "summary": func.__name__,
+                "description": func.__doc__,
+                "parameters": _scalars,
+                "requestBody": _body,
+                "responses": {"200": {"description": "OK"}},
+            }
+            open_api["components"]["schemas"].update(param["schema"]) # type: ignore
+
+        else:
+            open_api["paths"].setdefault(path, {})[method.lower()] = {
+                "summary": func.__name__,
+                "description": func.__doc__,
+                "parameters": _scalars,
+                "responses": {"200": {"description": "OK"}},
+            }
 
 
-async def extract_parameters(request: Request, params: dict):
-
+@singledispatch
+def make_response(response: Any) -> Response:
     """
-    
-    Helper function to extract parameters from a function.
-    
+    FastAPIesque function to make a response from a function.
     """
+    return response
 
+
+@make_response.register(BaseModel)
+def _(response: BaseModel) -> Response:
+    return Response(
+        status=200,
+        body=json.dumps(response.dict()),
+        content_type="application/json",
+    )
+
+
+@make_response.register(AsyncFaunaModel)
+def _(response: AsyncFaunaModel) -> Response:
+    response.ref = str(response.ref)
+    return Response(
+        status=200,
+        body=json.dumps(response.dict()),
+        content_type="application/json",
+    )
+
+
+@make_response.register(list)
+def _(response: list) -> Response:
+    return Response(
+        status=200,
+        body=json.dumps(list(response)),
+        content_type="application/json",
+    )
+
+
+@make_response.register(dict)
+def _(response: dict) -> Response:
+    return Response(
+        status=200,
+        body=json.dumps(response),
+        content_type="application/json",
+    )
+
+
+@make_response.register(str)
+def _(response: str) -> Response:
+    return Response(
+        status=200,
+        body=response.encode(),
+        content_type="text/plain",
+    )
+
+
+@make_response.register(bytes)
+def _(response: bytes) -> Response:
+    return Response(
+        status=200,
+        body=response,
+        content_type="application/octet-stream",
+    )
+
+
+@make_response.register(int)
+def _(response: int) -> Response:
+    return Response(
+        status=200,
+        body=str(response).encode(),
+        content_type="text/plain",
+    )
+
+
+@make_response.register(float)
+def _(response: float) -> Response:
+    return Response(
+        status=200,
+        body=str(response).encode(),
+        content_type="text/plain",
+    )
+
+
+@make_response.register(bool)
+def _(response: bool) -> Response:
+    return Response(
+        status=200,
+        body=str(response).encode(),
+        content_type="text/plain",
+    )
+
+
+async def inject_signature(request: Request, params: dict):
+    """
+    FastAPIesque function to shape the signature of a function to the request.
+    """
     args_to_apply = {}
-    open_api_params = {}
 
     for name, param in params.items():
         type_ = param.annotation
-
         if type_ in (str, int, float, bool) and name in request.match_info:
-            open_api_params[name] = {
-                "in": "path",
-                "name": name,
-                "required": True,
-                "schema": {"type": type_, "default": param.default, "required": True},
-            }
             args_to_apply[name] = request.match_info[name]
-
         elif type_ in (str, int, float, bool) and name in request.query:
-            open_api_params[name] = {
-                "in": "query",
-                "name": name,
-                "required": True,
-                "schema": {"type": type_, "default": param.default, "required": True},
-            }
             args_to_apply[name] = type_(request.query[name])
-
         elif issubclass(type_, BaseModel):
-            open_api_params[name] = {
-                "in": "body",
-                "name": name,
-                "required": True,
-                "schema": {
-                    "type": "object",
-                    "default": param.default,
-                    "required": True,
-                },
-            }
-            args_to_apply[name] = type_(**await request.json())
-
+            data = await request.json(loads=JSONDecoder().decode)
+            if isinstance(data, (str, bytes, bytearray)):
+                data = json.loads(data, object_hook=parse_json_or_none)
+            args_to_apply[name] = type_(**data)
         elif issubclass(type_, FileField):
-            open_api_params[name] = {
-                "in": "formData",
-                "name": name,
-                "required": True,
-                "schema": {"type": "file", "default": param.default, "required": True},
-            }
             args_to_apply[name] = await request.post()
-
-        elif issubclass(type_, Request):
-
-            continue
-
         else:
-
             continue
-
-    return args_to_apply, open_api_params
+    return args_to_apply
 
 
 class Api(Application):
     """
-    
+
     Api class to create a fastapi-like api.
-    
+
     """
+
+    title: str = "aiofauna"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -284,7 +361,7 @@ class Api(Application):
             "openapi": "3.0.0",
             "info": {"title": "API", "version": "1.0.0"},
             "paths": {},
-            "components": {},
+            "components": {"schemas": {}},
         }
         self._route_open_api_params = {}
 
@@ -295,34 +372,34 @@ class Api(Application):
 
         @self.get("/docs")
         async def docs():
-            html = """<!DOCTYPE html>
+            html = f"""<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <title>AioFauna</title>
+                <title>{self.title}</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui.css" >
                 <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-32x32.png" sizes="32x32" />
                 <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-16x16.png" sizes="16x16" />
                 <style>
                 html
-                {
+                {{
                     box-sizing: border-box;
                     overflow: -moz-scrollbars-vertical;
                     overflow-y: scroll;
-                }
+                }}
 
                 *,
                 *:before,
                 *:after
-                {
+                {{
                     box-sizing: inherit;
-                }
+                }}
 
                 body
-                {
+                {{
                     margin:0;
                     background: #fafafa;
-                }
+                }}
                 </style>
             </head>
 
@@ -332,9 +409,8 @@ class Api(Application):
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-bundle.js"> </script>
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-standalone-preset.js"> </script>
                 <script>
-                window.onload = function() {
-                // Begin Swagger UI call region
-                const ui = SwaggerUIBundle({
+                window.onload = function() {{
+                const ui = SwaggerUIBundle({{
                     url: "/openapi.json",
                     dom_id: '#swagger-ui',
                     deepLinking: true,
@@ -346,11 +422,9 @@ class Api(Application):
                     SwaggerUIBundle.plugins.DownloadUrl
                     ],
                     layout: "StandaloneLayout"
-                })
-                // End Swagger UI call region
-
+                }})
                 window.ui = ui
-                }
+                }}
             </script>
             </body>
             </html>
@@ -358,27 +432,38 @@ class Api(Application):
             return Response(body=html.encode(), content_type="text/html")
 
     def document(self, path: str, method: str):
-
         """
-        
+
         Decorator to document a function.
-        
+
         """
 
         def decorator(func):
             sig = signature(func)
             params = sig.parameters
-            open_api_params = extract_parameters_without_request(params.copy(), path)
+            open_api_params = extract_params(params.copy(), path)
             self._route_open_api_params[(path, method)] = open_api_params
             update_open_api(self.openapi, path, method, func, open_api_params)
 
             async def wrapper(*args, **kwargs):
                 request: Request = args[0]
                 args = args[1:]
-                args_to_apply, _ = await extract_parameters(request, params.copy())
+                args_to_apply = await inject_signature(request, params.copy())
+                definitive_args = {}
+                for name, param in params.items():
+                    if name in args_to_apply:
+                        definitive_args[name] = args_to_apply[name]
+                    elif param.default is not param.empty:
+                        definitive_args[name] = param.default
+                    else:
+                        raise ValueError(
+                            f"Missing parameter {name} for {func.__name__}"
+                        )
                 if asyncio.iscoroutinefunction(func):
-                    return await func(*args, **kwargs, **args_to_apply)
-                return func(*args, **kwargs, **args_to_apply)
+                    response = await func(*args, **kwargs, **definitive_args)
+                else:
+                    response = func(*args, **kwargs, **definitive_args)
+                return make_response(response)
 
             wrapper._handler = func
             return wrapper
@@ -444,17 +529,7 @@ class Api(Application):
         return decorator
 
     async def listen(self, host: str = "0.0.0.0", port: int = 8000, **kwargs):
-
-        cors = aiohttp_cors.setup(
-            self,
-            defaults={
-                "*": aiohttp_cors.ResourceOptions(
-                    allow_credentials=True, expose_headers="*", allow_headers="*",
-                )
-            },
-        )
         for route in list(self.router.routes()):
-            cors.add(route)
             handler = route.handler._handler  # pylint: disable=protected-access
             path = route.resource.canonical  # type: ignore
             method = route.method.lower()
@@ -472,5 +547,16 @@ class Api(Application):
         print(f"http://{host}:{port}/docs")
 
         while True:
-
             await asyncio.sleep(3600)
+
+    def on_event(self, event: str):
+        def decorator(func):
+            if event not in ["startup", "shutdown"]:
+                raise ValueError("Event must be startup or shutdown")
+            elif event == "startup":
+                self.on_startup.append(func)
+            else:
+                self.on_shutdown.append(func)
+            return func
+
+        return decorator

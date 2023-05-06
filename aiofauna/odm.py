@@ -1,180 +1,103 @@
 """Lightweight ORM to perform simple CRUD operations on FaunaDB collections and provision indexes
 
+
    the fauna query object is available also within the class for further customization
 """
 
+
 from __future__ import annotations
+
+
+import logging
+
+import os
 
 import asyncio
 
-from typing import List, Optional, Any, Callable
 
-from aiofauna import query as q
+from typing import List, Optional, Any, Callable, Union
 
-from aiofauna.errors import AioFaunaException
+try:
+    import query as q # type: ignore
+except ImportError:
+    from . import query as q
 
-from aiofauna.json import JSONModel  # pylint: disable=no-name-in-module
+from .errors import AioFaunaException
 
-from aiofauna.client import AsyncFaunaClient
+
+from .json import JSONModel  # pylint: disable=no-name-in-module
+
+
+from .client import AsyncFaunaClient
+
+
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
+
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
+class Fql(BaseModel):
+    field: str
+
+    operator: str
+
+    value: Any
 
 
 class AsyncFaunaModel(JSONModel):
     """
 
-    A base model class for interacting with FaunaDB using asynchronous operations.
-
-
-    Attributes:
-    -----------
-
-    ref: Optional[int]
-
-        The FaunaDB reference ID of the model instance.
-
-    ts: Optional[int]
-
-        The timestamp of the model instance.
-
-
-    Methods:
-    --------
-
-    client() -> AsyncFaunaClient:
-
-        Returns an instance of AsyncFaunaClient to interact with FaunaDB.
-
-    q() -> Expr:
-
-        Returns an instance of Expr to build queries for FaunaDB.
-
-    async provision() -> None:
-
-        Creates a collection and indexes for the model if they don't exist in FaunaDB.
-
-    exists(ref: int) -> bool:
-
-        Checks if a document exists in FaunaDB.
-
-    find_unique(field: str, value: Any) -> Optional[AsyncFaunaModel]:
-
-        Finds a document in FaunaDB by a unique field.
-
-    find_many(field: str, value: Any) -> Optional[List[AsyncFaunaModel]]:
-
-        Finds documents in FaunaDB by a field.
-
-    find(ref: int) -> Optional[AsyncFaunaModel]:
-
-        Finds a document in FaunaDB by its ID.
-
-    find_all() -> Optional[List[AsyncFaunaModel]]:
-
-        Finds all documents of the model in FaunaDB.
-
-    delete_unique(field: str, value: Any) -> bool:
-
-        Deletes a document in FaunaDB by a unique field.
-
-    create() -> Optional[AsyncFaunaModel]:
-
-        Creates a new document in FaunaDB.
-
-    update(ref: int, **kwargs) -> Optional[AsyncFaunaModel]:
-
-        Updates a document in FaunaDB.
-
-    upsert() -> Optional[AsyncFaunaModel]:
-
-        Upserts a document in FaunaDB.
-
-    query(query: str) -> Optional[List[AsyncFaunaModel]]:
-
-        Runs a query in FaunaDB.
+    FaunaDB Base Model
     """
 
-    ref: Optional[float] = None
+    ref: Optional[str] = None
 
-    ts: Optional[float] = None
+    ts: Optional[str] = None
 
     def __init__(self, **data: Any) -> None:
 
+        super().__init__(**data)
+
         for field in self.__fields__.values():
-
             try:
-
                 one_of = field.field_info.extra.get("oneOf")
 
                 if isinstance(one_of, list):
-
                     if data.get(field.name) not in one_of:
-
                         raise ValueError(f"{field.name} must be one of {one_of}")
 
-            except KeyError:
-
+            except Exception:  # pylint: disable=broad-except
                 continue
 
-        super().__init__(**data)
+
 
     @classmethod
     def client(cls) -> AsyncFaunaClient:
-        """
-
-        Returns an instance of AsyncFaunaClient to interact with FaunaDB.
-
-
-        Returns:
-        --------
-
-        AsyncFaunaClient:
-
-            An instance of AsyncFaunaClient.
-        """
-
-        return AsyncFaunaClient()  # pylint: disable=no-value-for-parameter
+        
+        fauna_secret = os.getenv("FAUNA_SECRET")
+              
+        return AsyncFaunaClient(secret=fauna_secret)
 
     @classmethod
     def q(cls) -> Callable:
-        """
-
-        Returns an instance of Expr to build queries for FaunaDB.
-
-
-        Returns:
-        --------
-
-        Expr:
-
-            An instance of Expr.
-        """
-
+        
         return cls.client().query
 
     @classmethod
-    async def provision(cls) -> None:
-        """
-
-        Creates a collection and indexes for the model if they don't exist in FaunaDB.
-
-
-        Returns:
-        --------
-
-        None:
-
-            None.
-        """
-
+    async def provision(cls) -> bool:
+        
         _q = cls.q()
-
         try:
-
             if not await _q(q.exists(q.collection(cls.__name__.lower()))):
-
                 await _q(q.create_collection({"name": cls.__name__.lower()}))
 
-                print(f"Created collection {cls.__name__.lower()}")
+                print("Created collection %s", cls.__name__.lower())
 
+            if not await _q(q.exists(q.index(cls.__name__.lower()))):
                 await _q(
                     q.create_index(
                         {
@@ -187,108 +110,135 @@ class AsyncFaunaModel(JSONModel):
                 print(f"Created index {cls.__name__.lower()}")
 
             for field in cls.__fields__.values():
-
                 if field.field_info.extra.get("unique"):
-
-                    await _q(
-                        q.create_index(
-                            {
-                                "name": f"{cls.__name__.lower()}_{field.name}_unique",
-                                "source": q.collection(cls.__name__.lower()),
-                                "terms": [{"field": ["data", field.name]}],
-                                "unique": True,
-                            }
+                    if not await _q(
+                        q.exists(q.index(f"{cls.__name__.lower()}_{field.name}_unique"))
+                    ):
+                        await _q(
+                            q.create_index(
+                                {
+                                    "name": f"{cls.__name__.lower()}_{field.name}_unique",
+                                    "source": q.collection(cls.__name__.lower()),
+                                    "terms": [{"field": ["data", field.name]}],
+                                    "unique": True,
+                                }
+                            )
                         )
-                    )
+
+                        print(
+                            cls.__name__.lower(),
+                            field.name,
+                        )
 
                     print(
-                        f"Created unique index {cls.__name__.lower()}_{field.name}_unique"
+                        "Created unique index %s_%s",
+                        cls.__name__.lower(),
+                        field.name,
                     )
+
                     continue
 
                 if field.field_info.extra.get("index"):
-
-                    await _q(
-                        q.create_index(
-                            {
-                                "name": f"{cls.__name__.lower()}_{field.name}",
-                                "source": q.collection(cls.__name__.lower()),
-                                "terms": [{"field": ["data", field.name]}],
-                            }
+                    if not await _q(
+                        q.exists(q.index(f"{cls.__name__.lower()}_{field.name}"))
+                    ):
+                        await _q(
+                            q.create_index(
+                                {
+                                    "name": f"{cls.__name__.lower()}_{field.name}",
+                                    "source": q.collection(cls.__name__.lower()),
+                                    "terms": [{"field": ["data", field.name]}],
+                                }
+                            )
                         )
-                    )
 
-                    print(f"Created index {cls.__name__.lower()}_{field.name}")
-                    continue
+                        print(
+                            "Created index %s_%s", cls.__name__.lower(), field.name
+                        )
+                        continue
+
+            return True
 
         except AioFaunaException as exc:
+            logging.error(exc)
 
-            print(exc)
-
-            return None
+            return False
 
     @classmethod
-    async def exists(cls, ref: float) -> bool:
+    async def exists(cls, ref: str) -> bool:
         """
 
+
         Checks if a document exists in FaunaDB.
+
 
 
         Parameters:
         -----------
         ref: int
 
+
             The reference ID of the document to check.
+
 
 
         Returns:
         --------
 
+
         bool:
+
 
             True if the document exists, False otherwise.
         """
 
         try:
-
             return await cls.q()(
                 q.exists(q.ref(q.collection(cls.__name__.lower()), ref))
             )
 
         except AioFaunaException as exc:
-
-            print(exc)
+            logging.error(exc)
 
             return False
 
     @classmethod
-    async def find_unique(cls, field: str, value: Any) -> Optional[AsyncFaunaModel]:
+    async def find_unique(
+        cls, field: str, value: Any
+    ) -> Union[AsyncFaunaModel, BaseModel]:
         """
 
+
         Finds a document in FaunaDB by a unique field.
+
 
 
         Parameters:
         -----------
         field: str
 
+
             The name of the field to search.
+
 
         value: Any
 
+
             The value to search for.
+
 
 
         Returns:
         --------
 
-        Optional[AsyncFaunaModel]:
+
+        Union[AsyncFaunaModel,BaseModel]:
+
 
             An instance of the model if found, None otherwise.
         """
 
         try:
-
             data = await cls.q()(
                 q.get(q.match(q.index(f"{cls.__name__.lower()}_{field}_unique"), value))
             )
@@ -301,38 +251,45 @@ class AsyncFaunaModel(JSONModel):
             )
 
         except AioFaunaException as exc:
-            print(exc)
+            logging.error(exc)
 
             return None
 
     @classmethod
-    async def find_many(cls, field: str, value: Any) -> Optional[List[AsyncFaunaModel]]:
+    async def find_many(cls, field: str, value: Any) -> List[AsyncFaunaModel]:
         """
 
+
         Finds documents in FaunaDB by a field.
+
 
 
         Parameters:
         -----------
         field: str
 
+
             The name of the field to search.
+
 
         value: Any
 
+
             The value to search for.
+
 
 
         Returns:
         --------
 
-        Optional[List[AsyncFaunaModel]]:
+
+        List[AsyncFaunaModel]:
+
 
             A list of instances of the model if found, None otherwise.
         """
 
         try:
-
             _q = cls.q()
 
             refs = (
@@ -362,35 +319,39 @@ class AsyncFaunaModel(JSONModel):
             ]
 
         except AioFaunaException as exc:
+            logging.error(exc)
 
-            print(exc)
-
-            return None
+            return []
 
     @classmethod
-    async def find(cls, ref: float) -> Optional[AsyncFaunaModel]:
+    async def find(cls, ref: str) -> Union[AsyncFaunaModel, BaseModel]:
         """
 
+
         Finds a document in FaunaDB by its ID.
+
 
 
         Parameters:
         -----------
         ref: int
 
+
             The reference ID of the document to find.
+
 
 
         Returns:
         --------
 
-        Optional[AsyncFaunaModel]:
+
+        Union[AsyncFaunaModel,BaseModel]:
+
 
             An instance of the model if found, None otherwise.
         """
 
         try:
-
             data = await cls.q()(q.get(q.ref(q.collection(cls.__name__.lower()), ref)))
             return cls(
                 **{
@@ -401,28 +362,30 @@ class AsyncFaunaModel(JSONModel):
             )
 
         except AioFaunaException as exc:
+            logging.error(exc)
 
-            print(exc)
-
-            return None
+            raise ValueError(f"{ref} not found")
 
     @classmethod
-    async def find_all(cls) -> Optional[List[AsyncFaunaModel]]:
+    async def find_all(cls, limit: int, offset: int) -> List[AsyncFaunaModel]:
         """
 
+
         Finds all documents of the model in FaunaDB.
+
 
 
         Returns:
         --------
 
-        Optional[List[AsyncFaunaModel]]:
+
+        List[AsyncFaunaModel]:
+
 
             A list of instances of the model if found, None otherwise.
         """
 
         try:
-
             _q = cls.q()
 
             refs = (await _q(q.paginate(q.match(q.index(cls.__name__.lower())))))[
@@ -448,39 +411,45 @@ class AsyncFaunaModel(JSONModel):
             ]
 
         except AioFaunaException as exc:
+            logging.error(exc)
 
-            print(exc)
-
-            return None
+            return []
 
     @classmethod
     async def delete_unique(cls, field: str, value: Any) -> bool:
         """
 
-        Deletes a document in FaunaDB by a unique field.
+
+                Deletes a document in FaunaDB by a unique field.
 
 
-        Parameters:
-        -----------
-        field: str
 
-            The name of the unique field to use in the search.
-
-        value: Any
-
-            The value of the unique field to use in the search.
+                Parameters:
+                -----------
+                field: str
 
 
-        Returns:
-        --------
+                    The name of the unique field to use in the search.
 
-        bool:
 
-            True if the document is deleted, False otherwise.
+                value: Any
+
+
+                    The value of the unique field to use in the search.
+
+
+
+                Returns:
+                --------
+
+
+                bool:
+        t
+
+                    True if the document is deleted, False otherwise.
         """
 
         try:
-
             _q = cls.q()
 
             ref = await _q(
@@ -492,177 +461,94 @@ class AsyncFaunaModel(JSONModel):
             return True
 
         except AioFaunaException as exc:
-
-            print(exc)
+            logging.error(exc)
 
             return False
 
     @classmethod
-    async def delete(cls, ref: float) -> bool:
-
+    async def delete(cls, ref: str) -> bool:
         """Delete a document by id"""
 
         try:
+            await cls.q()(q.delete(q.ref(q.collection(cls.__name__.lower()), ref)))
 
-            return await cls.q()(
-                q.delete(q.ref(q.collection(cls.__name__.lower())), ref)
-            )
+            return True
 
         except AioFaunaException as exc:
+            logging.error(exc)
 
-            raise AioFaunaException(exc)
+            return False
 
-    async def create(self) -> Optional[AsyncFaunaModel]:
+    async def create(self) -> AsyncFaunaModel:
         """
 
+
         Creates a new document in FaunaDB.
+
 
 
         Parameters:
         -----------
 
+
         **kwargs:
 
+
             The data to create the new document with.
+
 
 
         Returns:
         --------
 
-        Optional[AsyncFaunaModel]:
+
+        Union[AsyncFaunaModel,BaseModel]:
+
 
             An instance of the model if created successfully, None otherwise.
         """
 
         try:
-
             for field in self.__fields__.values():
-
                 if field.field_info.extra.get("unique"):
-
-                    instance = await self.find_unique(
-                        field.name, self.dict()[field.name]  # type: ignore
-                    )
-                    if instance:
-                        return instance
-
-            data = await self.q()(
-                q.create(
-                    q.collection(self.__class__.__name__.lower()), {"data": self.dict()}
-                )
-            )
-            return self.__class__(
-                **{
-                    **data["data"],
-                    "ref": data["ref"]["@ref"]["id"],
-                    "ts": data["ts"] / 1000,
-                }
-            )
-
+                    instance = await self.find_unique(field.name, getattr(self, field.name))
+                    if instance is None:
+                        continue
+                    else:
+                        await instance.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()})) # type: ignore
+                        return instance # type: ignore
+            await self.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()}))
+            return self 
+        
         except AioFaunaException as exc:
-
-            print(exc)
-
-            return None
+            
+            logging.error(exc)
+            
+            raise ValueError(exc)
 
     @classmethod
-    async def update(cls, ref: float, **kwargs) -> Optional[AsyncFaunaModel]:
+    async def query(cls, query: str) -> List[AsyncFaunaModel]:
         """
 
-        Creates a new document in FaunaDB.
-
-
-        Parameters:
-        -----------
-
-        **kwargs:
-
-            The data to create the new document with.
-
-
-        Returns:
-        --------
-
-        Optional[AsyncFaunaModel]:
-
-            An instance of the model if created successfully, None otherwise.
-        """
-
-        try:
-
-            data = await cls.q()(
-                q.update(
-                    q.ref(q.collection(cls.__name__.lower()), ref), {"data": kwargs}
-                )
-            )
-            return cls(
-                **{
-                    **data["data"],
-                    "ref": data["ref"]["@ref"]["id"],
-                    "ts": data["ts"] / 1000,
-                }
-            )
-
-        except AioFaunaException as exc:
-
-            print(exc)
-
-            return None
-
-    async def upsert(self) -> Optional[AsyncFaunaModel]:
-        """
-
-        Creates a new document in FaunaDB.
-
-
-        Parameters:
-        -----------
-
-        **kwargs:
-
-            The data to create the new document with.
-
-
-        Returns:
-        --------
-
-        Optional[AsyncFaunaModel]:
-
-            An instance of the model if created successfully, None otherwise.
-        """
-
-        try:
-            if not self.ref:
-
-                return await self.create()
-
-            return await self.update(self.ref, **self.dict())  # type: ignore
-
-        except AioFaunaException as exc:
-
-            print(exc)
-
-            return None
-
-    @classmethod
-    async def query(cls, query: str) -> Optional[List[AsyncFaunaModel]]:
-        """
 
         Queries FaunaDB using a string query and returns a list of instances of the model.
 
 
+
         Args:
+
 
             query (str): The query to use.
 
 
+
         Returns:
 
-            Optional[List[AsyncFaunaModel]]: A list of instances of the model if found, None otherwises.
+
+            List[AsyncFaunaModel]: A list of instances of the model if found, None otherwises.
         """
 
         try:
-
             refs = (await cls.q()(q.paginate(q.match(q.query(query)))))["data"]
 
             data = await asyncio.gather(*[cls.q()(q.get(ref)) for ref in refs])
@@ -675,7 +561,52 @@ class AsyncFaunaModel(JSONModel):
             ]
 
         except AioFaunaException as exc:
+            logging.error(exc)
 
-            print(exc)
+            return []
 
-            return None
+    @classmethod
+    async def update(cls, ref: str, **kwargs) -> AsyncFaunaModel:
+        try:
+            instance = await cls.find(ref)
+            if isinstance(instance, cls):
+                instance_updated = await cls.q()(
+                    q.update(
+                        q.ref(q.collection(cls.__name__.lower()), ref), {"data": kwargs}
+                    )
+                )
+                return cls(
+                    **{
+                        **instance_updated["data"],
+                        "ref": instance_updated["ref"]["@ref"]["id"],
+                        "ts": instance_updated["ts"] / 1000,
+                    }
+                )
+            else:
+                raise ValueError(f"Field {ref} not found")
+        except AioFaunaException as exc:
+            logging.error(exc)
+            raise ValueError(f"Field {ref} not found")
+
+    async def save(self) -> AsyncFaunaModel:
+        """
+
+
+        Saves a document in FaunaDB.
+
+
+
+        Returns:
+        --------
+
+
+        Union[AsyncFaunaModel,BaseModel]:
+
+
+            An instance of the model if saved successfully, None otherwise.
+        """
+
+        if isinstance(self.ref, str) and len(self.ref) == 18:
+            return await self.update(self.ref, kwargs=self.dict())
+        return await self.create()
+

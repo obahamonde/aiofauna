@@ -1,39 +1,23 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.0.19"
-description = "A developer friendly yet versatile asynchronous Object-Document Mapper for FaunaDB, comes with an Http Framework out of the box."
+version = "0.1.3"
+description = ""
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
-license = "MIT"
-readme = "README.md"
-homepage = "https://github.com/obahamonde/aiofauna"
-repository = "https://github.com/obahamonde/aiofauna"
-documentation = "https://aiofauna.netlify.app/"
-
 
 [tool.poetry.dependencies]
 python = "^3.7"
-pydantic = {extras = ["dotenv","email"], version = "^1.10.7"}
+pydantic = {extras = ["dotenv"], version = "^1.10.7"}
 aiohttp = "^3.8.4"
 iso8601 = "^1.1.0"
-Jinja2 = "^3.1.2"
 aiohttp-sse = "^2.1.0"
 aiohttp_cors = "^0.7.0"
-
+aiohttp-devtools = "^1.0.post0"
 
 [tool.poetry.dev-dependencies]
-autopep8 = "^2.0.2"
-pytest = "*"
-pylint = "*"
-black = "*"
-isort = "*"
-mypy = "*"
-pytest-cov = "*"
-pytest-mock = "*"
-pytest-aiohttp = "*"
-aiohttp-devtools = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-
+[tool.poetry.scripts]
+dev = "aiofauna.cli:dev"
