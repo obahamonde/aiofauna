@@ -253,7 +253,7 @@ class AsyncFaunaModel(JSONModel):
         except AioFaunaException as exc:
             logging.error(exc)
 
-            return None
+            raise ValueError(f"{field} {value} not found")
 
     @classmethod
     async def find_many(cls, field: str, value: Any) -> List[AsyncFaunaModel]:
@@ -514,11 +514,10 @@ class AsyncFaunaModel(JSONModel):
                     instance = await self.find_unique(field.name, getattr(self, field.name))
                     if instance is None:
                         continue
-                    else:
-                        await instance.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()})) # type: ignore
-                        return instance # type: ignore
-            await self.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()}))
-            return self 
+                    await instance.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()})) # type: ignore
+                    return instance # type: ignore
+            self.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()}))
+            return self
         
         except AioFaunaException as exc:
             
@@ -609,4 +608,5 @@ class AsyncFaunaModel(JSONModel):
         if isinstance(self.ref, str) and len(self.ref) == 18:
             return await self.update(self.ref, kwargs=self.dict())
         return await self.create()
+
 
