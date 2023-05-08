@@ -26,7 +26,6 @@ class Graph(BaseModel):
 
     @property
     def is_cyclic(self) -> bool:
-
         """
         The is_cyclic property checks if the graph is cyclic.
         """
@@ -61,7 +60,7 @@ class Graph(BaseModel):
 
     def topological_sort(self) -> List[int]:
         """
-        The topological_sort method performs a topological sort on the graph using a modified depth-first search algorithm. It initializes a set of visited nodes and a list of sorted nodes, and then iterates through each node in the graph. 
+        The topological_sort method performs a topological sort on the graph using a modified depth-first search algorithm. It initializes a set of visited nodes and a list of sorted nodes, and then iterates through each node in the graph.
         """
         return self._topological_sort(self.nodes, self.edges)
 

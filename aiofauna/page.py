@@ -3,10 +3,10 @@ from aiofauna import query
 
 class Page(object):
     """
-  Represents a single pagination result.
-  See ``paginate`` in the `docs <https://app.fauna.com/documentation/reference/queryapi#read-functions>`__.
-  You must convert to Page yourself using :py:meth:`from_raw`.
-  """
+    Represents a single pagination result.
+    See ``paginate`` in the `docs <https://app.fauna.com/documentation/reference/queryapi#read-functions>`__.
+    You must convert to Page yourself using :py:meth:`from_raw`.
+    """
 
     @staticmethod
     def from_raw(raw):
@@ -43,17 +43,17 @@ class Page(object):
     @staticmethod
     def set_iterator(client, set_query, map_lambda=None, mapper=None, page_size=None):
         """
-    Iterator that keeps getting new pages of a set.
+        Iterator that keeps getting new pages of a set.
 
-    :param map_lambda:
-      If present, a :any:`lambda_` for mapping set elements.
-    :param mapper:
-      Mapping Python function used on each page element.
-    :param page_size:
-      Number of instances to be fetched at a time.
-    :return:
-      Iterator through all elements in the set.
-    """
+        :param map_lambda:
+          If present, a :any:`lambda_` for mapping set elements.
+        :param mapper:
+          Mapping Python function used on each page element.
+        :param page_size:
+          Number of instances to be fetched at a time.
+        :return:
+          Iterator through all elements in the set.
+        """
 
         def get_page(**kwargs):
             queried = query.paginate(set_query, **kwargs)

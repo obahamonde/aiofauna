@@ -1,32 +1,85 @@
 """
 Flaskaesque helper functions for aiohttp.
 """
-import asyncio
-from functools import wraps
+import re
+from markdown import markdown  # pylint: disable=import-error
 from aiohttp import web
-from aiohttp.web_request import FileField
-from jinja2 import Environment, FileSystemLoader
+from aiofauna import Response
+from pygments import highlight
+from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
+from pygments.lexers import get_lexer_by_name
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+MD_FMT_CDN = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">"""  # pylint: disable=line-too-long
+CODE_FMT_CDN = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pygments-css@1.0.0/github.min.css">"""  # pylint: disable=line-too-long
+
+html_formatter = HtmlFormatter(style="default")
+
+jinja_env = Environment(
+    loader=FileSystemLoader("templates"),
+    autoescape=select_autoescape(["html", "xml"]),
+    trim_blocks=True,
+    lstrip_blocks=True,
+    extensions=["jinja2.ext.do"],
+)
+
+md_env = Environment(
+    loader=FileSystemLoader("markdown"),
+    autoescape=select_autoescape(["html", "xml"]),
+    trim_blocks=True,
+    lstrip_blocks=True,
+)
 
 
-def jsonify(func):
+def markdown_it(md_string: str):
     """
-    Decorator to convert the result of an asynchronous function to a JSON response.
+    Render a markdown file to HTML.
 
     Args:
-        func (callable): The asynchronous function to be wrapped.
+        md_string (str): The markdown file to render.
 
     Returns:
-        callable: A wrapped version of the input function that returns a JSON response.
+        str: The rendered HTML.
     """
 
-    @wraps(func)
-    async def wrapper(request):
-        try:
-            return web.json_response(await func(request))
-        except Exception as e:
-            return web.json_response(func(request))
-
-    return wrapper
+    template = md_env.get_template(md_string)
+    text = template.render()
+    code = re.findall(r"```[a-z]*\n[\s\S]*?\n```", text)
+    for code_ in code:
+        lang = re.findall(r"```([a-z]*)\n", code_)[0]
+        lexer = get_lexer_by_name(lang)
+        code = re.findall(r"```[a-z]*\n([\s\S]*?)\n```", code_)[0]
+        code = highlight(code, lexer, html_formatter)
+        text = text.replace(code_, code)
+    text = markdown(text, extensions=["fenced_code"])
+    text = f"""
+    <html>
+        <head>
+            <meta charset="utf-8">
+            {MD_FMT_CDN}
+            {CODE_FMT_CDN}
+        </head>
+        <style>
+        .container {{
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }}
+        h1, h2, h3, h4, h5, h6 {{
+            margin-top: 40px;
+            text-align: center;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }}
+        </style>
+        <body class="markdown-body">
+        <main class="container">
+            {text}
+        </main>
+        </body>
+    </html>
+    """
+    return Response(text=text, content_type="text/html")
 
 
 def redirect(url):
@@ -39,6 +92,7 @@ def redirect(url):
     Returns:
         web.HTTPFound: An HTTP redirect response with the specified URL.
     """
+
     return web.HTTPFound(url)
 
 
@@ -68,31 +122,5 @@ def render_template(template_name, **kwargs):
     Returns:
         web.Response: An HTTP response with the rendered template as its body and content type set to "text/html".
     """
-    env = Environment(loader=FileSystemLoader("templates"))
-    template = env.get_template(template_name).render(**kwargs)
+    template = jinja_env.get_template(template_name).render(**kwargs)
     return web.Response(body=template.encode(), content_type="text/html")
-
-
-def upload_files(func):
-    """
-    Decorator to handler file uploading in an asynchronous function.
-
-    Args:
-        func (callable): The asynchronous function to be wrapped.
-
-    Returns:
-        callable: A wrapped version of the input function that returns a JSON response.
-    """
-
-    @wraps(func)
-    async def wrapper(request: web.Request):
-        file_payload = await request.post()
-        files = {}
-        for key, value in file_payload.items():
-            if isinstance(value, FileField):
-                files[key] = value
-        if asyncio.iscoroutinefunction(func):
-            return await func(request, files)
-        return func(request, files)
-
-    return wrapper

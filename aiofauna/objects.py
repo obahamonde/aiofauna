@@ -14,17 +14,17 @@ class Ref(Expr):
     Ref(id, cls=None, db=None)
     ```
     A reference to a document in a collection or index.
-    
+
     :param id: The document's ID.
     :param cls: The collection or index class.
     :param db: The database.
 
-    `Ref` 
-    
+    `Ref`
+
     Is a special type in FaunaDB. It is used to represent a document in a collection or index.
-    
-    It is serialized to JSON as an object with the `@ref` key. Passing the `id` to the response. 
-    
+
+    It is serialized to JSON as an object with the `@ref` key. Passing the `id` to the response.
+
     """
 
     def __init__(self, id, cls=None, db=None):
@@ -43,27 +43,27 @@ class Ref(Expr):
 
     def collection(self):
         """
-    Gets the collection part out of the Ref.
-    """
+        Gets the collection part out of the Ref.
+        """
         return self.value.get("collection")
 
     @deprecated("use collection instead")
     def class_(self):
         """
-    Gets the class part out of the Ref.
-    """
+        Gets the class part out of the Ref.
+        """
         return self.value.get("collection")
 
     def database(self):
         """
-    Gets the database part out of the Ref.
-    """
+        Gets the database part out of the Ref.
+        """
         return self.value.get("database")
 
     def id(self):
         """
-    Gets the id part out of the Ref.
-    """
+        Gets the id part out of the Ref.
+        """
         return self.value["id"]
 
     def to_fauna_json(self):
@@ -120,10 +120,10 @@ class Native(object):
 
 class SetRef(Expr):
     """
-  FaunaDB Set.
-  This represents a set returned as part of a response.
-  For query sets see :doc:`query`.
-  """
+    FaunaDB Set.
+    This represents a set returned as part of a response.
+    For query sets see :doc:`query`.
+    """
 
     def __init__(self, set_ref):
         if isinstance(set_ref, Expr):
@@ -149,17 +149,17 @@ class SetRef(Expr):
 
 class FaunaTime(Expr):
     """
-  FaunaDB time. See the `docs <https://app.fauna.com/documentation/reference/queryapi#special-type>`__.
+    FaunaDB time. See the `docs <https://app.fauna.com/documentation/reference/queryapi#special-type>`__.
 
-  For dates, regular :class:`datetime.date` objects are used.
-  """
+    For dates, regular :class:`datetime.date` objects are used.
+    """
 
     def __init__(self, value):
         """
-    :param value:
-      If a :class:`datetime.datetime` is passed, it is converted to a string.
-      Must include an offset.
-    """
+        :param value:
+          If a :class:`datetime.datetime` is passed, it is converted to a string.
+          Must include an offset.
+        """
         if isinstance(value, datetime):
             if value.utcoffset() is None:
                 raise ValueError("FaunaTime requires offset-aware datetimes")
@@ -171,9 +171,9 @@ class FaunaTime(Expr):
 
     def to_datetime(self):
         """
-    Convert to an offset-aware datetime object.
-    This is lossy as datetimes have microsecond rather than nanosecond precision.
-    """
+        Convert to an offset-aware datetime object.
+        This is lossy as datetimes have microsecond rather than nanosecond precision.
+        """
         return parse_date(self.value)
 
     def to_fauna_json(self):
@@ -192,9 +192,9 @@ class FaunaTime(Expr):
 
 class Query(Expr):
     """
-  Represents a `@query` type in FaunaDB.
-  See the `docs <https://app.fauna.com/documentation/reference/queryapi#special-type>`__.
-  """
+    Represents a `@query` type in FaunaDB.
+    See the `docs <https://app.fauna.com/documentation/reference/queryapi#special-type>`__.
+    """
 
     def to_fauna_json(self):
         return {"@query": self.value}

@@ -136,25 +136,25 @@ def do(*expressions):
 
 def lambda_query(func):
     """
-  See the `docs <https://app.fauna.com/documentation/reference/queryapi#basic-forms>`__.
-  This form generates :any:`var` objects for you, and is called like::
+    See the `docs <https://app.fauna.com/documentation/reference/queryapi#basic-forms>`__.
+    This form generates :any:`var` objects for you, and is called like::
 
-      query.lambda_query(lambda a: query.add(a, a))
-      # Produces: {
-      #  "lambda": "a",
-      #  "expr": {"add": ({"var": "a"}, {"var": "a"})}
-      # }
+        query.lambda_query(lambda a: query.add(a, a))
+        # Produces: {
+        #  "lambda": "a",
+        #  "expr": {"add": ({"var": "a"}, {"var": "a"})}
+        # }
 
-  You usually don't need to call this directly as lambdas in queries will be converted for you.
-  For example: ``query.map_(lambda a: query.add(a, 1), collection)``.
+    You usually don't need to call this directly as lambdas in queries will be converted for you.
+    For example: ``query.map_(lambda a: query.add(a, 1), collection)``.
 
-  You can also use :any:`lambda_` directly.
+    You can also use :any:`lambda_` directly.
 
-  :param func:
-    Takes one or more :any:`var` expressions and uses them to construct an expression.
-    If this has more than one argument, the lambda destructures an array argument.
-    (To destructure single-element arrays use :any:`lambda_`.)
-  """
+    :param func:
+      Takes one or more :any:`var` expressions and uses them to construct an expression.
+      If this has more than one argument, the lambda destructures an array argument.
+      (To destructure single-element arrays use :any:`lambda_`.)
+    """
 
     vars = func.__code__.co_varnames
     n_args = len(vars)
@@ -392,9 +392,9 @@ def paginate(
     set, size=None, ts=None, after=None, before=None, events=None, sources=None
 ):
     """
-  See the `docs <https://app.fauna.com/documentation/reference/queryapi#read-functions>`__.
-  You may want to convert the result of this to a :any:`Page`.
-  """
+    See the `docs <https://app.fauna.com/documentation/reference/queryapi#read-functions>`__.
+    You may want to convert the result of this to a :any:`Page`.
+    """
     # pylint: disable=too-many-arguments
     # pylint: disable=redefined-outer-name
     opts = {
@@ -871,8 +871,8 @@ _NO_DEFAULT = object()
 
 def select(path, from_, default=_NO_DEFAULT):
     """
-  See the `docs <https://docs.fauna.com/fauna/current/api/fql/functions/select>`__.
-  See also :py:func:`select_with_default`."""
+    See the `docs <https://docs.fauna.com/fauna/current/api/fql/functions/select>`__.
+    See also :py:func:`select_with_default`."""
     _dict = {"select": path, "from": from_}
     if default is not _NO_DEFAULT:
         _dict["default"] = default
@@ -1234,8 +1234,8 @@ def to_date(expr):
 
 class Expr(object):
     """
-  Used to mark values that have been wrapped.
-  """
+    Used to mark values that have been wrapped.
+    """
 
     def __init__(self, value):
         self.value = value
@@ -1280,10 +1280,10 @@ def _params(main_params, optional_params):
 
 def _varargs(values):
     """
-  Called on ``*args`` arguments.
-  This ensures that a single value passed is not put in an array, so
-  ``query.add([1, 2])`` will work as well as ``query.add(1, 2)``.
-  """
+    Called on ``*args`` arguments.
+    This ensures that a single value passed is not put in an array, so
+    ``query.add([1, 2])`` will work as well as ``query.add(1, 2)``.
+    """
     return values[0] if len(values) == 1 else values
 
 

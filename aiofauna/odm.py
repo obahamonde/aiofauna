@@ -18,7 +18,7 @@ import asyncio
 from typing import List, Optional, Any, Callable, Union
 
 try:
-    import query as q # type: ignore
+    import query as q  # type: ignore
 except ImportError:
     from . import query as q
 
@@ -59,7 +59,6 @@ class AsyncFaunaModel(JSONModel):
     ts: Optional[str] = None
 
     def __init__(self, **data: Any) -> None:
-
         super().__init__(**data)
 
         for field in self.__fields__.values():
@@ -73,23 +72,18 @@ class AsyncFaunaModel(JSONModel):
             except Exception:  # pylint: disable=broad-except
                 continue
 
-
-
     @classmethod
     def client(cls) -> AsyncFaunaClient:
-        
         fauna_secret = os.getenv("FAUNA_SECRET")
-              
+
         return AsyncFaunaClient(secret=fauna_secret)
 
     @classmethod
     def q(cls) -> Callable:
-        
         return cls.client().query
 
     @classmethod
     async def provision(cls) -> bool:
-        
         _q = cls.q()
         try:
             if not await _q(q.exists(q.collection(cls.__name__.lower()))):
@@ -152,9 +146,7 @@ class AsyncFaunaModel(JSONModel):
                             )
                         )
 
-                        print(
-                            "Created index %s_%s", cls.__name__.lower(), field.name
-                        )
+                        print("Created index %s_%s", cls.__name__.lower(), field.name)
                         continue
 
             return True
@@ -367,7 +359,7 @@ class AsyncFaunaModel(JSONModel):
             raise ValueError(f"{ref} not found")
 
     @classmethod
-    async def find_all(cls, limit: int, offset: int) -> List[AsyncFaunaModel]:
+    async def all(cls) -> List[AsyncFaunaModel]:
         """
 
 
@@ -511,18 +503,25 @@ class AsyncFaunaModel(JSONModel):
         try:
             for field in self.__fields__.values():
                 if field.field_info.extra.get("unique"):
-                    instance = await self.find_unique(field.name, getattr(self, field.name))
+                    instance = await self.find_unique(
+                        field.name, getattr(self, field.name)
+                    )
                     if instance is None:
                         continue
-                    await instance.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()})) # type: ignore
-                    return instance # type: ignore
-            self.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()}))
+                    await instance.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()}))  # type: ignore
+                    return instance  # type: ignore
+            data = await self.__class__.q()(
+                q.create(
+                    q.collection(self.__class__.__name__.lower()), {"data": self.dict()}
+                )
+            )
+            self.ref = data["ref"]["@ref"]["id"]
+            self.ts = data["ts"] / 1000
             return self
-        
+
         except AioFaunaException as exc:
-            
             logging.error(exc)
-            
+
             raise ValueError(exc)
 
     @classmethod
@@ -608,5 +607,3 @@ class AsyncFaunaModel(JSONModel):
         if isinstance(self.ref, str) and len(self.ref) == 18:
             return await self.update(self.ref, kwargs=self.dict())
         return await self.create()
-
-

@@ -29,13 +29,10 @@ class codes:
 
 
 def _get_or_raise(request_result, dct, key):
-
     if isinstance(dct, dict) and key in dct:
-
         return dct[key]
 
     else:
-
         raise UnexpectedError(
             "Response JSON does not contain expected key %s" % key, request_result
         )
@@ -54,7 +51,6 @@ class FaunaError(Exception):
 
     @staticmethod
     def raise_for_status_code(request_result):
-
         code = request_result.status_code
 
         # pylint: disable=no-member, too-many-return-statements
@@ -63,35 +59,27 @@ class FaunaError(Exception):
             pass
 
         elif code == codes.bad_request:
-
             raise BadRequest(request_result)
 
         elif code == codes.unauthorized:
-
             raise Unauthorized(request_result)
 
         elif code == codes.forbidden:
-
             raise PermissionDenied(request_result)
 
         elif code == codes.not_found:
-
             raise NotFound(request_result)
 
         elif code == codes.internal_server_error:
-
             raise InternalError(request_result)
 
         elif code == codes.unavailable:
-
             raise UnavailableError(request_result)
 
         else:
-
             raise UnexpectedError("Unexpected status code.", request_result)
 
     def __init__(self, description, request_result):
-
         super(FaunaError, self).__init__(description)
 
         self.request_result = request_result
@@ -108,7 +96,6 @@ class UnexpectedError(FaunaError):
 
 class HttpError(FaunaError):
     def __init__(self, request_result):
-
         self.errors = HttpError._get_errors(request_result)
 
         """List of all :py:class:`ErrorData` objects sent by the server."""
@@ -117,7 +104,6 @@ class HttpError(FaunaError):
 
     @staticmethod
     def _get_errors(request_result):
-
         response = request_result.response_content
 
         errors = _get_or_raise(request_result, response, "errors")
@@ -125,11 +111,9 @@ class HttpError(FaunaError):
         return [ErrorData.from_dict(error, request_result) for error in errors]
 
     def __str__(self):
-
         return repr(self.errors[0])
 
     def _get_description(self):
-
         return self.errors[0].description if self.errors else "(empty `errors`)"
 
 
@@ -142,7 +126,6 @@ class BadRequest(HttpError):
 
 class Unauthorized(HttpError):
     def __init__(self, request_result):
-
         super(Unauthorized, self).__init__(request_result)
 
         self.errors[
@@ -189,7 +172,6 @@ class ErrorData(object):
 
     @staticmethod
     def from_dict(dct, request_result):
-
         return ErrorData(
             _get_or_raise(request_result, dct, "code"),
             _get_or_raise(request_result, dct, "description"),
@@ -200,9 +182,7 @@ class ErrorData(object):
 
     @staticmethod
     def get_failures(dct, request_result):
-
         if "failures" in dct:
-
             return [
                 Failure.from_dict(failure, request_result)
                 for failure in dct["failures"]
@@ -212,9 +192,7 @@ class ErrorData(object):
 
     @staticmethod
     def get_cause(dct, request_result):
-
         if "cause" in dct:
-
             return [
                 ErrorData.from_dict(cause, request_result) for cause in dct["cause"]
             ]
@@ -222,7 +200,6 @@ class ErrorData(object):
         return None
 
     def __init__(self, code, description, position, failures, cause=None):
-
         self.code = code
 
         """Error code. See all error codes `here <https://fauna.com/documentation#errors>`__."""
@@ -248,7 +225,6 @@ class ErrorData(object):
     """
 
     def __repr__(self):
-
         return (
             "ErrorData(code=%s, description=%s, position=%s, failures=%s, cause=%s)"
             % (
@@ -261,7 +237,6 @@ class ErrorData(object):
         )
 
     def __eq__(self, other):
-
         return (
             self.__class__ == other.__class__
             and self.description == other.description
@@ -271,7 +246,6 @@ class ErrorData(object):
         )
 
     def __ne__(self, other):
-
         # pylint: disable=unneeded-not
 
         return not self == other
@@ -287,7 +261,6 @@ class Failure(object):
 
     @staticmethod
     def from_dict(dct, request_result):
-
         return Failure(
             _get_or_raise(request_result, dct, "code"),
             _get_or_raise(request_result, dct, "description"),
@@ -295,7 +268,6 @@ class Failure(object):
         )
 
     def __init__(self, code, description, field):
-
         self.code = code
 
         """Failure code."""
@@ -309,7 +281,6 @@ class Failure(object):
         """Field of the failure in the instance."""
 
     def __repr__(self):
-
         return "Failure(code=%s, description=%s, field=%s)" % (
             repr(self.code),
             repr(self.description),
@@ -317,7 +288,6 @@ class Failure(object):
         )
 
     def __eq__(self, other):
-
         return (
             self.code == other.code
             and self.description == other.description
@@ -325,7 +295,6 @@ class Failure(object):
         )
 
     def __ne__(self, other):
-
         # pylint: disable=unneeded-not
 
         return not self == other

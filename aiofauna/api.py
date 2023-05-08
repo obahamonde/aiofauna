@@ -2,23 +2,13 @@
 import json
 import base64
 import asyncio
-from typing import (
-    Any,
-    Dict,
-)
+from typing import Any, Dict, List, Union
 from inspect import signature
 from uuid import UUID
 from datetime import datetime, date, time
 from functools import singledispatch
 from enum import Enum
-from aiohttp.web import (
-    Application,
-    Request,
-    Response,
-    json_response,
-    AppRunner,
-    TCPSite,
-)
+from aiohttp.web import Application, Request, Response, json_response
 from json import JSONDecoder
 from aiohttp.web_request import FileField
 from .odm import AsyncFaunaModel
@@ -221,7 +211,7 @@ def update_open_api(
                 "requestBody": _body,
                 "responses": {"200": {"description": "OK"}},
             }
-            open_api["components"]["schemas"].update(param["schema"]) # type: ignore
+            open_api["components"]["schemas"].update(param["schema"])  # type: ignore
 
         else:
             open_api["paths"].setdefault(path, {})[method.lower()] = {
@@ -233,14 +223,14 @@ def update_open_api(
 
 
 @singledispatch
-def make_response(response: Any) -> Response:
+def do_response(response: Any) -> Response:
     """
-    FastAPIesque function to make a response from a function.
+    Flask-esque function to make a response from a function.
     """
     return response
 
 
-@make_response.register(BaseModel)
+@do_response.register(BaseModel)
 def _(response: BaseModel) -> Response:
     return Response(
         status=200,
@@ -249,7 +239,7 @@ def _(response: BaseModel) -> Response:
     )
 
 
-@make_response.register(AsyncFaunaModel)
+@do_response.register(AsyncFaunaModel)
 def _(response: AsyncFaunaModel) -> Response:
     response.ref = str(response.ref)
     return Response(
@@ -259,16 +249,7 @@ def _(response: AsyncFaunaModel) -> Response:
     )
 
 
-@make_response.register(list)
-def _(response: list) -> Response:
-    return Response(
-        status=200,
-        body=json.dumps(list(response)),
-        content_type="application/json",
-    )
-
-
-@make_response.register(dict)
+@do_response.register(dict)
 def _(response: dict) -> Response:
     return Response(
         status=200,
@@ -277,7 +258,7 @@ def _(response: dict) -> Response:
     )
 
 
-@make_response.register(str)
+@do_response.register(str)
 def _(response: str) -> Response:
     return Response(
         status=200,
@@ -286,7 +267,7 @@ def _(response: str) -> Response:
     )
 
 
-@make_response.register(bytes)
+@do_response.register(bytes)
 def _(response: bytes) -> Response:
     return Response(
         status=200,
@@ -295,7 +276,7 @@ def _(response: bytes) -> Response:
     )
 
 
-@make_response.register(int)
+@do_response.register(int)
 def _(response: int) -> Response:
     return Response(
         status=200,
@@ -304,7 +285,7 @@ def _(response: int) -> Response:
     )
 
 
-@make_response.register(float)
+@do_response.register(float)
 def _(response: float) -> Response:
     return Response(
         status=200,
@@ -313,12 +294,31 @@ def _(response: float) -> Response:
     )
 
 
-@make_response.register(bool)
+@do_response.register(bool)
 def _(response: bool) -> Response:
     return Response(
         status=200,
         body=str(response).encode(),
         content_type="text/plain",
+    )
+
+
+@do_response.register(list)
+def _(
+    response: List[Union[AsyncFaunaModel, BaseModel, dict, str, int, float]]
+) -> Response:
+    processed_response = []
+
+    for item in response:
+        if isinstance(item, (BaseModel, AsyncFaunaModel)):
+            processed_response.append(item.dict())
+        else:
+            processed_response.append(item)
+
+    return Response(
+        status=200,
+        body=json.dumps(processed_response),
+        content_type="application/json",
     )
 
 
@@ -463,7 +463,7 @@ class Api(Application):
                     response = await func(*args, **kwargs, **definitive_args)
                 else:
                     response = func(*args, **kwargs, **definitive_args)
-                return make_response(response)
+                return do_response(response)
 
             wrapper._handler = func
             return wrapper
@@ -520,34 +520,6 @@ class Api(Application):
             return func
 
         return decorator
-
-    def static(self, path: str, directory: str, **kwargs):
-        def decorator(func):
-            self.router.add_static(path, directory, **kwargs)
-            return func
-
-        return decorator
-
-    async def listen(self, host: str = "0.0.0.0", port: int = 8000, **kwargs):
-        for route in list(self.router.routes()):
-            handler = route.handler._handler  # pylint: disable=protected-access
-            path = route.resource.canonical  # type: ignore
-            method = route.method.lower()
-            open_api_params = self._route_open_api_params.get((path, method), {})
-            update_open_api(self.openapi, path, method, handler, open_api_params)
-
-        runner = AppRunner(self)
-
-        await runner.setup()
-
-        site = TCPSite(runner, host, port)
-
-        await site.start()
-
-        print(f"http://{host}:{port}/docs")
-
-        while True:
-            await asyncio.sleep(3600)
 
     def on_event(self, event: str):
         def decorator(func):

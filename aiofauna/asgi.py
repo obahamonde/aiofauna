@@ -1,7 +1,8 @@
 """ASGI Middleware"""
 import typing
 import io
-from aiofauna.application import App, Request
+from aiohttp.web import Request
+from aiofauna.api import Api
 
 Scope = typing.MutableMapping[str, typing.Any]
 Message = typing.MutableMapping[str, typing.Any]
@@ -12,47 +13,7 @@ Send = typing.Callable[[Message], typing.Awaitable[None]]
 ASGIApp = typing.Callable[[Scope, Receive, Send], typing.Awaitable[None]]
 
 
-def aioasgi(app: App) -> ASGIApp:
-    """
-    Converts an aiohttp web application to an ASGI application.
-
-    Args:
-        app (App): An instance of the aiohttp web application.
-
-    Returns:
-        ASGIApp: An instance of the ASGI application.
-
-    Raises:
-        RuntimeError: If the ASGI scope is not of type "http".
-
-    Notes:
-        This middleware function is used to convert an aiohttp web application
-        to an ASGI application, so that it can be used with ASGI-compatible web
-        servers.
-
-        The resulting ASGI application can be used with any ASGI-compatible web
-        server, including Uvicorn, Daphne, and Hypercorn.
-
-    Examples:
-        Here's an example of how to use the `aiohttp_to_asgi` middleware function:
-
-        ```python
-        from aiohttp import web
-        from aiofauna import App
-        from myapp import routes
-
-        app = App()
-        app.add_routes(routes)
-
-        asgi_app = aiohttp_to_asgi(app)
-
-        from uvicorn import run
-        
-        run(asgi_app)
-        
-        ```
-    """
-
+def aioasgi(app: Api) -> ASGIApp:
     async def asgi(scope: Scope, receive: Receive, send: Send) -> None:
         nonlocal app
         if scope["type"] != "http":
@@ -126,7 +87,10 @@ def aioasgi(app: App) -> ASGIApp:
         )
 
         await send(
-            {"type": "http.response.body", "body": response_body,}
+            {
+                "type": "http.response.body",
+                "body": response_body,
+            }
         )
 
     return asgi

@@ -2,49 +2,53 @@
 ---
 title: AioFauna
 ---
-
 # AioFauna
- 
- 🚀 Introducing aiofauna: A full-stack framework for FaunaDB, industry performant with a seamless user experience! 🔥 Take your Backend Development to the next level dramatically improving productivity, performance and development experience.
+
+🚀 Introducing aiofauna: A full-stack framework built on top of Aiohttp, Pydantic and FaunaDB.
+
+🔥 Inspired by FastAPI focuses on Developer Experience, Productivity and Versatility.
 
 🌟 Features:
 
-✅ Inspired by FastAPI: DX (Developer Experience) first. Based on Pydantic, Aiohttp, and FaunaDB. CORS support, query and path parameters, request body parsing, most of the features you love from FastAPI are available in aiofauna.
+✅ Supports Python 3.7+, comes with an opinionated ODM (Object Document Mapper) out of the box for FaunaDB that abstracts out complex FQL expressions into pythonic, fully typed asynchronous methods for all CRUD operations.
 
-✅ Blazingly Fast!: Industry performant http server while having the fastest python based http client allowing exceptional integrations with third party APIs, forget about installing dozens of SDKs.
+✅ Performant and scalable: Built on top of Aiohttp a powerful http server and client and FaunaDB an scalable serverless database for modern applications.
 
-✅ Async/await coroutines: Leverage the power of async programming for enhanced performance and responsiveness. 
+✅ Async/await coroutines: Leverage the power of async programming for enhanced performance and responsiveness, being ASGI compliant is compatible with most async python frameworks.
 
-✅ Automatic Swagger UI generation: Automatic documentation and manual testing UI following industry standard without further effort!.
+✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your API.
 
-✅ Live reload and SSE (Server-Sent Events) support: Stream data in real-time to your clients and experience effortless development with live reload.
+✅ SSE (Server Sent Events): Built-in support for SSE (Server Sent Events) for real-time streaming of data from FaunaDB to your application.
 
-✅ Pydantic-based Document Object Mapper (DOM): Define and validate your data models with ease. Summarize complex FQL expressions into pythonic, fully typed asynchronous methods for all CRUD operations.
+✅ Robust data validation: Built-in support for Pydantic models for robust data validation and serialization.
 
-✅ Auto-provisioning: Automatic management of indexes, unique indexes, and collections.
+✅ Auto-provisioning: Automatic management of indexes, unique indexes, and collections with FaunaModel ODM.
 
-✅ Full JSON communication: Custom encoders to ensure seamless data exchange between your application and FaunaDB backend.
+✅ Full JSON communication: Custom encoder to ensure seamless data exchange between your application and FaunaDB backend.
 
-💡 With aiofauna, you can build fast, scalable, and reliable applications using the power of FaunaDB and modern asynchronous Python with its out of the box aiohttp based web framework. Say goodbye to the hassle of manually managing indexes and collections and hello to a seamless data driven development experience with FaunaModel.
+✅ Markdown and Jinja support with live reload: experiment an smooth frontend devserver experience without leaving your backend code.
 
-🌐 aiofauna is independent and allows native interaction with external services like Docker API, GCP API, AWS API among others, implementing a lightweight stack with aiohttp server capabilities and fauna backend (to be enhanced soon).
+✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes and more.
+
+💡 With aiofauna, you can build fast, scalable, and reliable modern applications, while building seamless integrations thanks to the fastest http client aiohttp and the most versatile database FaunaDB, you will enjoy integrating with third party services such as APIs, Data Sources and Cloud Services.
 
 📚 Check out the aiofauna library, and start building your next-gen applications today! 🚀
+
 #Python #FaunaDB #Async #Pydantic #aiofauna
 
 ⚙️ If you are using a synchronous framework check out [Faudantic](https://github.com/obahamonde/faudantic) for a similar experience with FaunaDB and Pydantic.
 
-📚 [Documentation](https://aiofauna.smartpro.solutions)
+📚 [Documentation](https://obahamonde-aiofauna-docs.smartpro.solutions) (Built with aiofauna)
 
 📦 [PyPi](https://pypi.org/project/aiofauna/)
 
 📦 [GitHub](https://github.com/obahamonde/aiofauna)
 
-📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Stream data in real-time to your clients)
+📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Real time Latency Monitoring between FaunaDB and Google Cloud Run)
 
 """
 
-__version__ = (0, 1, 0)
+__version__ = (0, 1, 5)
 __author__ = "obahamonde"
 __license__ = "MIT"
 
@@ -55,19 +59,13 @@ from uuid import UUID, uuid4
 
 import asyncio
 import aiohttp_cors
-
-from pydantic import BaseModel,BaseConfig, BaseSettings, Field  # pylint: disable=no-name-in-module
-
-from aiohttp.web import (
-    Application,
-    AppRunner,
-    Request,
-    Response,
-    RouteDef,
-    TCPSite,
-    json_response,
-)
-from aiohttp.web_middlewares import middleware
+from pydantic import (
+    BaseModel,
+    BaseConfig,
+    BaseSettings,
+    Field,
+)  # pylint: disable=no-name-in-module
+from aiohttp.web import json_response as jsonify, Request, Response
 from aiohttp_sse import sse_response
 from .client import ClientSession, AsyncFaunaClient as FaunaClient
 from .errors import AioFaunaException as FaunaException
@@ -79,3 +77,4 @@ from .json import (
 )
 from .odm import AsyncFaunaModel as FaunaModel
 from .api import Api
+from .helpers import render_template, make_response, markdown_it, redirect

@@ -24,16 +24,13 @@ def parse_json(json_string):
 
 def parse_json_or_none(json_string):
     try:
-
         return parse_json(json_string)
 
     except ValueError:
-
         pass
 
 
 def _parse_json_hook(dct):
-
     # pylint: disable=too-many-return-statements
     """
 
@@ -41,37 +38,29 @@ def _parse_json_hook(dct):
     """
 
     if "@ref" in dct:
-
         ref = dct["@ref"]
 
         if (not "collection" in ref) and (not "database" in ref):
-
             return Native.from_name(ref["id"])
 
         return Ref(ref["id"], ref.get("collection"), ref.get("database"))
 
     if "@obj" in dct:
-
         return dct["@obj"]
 
     if "@set" in dct:
-
         return SetRef(dct["@set"])
 
     if "@query" in dct:
-
         return Query(dct["@query"])
 
     if "@ts" in dct:
-
         return FaunaTime(dct["@ts"])
 
     if "@date" in dct:
-
         return parse_date(dct["@date"]).date()
 
     if "@bytes" in dct:
-
         return bytearray(urlsafe_b64decode(dct["@bytes"].encode()))
     return dct
 
@@ -84,7 +73,6 @@ def to_json(dct, pretty=True, sort_keys=True):
     Converts a :any`_Expr` into a request body, calling :any:`to_fauna_json`.
     """
     if pretty:
-
         return dumps(
             dct, cls=FaunaJSONEncoder, sort_keys=True, indent=4, separators=(", ", ": ")
         )
@@ -108,7 +96,6 @@ class FaunaJSONEncoder(JSONEncoder):
 
     @override
     def default(self, obj):
-
         """
         Encodes the given object in Fauna-compatible JSON format.
 
