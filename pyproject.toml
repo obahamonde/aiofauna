@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.1.5"
+version = "0.1.6"
 description = ""
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 repository = "https://github.com/obahamonde/aiofauna"

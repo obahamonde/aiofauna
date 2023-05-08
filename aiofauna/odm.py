@@ -197,7 +197,7 @@ class AsyncFaunaModel(JSONModel):
     @classmethod
     async def find_unique(
         cls, field: str, value: Any
-    ) -> Union[AsyncFaunaModel, BaseModel]:
+    ) -> AsyncFaunaModel:
         """
 
 
@@ -245,7 +245,7 @@ class AsyncFaunaModel(JSONModel):
         except AioFaunaException as exc:
             logging.error(exc)
 
-            raise ValueError(f"{field} {value} not found")
+            return None # type: ignore # pylint: disable=unreachable
 
     @classmethod
     async def find_many(cls, field: str, value: Any) -> List[AsyncFaunaModel]:
@@ -316,7 +316,7 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def find(cls, ref: str) -> Union[AsyncFaunaModel, BaseModel]:
+    async def find(cls, ref: str) -> AsyncFaunaModel:
         """
 
 
@@ -356,7 +356,7 @@ class AsyncFaunaModel(JSONModel):
         except AioFaunaException as exc:
             logging.error(exc)
 
-            raise ValueError(f"{ref} not found")
+            return None # type: ignore # pylint: disable=unreachable
 
     @classmethod
     async def all(cls) -> List[AsyncFaunaModel]:
@@ -522,7 +522,7 @@ class AsyncFaunaModel(JSONModel):
         except AioFaunaException as exc:
             logging.error(exc)
 
-            raise ValueError(exc)
+            return None # type: ignore # pylint: disable=unreachable
 
     @classmethod
     async def query(cls, query: str) -> List[AsyncFaunaModel]:
