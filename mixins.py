@@ -1,4 +1,5 @@
 import json
+import botocore
 from typing import Dict, List
 from pydantic import BaseModel, BaseConfig, BaseSettings, Field
 from aiohttp_sse import EventSourceResponse, sse_response
@@ -63,22 +64,29 @@ async def post_message(message:str):
     return "OK"
 
 @app.post("/api/upload")
-async def upload_endpoint(request: Request):
-    params = dict(request.query)
-    if "ref" not in params:
-        raise Exception("Missing ref") # pylint: disable=all
-    ref = params["ref"]
+async def upload_handler(request:Request):
+    """
+    Upload Endpoint
+    """
     data = await request.post()
-    file = data["file"]
-    assert isinstance(file, FileField)
-    _bytes = file.file.read()
-    upload_file = UploadFile(filename=file.filename, content_type=file.content_type,data= _bytes, size=len(_bytes),headers=dict(request.headers)) 
-    key = file.filename
-    async with session.client(service_name="s3", region_name="us-east-1",aws_access_key_id=env.AWS_ACCESS_KEY_ID,aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY,endpoint_url=env.AWS_S3_ENDPOINT) as client:
-        await client.put_object(Bucket=env.AWS_S3_BUCKET, Key=file.filename, Body=upload_file.data, ContentType=upload_file.content_type)
-        url = await client.generate_presigned_url('get_object', Params={'Bucket': env.AWS_S3_BUCKET, 'Key': key}, ExpiresIn=3600)   
-        return await UserUpload(user=ref, file=upload_file, url=url).save()
-        
+    params = dict(request.query)
+    key = params.get("key")
+    size = params.get("size")
+    user = params.get("user")
+    if key and size and user:
+        size = int(size)
+        file = data["file"]
+        if isinstance(file, FileField):
+            async with session.client(service_name="s3", 
+            aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY,
+            endpoint_url=env.AWS_S3_ENDPOINT,
+            config=botocore.config.Config(signature_version="s3v4")) as s3client: # type: ignore
+                key_ = f"{key}/{file.filename}" # type: ignore
+                await s3client.put_object(Bucket=env.AWS_S3_BUCKET, Key=key_, Body=file.file.read(), ContentType=file.content_type, ACL="public-read")
+                url = await s3client.generate_presigned_url("get_object", Params={"Bucket": env.AWS_S3_BUCKET, "Key": key_}, ExpiresIn=3600*7*24)
+                return await Upload(user=user,key=key_, name=file.filename, size=size, type=file.content_type, url=url).save()     
+    return {"message": "Invalid request", "status": "error"}
 
     
         

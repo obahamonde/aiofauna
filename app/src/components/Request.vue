@@ -37,7 +37,7 @@ const loaderActive = computed(() => isloading.value);
 </script>
 <template>
     <div v-if="!iserror && !loaderActive && response">
-        <slot :response="response"></slot>
+        <slot :$="response"></slot>
     </div>
     <div v-else-if="iserror">
         <slot name="error" :error="iserror">

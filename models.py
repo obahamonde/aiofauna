@@ -11,6 +11,7 @@ from aiofauna import (
     Callable as C,
 )
 from aiofauna.api import UploadFile
+from datetime import datetime
 
 
 class Auth0User(FaunaModel):
@@ -38,6 +39,7 @@ class Message(FaunaModel):
     )
     conversation: O[str] = Field(default=None, unique=True)
     
+
     
 class Conversation(FaunaModel):
     """Messages"""
@@ -52,15 +54,21 @@ class GroupChat(FaunaModel):
     messages: L[str] = Field(default=[])
     users: L[str] = Field(default=[], max_items=100)
 
-class UserUpload(FaunaModel):
-    """User Upload"""
 
-    user: str = Field(..., index=True)
-    file: UploadFile = Field(..., index=True)
-    url: O[str] = Field(default=None, unique=True)
-    kind: O[str] = Field(
-        default="IMAGE", oneOf=["IMAGE", "VIDEO", "AUDIO"], index=True
-    )
+class Upload(FaunaModel):
+    """
+    
+    R2 Upload Record
+    
+    """
+    user: str = Field(..., description="User sub", index=True)
+    name: str = Field(..., description="File name")
+    key: str = Field(..., description="File key")
+    size: int = Field(..., description="File size",gt=0)
+    type: str = Field(..., description="File type", index=True)
+    lastModified: float = Field(default_factory=lambda: datetime.now().timestamp(), description="Last modified", index=True)
+    url: O[str] = Field(None, description="File url")
+        
 
 class UserMessages(BaseModel):
     """User Messages"""
