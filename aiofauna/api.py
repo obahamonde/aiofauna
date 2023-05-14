@@ -284,9 +284,7 @@ def do_response(response: Any) -> Response:
 @do_response.register(BaseModel)
 def _(response: BaseModel) -> Response:
     return Response(
-        status=200,
-        body=json.dumps(response.dict()),
-        content_type="application/json",
+        status=200, body=json.dumps(response.dict()), content_type="application/json"
     )
 
 
@@ -294,64 +292,40 @@ def _(response: BaseModel) -> Response:
 def _(response: AsyncFaunaModel) -> Response:
     response.ref = str(response.ref)
     return Response(
-        status=200,
-        body=json.dumps(response.dict()),
-        content_type="application/json",
+        status=200, body=json.dumps(response.dict()), content_type="application/json"
     )
 
 
 @do_response.register(dict)
 def _(response: dict) -> Response:
     return Response(
-        status=200,
-        body=json.dumps(response),
-        content_type="application/json",
+        status=200, body=json.dumps(response), content_type="application/json"
     )
 
 
 @do_response.register(str)
 def _(response: str) -> Response:
-    return Response(
-        status=200,
-        body=response.encode(),
-        content_type="text/plain",
-    )
+    return Response(status=200, body=response.encode(), content_type="text/plain")
 
 
 @do_response.register(bytes)
 def _(response: bytes) -> Response:
-    return Response(
-        status=200,
-        body=response,
-        content_type="application/octet-stream",
-    )
+    return Response(status=200, body=response, content_type="application/octet-stream")
 
 
 @do_response.register(int)
 def _(response: int) -> Response:
-    return Response(
-        status=200,
-        body=str(response).encode(),
-        content_type="text/plain",
-    )
+    return Response(status=200, body=str(response).encode(), content_type="text/plain")
 
 
 @do_response.register(float)
 def _(response: float) -> Response:
-    return Response(
-        status=200,
-        body=str(response).encode(),
-        content_type="text/plain",
-    )
+    return Response(status=200, body=str(response).encode(), content_type="text/plain")
 
 
 @do_response.register(bool)
 def _(response: bool) -> Response:
-    return Response(
-        status=200,
-        body=str(response).encode(),
-        content_type="text/plain",
-    )
+    return Response(status=200, body=str(response).encode(), content_type="text/plain")
 
 
 @do_response.register(list)
@@ -367,9 +341,7 @@ def _(
             processed_response.append(item)
 
     return Response(
-        status=200,
-        body=json.dumps(processed_response),
-        content_type="application/json",
+        status=200, body=json.dumps(processed_response), content_type="application/json"
     )
 
 

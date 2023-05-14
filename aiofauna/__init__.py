@@ -69,8 +69,8 @@ from pydantic import (
 )  # pylint: disable=no-name-in-module
 from aiohttp.web import json_response as jsonify, Request, Response
 from aiohttp.web_request import FileField
-from aiohttp_sse import sse_response
-from .client import ClientSession, AsyncFaunaClient as FaunaClient
+from aiohttp_sse import sse_response, EventSourceResponse
+from .client import HTTPClient, AsyncFaunaClient as FaunaClient
 from .errors import AioFaunaException as FaunaException
 from . import query as q
 from .json import (

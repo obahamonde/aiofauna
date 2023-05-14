@@ -119,15 +119,10 @@ class AsyncFaunaModel(JSONModel):
                             )
                         )
 
-                        print(
-                            cls.__name__.lower(),
-                            field.name,
-                        )
+                        print(cls.__name__.lower(), field.name)
 
                     print(
-                        "Created unique index %s_%s",
-                        cls.__name__.lower(),
-                        field.name,
+                        "Created unique index %s_%s", cls.__name__.lower(), field.name
                     )
 
                     continue
@@ -314,7 +309,7 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def find(cls, ref: str) -> AsyncFaunaModel:
+    async def get(cls, ref: str) -> AsyncFaunaModel:
         """
 
 
@@ -357,30 +352,32 @@ class AsyncFaunaModel(JSONModel):
             return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
-    async def all(cls) -> List[AsyncFaunaModel]:
+    async def all(cls, limit: int = 100, offset: int = 0) -> List[AsyncFaunaModel]:
         """
+        Returns all documents of a collection.
 
-
-        Finds all documents of the model in FaunaDB.
-
-
-
+        Parameters:
+        -----------
+        limit: int
+            The maximum number of documents to return.
+            
+        offset: int
+            The number of documents to skip.
+            
         Returns:
         --------
-
-
         List[AsyncFaunaModel]:
-
-
-            A list of instances of the model if found, None otherwise.
+            A list of instances of the model.
         """
 
         try:
             _q = cls.q()
 
-            refs = (await _q(q.paginate(q.match(q.index(cls.__name__.lower())))))[
-                "data"
-            ]
+            query = q.paginate(
+                q.match(q.collection(cls.__name__.lower())), size=limit, after=offset
+            )
+
+            refs = (await _q(query))["data"]
 
             data = await asyncio.gather(
                 *[
@@ -401,6 +398,7 @@ class AsyncFaunaModel(JSONModel):
             ]
 
         except AioFaunaException as exc:
+
             logging.error(exc)
 
             return []
@@ -506,7 +504,12 @@ class AsyncFaunaModel(JSONModel):
                     )
                     if instance is None:
                         continue
-                    await instance.__class__.q()(q.create(q.collection(self.__class__.__name__.lower()), {"data": self.dict()}))  # type: ignore
+                    await instance.__class__.q()(
+                        q.create(
+                            q.collection(self.__class__.__name__.lower()),
+                            {"data": self.dict()},
+                        )
+                    )  # type: ignore
                     return instance  # type: ignore
             data = await self.__class__.q()(
                 q.create(
@@ -564,7 +567,7 @@ class AsyncFaunaModel(JSONModel):
     @classmethod
     async def update(cls, ref: str, **kwargs) -> AsyncFaunaModel:
         try:
-            instance = await cls.find(ref)
+            instance = await cls.get(ref)
             if isinstance(instance, cls):
                 instance_updated = await cls.q()(
                     q.update(

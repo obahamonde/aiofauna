@@ -86,11 +86,6 @@ def aioasgi(app: Api) -> ASGIApp:
             }
         )
 
-        await send(
-            {
-                "type": "http.response.body",
-                "body": response_body,
-            }
-        )
+        await send({"type": "http.response.body", "body": response_body})
 
     return asgi
