@@ -1,4 +1,11 @@
 """
+AioFauna
+"""
+
+__version__ = (0, 1, 8)
+__author__ = "obahamonde"
+__license__ = "MIT"
+__doc__ = """
 ---
 title: AioFauna
 ---
@@ -45,12 +52,7 @@ title: AioFauna
 📦 [GitHub](https://github.com/obahamonde/aiofauna)
 
 📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Real time Latency Monitoring between FaunaDB and Google Cloud Run)
-
 """
-
-__version__ = (0, 1, 5)
-__author__ = "obahamonde"
-__license__ = "MIT"
 
 import json
 from datetime import datetime
@@ -66,6 +68,7 @@ from pydantic import (
     Field,
 )  # pylint: disable=no-name-in-module
 from aiohttp.web import json_response as jsonify, Request, Response
+from aiohttp.web_request import FileField
 from aiohttp_sse import sse_response
 from .client import ClientSession, AsyncFaunaClient as FaunaClient
 from .errors import AioFaunaException as FaunaException

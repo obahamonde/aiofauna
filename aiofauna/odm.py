@@ -195,9 +195,7 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def find_unique(
-        cls, field: str, value: Any
-    ) -> AsyncFaunaModel:
+    async def find_unique(cls, field: str, value: Any) -> AsyncFaunaModel:
         """
 
 
@@ -245,7 +243,7 @@ class AsyncFaunaModel(JSONModel):
         except AioFaunaException as exc:
             logging.error(exc)
 
-            return None # type: ignore # pylint: disable=unreachable
+            return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
     async def find_many(cls, field: str, value: Any) -> List[AsyncFaunaModel]:
@@ -356,7 +354,7 @@ class AsyncFaunaModel(JSONModel):
         except AioFaunaException as exc:
             logging.error(exc)
 
-            return None # type: ignore # pylint: disable=unreachable
+            return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
     async def all(cls) -> List[AsyncFaunaModel]:
@@ -522,7 +520,7 @@ class AsyncFaunaModel(JSONModel):
         except AioFaunaException as exc:
             logging.error(exc)
 
-            return None # type: ignore # pylint: disable=unreachable
+            return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
     async def query(cls, query: str) -> List[AsyncFaunaModel]:
@@ -607,3 +605,199 @@ class AsyncFaunaModel(JSONModel):
         if isinstance(self.ref, str) and len(self.ref) == 18:
             return await self.update(self.ref, kwargs=self.dict())
         return await self.create()
+
+    @classmethod
+    def gen_ts(cls):
+        """Health check endpoint"""
+        schema = cls.schema()
+        ts_config = {}
+        for name_, field in schema["properties"].items():
+            if field.get("type") in ["string", "number", "boolean", "integer", "null"]:
+                ts_config[name_] = (
+                    field.get("type")
+                    if name_ in schema["required"]
+                    else f"{field['type']} | undefined"
+                )
+            elif field.get("type") == "array":
+                if field.get("items").get("type") in [
+                    "string",
+                    "number",
+                    "boolean",
+                    "integer",
+                    "null",
+                ]:
+                    ts_config[name_] = (
+                        f"{field.get('items').get('type')}[]"
+                        if name_ in schema["required"]
+                        else f"{field.get('items').get('type')}[] | undefined"
+                    )
+                elif field.get("items").get("$ref"):
+                    ts_config[name_] = (
+                        f"{field.get('items').get('$ref').split('/')[-1]}[]"
+                        if name_ in schema["required"]
+                        else f"{field.get('items').get('$ref').split('/')[-1]}[] | undefined"
+                    )
+                elif field.get("items").get("object"):
+                    ts_config[name_] = (
+                        f"{field.get('items').get('title')}[]"
+                        if name_ in schema["required"]
+                        else f"{field.get('items').get('title')}[] | undefined"
+                    )
+            elif field.get("type") == "object":
+                ts_config[name_] = (
+                    field.get("title")
+                    if name_ in schema["required"]
+                    else f"{field.get('title')} | undefined"
+                )
+            elif field.get("$ref"):
+                ts_config[name_] = (
+                    field.get("$ref").split("/")[-1]
+                    if name_ in schema["required"]
+                    else f"{field.get('$ref').split('/')[-1]} | undefined"
+                )
+            elif field.get("object"):
+                ts_config[name_] = (
+                    field.get("title")
+                    if name_ in schema["required"]
+                    else f"{field.get('title')} | undefined"
+                )
+            elif field.get("oneOf"):
+                ts_config[name_] = " | ".join(
+                    [
+                        f"{x.get('$ref').split('/')[-1]}"
+                        if x.get("$ref")
+                        else f"{x.get('title')}"
+                        for x in field.get("oneOf")
+                    ]
+                )
+            elif field.get("anyOf"):
+                ts_config[name_] = " | ".join(
+                    [
+                        f"{x.get('$ref').split('/')[-1]}"
+                        if x.get("$ref")
+                        else f"{x.get('title')}"
+                        for x in field.get("anyOf")
+                    ]
+                )
+            elif field.get("allOf"):
+                ts_config[name_] = " & ".join(
+                    [
+                        f"{x.get('$ref').split('/')[-1]}"
+                        if x.get("$ref")
+                        else f"{x.get('title')}"
+                        for x in field.get("allOf")
+                    ]
+                )
+            elif field.get("not"):
+                ts_config[name_] = (
+                    f"!{field.get('not').get('$ref').split('/')[-1]}"
+                    if field.get("not").get("$ref")
+                    else f"!{field.get('not').get('title')}"
+                )
+            elif field.get("enum"):
+                ts_config[name_] = " | ".join([f"{x}" for x in field.get("enum")])
+            else:
+                ts_config[name_] = "any"
+
+        ts_type = f"type {cls.__name__} = {ts_config}"
+
+        return ts_type.replace("'", "")
+
+    @classmethod
+    def gen_store(cls):
+        return f"""
+        import {cls.__name__} from '~/types/{cls.__name__.lower()}'
+        import {{ defineStore, acceptHMRUpdate }} from 'pinia'
+        
+        export const {cls.__name__}Store = defineStore('{cls.__name__.lower()}', () => {{
+            const state = reactive({{
+                {cls.__name__.lower()}s: [] as {cls.__name__}[],
+                {cls.__name__.lower()}: null as {cls.__name__} | null,
+                loading: false,
+                error: null as string | null,
+                notifications: [] as {{message: string, status: 'success' | 'error' | 'warning' | 'info'}}[]
+            }})
+            
+            const api = {{
+                async fetch{cls.__name__}s() {{  
+                    state.loading = true
+                    try {{
+                        const {{ data }} =  await useFetch("/api/{cls.__name__.lower()}s").json()
+                        state.{cls.__name__.lower()}s = unref(data)
+                    }} catch (error) {{
+                        state.error = error.message
+                    }} finally {{
+                        state.loading = false
+                    }}
+                }},
+                async fetch{cls.__name__}(id: string) {{
+                    state.loading = true
+                    try {{
+                        const {{ data }} =  await useFetch("/api/{cls.__name__.lower()}s/" + id).json()
+                        state.{cls.__name__.lower()} = unref(data)
+                    }} catch (error) {{
+                        state.error = error.message
+                    }} finally {{
+                        state.loading = false
+                    }}
+                }},
+                async create{cls.__name__}({cls.__name__.lower()}: {cls.__name__}) {{
+                    state.loading = true
+                    try {{
+                        const {{ data }} =  await useFetch("/api/{cls.__name__.lower()}s", {{
+                            method: "POST",
+                            headers: {{
+                                "Content-Type": "application/json"
+                            }},
+                            body: JSON.stringify({cls.__name__.lower()})
+                        }}).json()
+                        state.{cls.__name__.lower()} = unref(data)
+                    }} catch (error) {{
+                        state.error = error.message
+                    }} finally {{
+                        state.loading = false
+                    }}
+                }},
+                async update{cls.__name__}({cls.__name__.lower()}: {cls.__name__}) {{
+                    state.loading = true
+                    try {{
+                        const {{ data }} =  await useFetch("/api/{cls.__name__.lower()}s/" + {cls.__name__.lower()}.ref, {{
+                            method: "PUT",
+                            headers: {{
+                                "Content-Type": "application/json"
+                            }},
+                            body: JSON.stringify({cls.__name__.lower()})
+                        }}).json()
+                        state.{cls.__name__.lower()} = unref(data)
+                    }} catch (error) {{
+                        state.error = error.message
+                    }} finally {{
+                        state.loading = false
+                    }}
+                }},
+                async delete{cls.__name__}({cls.__name__.lower()}: {cls.__name__}) {{
+                    state.loading = true
+                    try {{
+                        const {{ data }} =  await useFetch("/api/{cls.__name__.lower()}s/" + {cls.__name__.lower()}.ref, {{
+                            method: "DELETE"
+                        }}).json()
+                        state.{cls.__name__.lower()} = unref(data)
+                    }} catch (error) {{
+                        state.error = error.message
+                    }} finally {{
+                        state.loading = false
+                    }}
+                }}
+            }}
+
+        
+            return {{
+                state,
+                api
+            }}
+        }})
+        
+        if (import.meta.hot) {{
+            import.meta.hot.accept(acceptHMRUpdate({cls.__name__}Store, import.meta.hot))
+        }}
+        """

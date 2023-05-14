@@ -3,3 +3,4 @@
 .venv
 client
 dist
+.faunarc
