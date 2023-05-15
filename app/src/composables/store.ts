@@ -7,7 +7,7 @@ export const useStore = defineStore('whatsApp',()=>{
         contact: null as any,
         messages: [] as any,
         contacts: [] as any,
-        conversations: [] as any,
+        conversation: null as any,
         whispers: [] as any,
         notifications: [] as any,
     })

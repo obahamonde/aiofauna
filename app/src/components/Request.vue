@@ -37,12 +37,12 @@ const loaderActive = computed(() => isloading.value);
 </script>
 <template>
     <div v-if="!iserror && !loaderActive && response">
-        <slot :response="response"></slot>
+        <slot :json="response"></slot>
     </div>
     <div v-else-if="iserror">
         <slot name="error" :error="iserror">
             <!-- Add default error handling UI here -->
-            <p>An error occurred: {{ iserror.message }}</p>
+            <p class="text-error">An error occurred: {{ iserror.message }}</p>
         </slot>
     </div>
     <div v-else-if="loaderActive">

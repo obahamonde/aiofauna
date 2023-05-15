@@ -1,5 +1,4 @@
 import json
-from re import M
 import botocore
 from typing import Dict, List
 from pydantic import BaseModel, BaseConfig, BaseSettings, Field
@@ -125,7 +124,7 @@ async def fetch_user_conversations(user_id: str,owner:bool=True):
     instances = await Conversation.find_many("owner", user_id) + await Conversation.find_many("guest", user_id)
     if len(instances) == 0:
         instances.append(await Conversation(
-            owner=user_id,
+            owner=user_id,  
             guest=user_id
         ).save())
     for instance in instances:

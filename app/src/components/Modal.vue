@@ -1,7 +1,7 @@
 <template>
     <transition name="modal">
         <div class="fixed z-10 inset-0 overflow-y-auto" @click.self="emit('close')">
-            <div class="flex items-center justify-center min-h-screen">
+            <div class="flex items-center justify-center">
                 <div class="bg-white rounded-lg shadow-lg p-8">
                     <div class="modal-header">
                         <slot name="header">
@@ -13,7 +13,7 @@
                     </div>
                     <div class="modal-footer">
                         <slot name="footer">
-                            <button class="bg-gray-500 text-white px-4 py-2 rounded-md" @click="emit('close')">
+                                    <button class="btn-del" @click="emit('close')">
                                 Close
                             </button>
                         </slot>
