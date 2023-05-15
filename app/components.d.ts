@@ -9,6 +9,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AppBar: typeof import('./src/components/AppBar.vue')['default']
+    AppContainer: typeof import('./src/components/AppContainer.vue')['default']
     ChatArea: typeof import('./src/components/ChatArea.vue')['default']
     ChatContainer: typeof import('./src/components/ChatContainer.vue')['default']
     ChatHeader: typeof import('./src/components/ChatHeader.vue')['default']
