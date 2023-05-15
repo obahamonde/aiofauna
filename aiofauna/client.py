@@ -8,7 +8,7 @@ from aiohttp import ClientSession
 
 from dotenv import load_dotenv
 
-from .errors import AioFaunaException
+from .errors import FaunaException
 
 from .objects import Expr
 
@@ -125,7 +125,7 @@ class AsyncFaunaClient(object):
 
                     return data["resource"]
 
-                except AioFaunaException as exc:
+                except( FaunaException, ValueError, KeyError, TypeError, Exception) as exc:
                     print(exc)
 
                     return None
@@ -216,7 +216,7 @@ class HTTPClient:
                 ) as response:
                     return await response.json()
         else:
-            raise ValueError("Invalid method")
+            raise FaunaException(400, "Invalid method", None)
 
     async def text(
         self,
@@ -239,7 +239,7 @@ class HTTPClient:
                 ) as response:
                     return await response.text()
         else:
-            raise ValueError("Invalid method")
+            raise FaunaException(400, "Invalid method", None)
 
     async def blob(
         self,
@@ -262,7 +262,7 @@ class HTTPClient:
                 ) as response:
                     return await response.read()
         else:
-            raise ValueError("Invalid method")
+            raise FaunaException(400, "Invalid method", None)
 
     async def stream(
         self,
@@ -287,4 +287,4 @@ class HTTPClient:
                     async for chunk in response.content.iter_chunked(1024):
                         yield chunk.decode("utf-8")
         else:
-            raise ValueError("Invalid method")
+            raise FaunaException(400, "Invalid method", None)

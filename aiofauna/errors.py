@@ -1,15 +1,5 @@
 """Error types that methods in the FaunaDB client throw."""
 
-# pylint: disable=redefined-builtin
-
-from builtins import object
-
-from typing import Union
-
-from pydantic import ValidationError
-
-from aiohttp.web_exceptions import HTTPException
-
 
 class codes:
 
@@ -300,46 +290,25 @@ class Failure(object):
         return not self == other
 
 
-AioFaunaException = (
-    ValidationError,
-    FaunaError,
-    HTTPException,
-    BaseException,
-    Exception,
-    TypeError,
-    ValueError,
-    KeyError,
-    IndexError,
-    AttributeError,
-    AssertionError,
-    NotImplementedError,
-    StopIteration,
-    RuntimeError,
-    NameError,
-    OSError,
-    IOError,
-    EOFError,
-    ImportError,
-    LookupError,
-    MemoryError,
-    ReferenceError,
-    SystemError,
-    SystemExit,
-    ConnectionError,
-    BrokenPipeError,
-    ConnectionAbortedError,
-    ConnectionRefusedError,
-    ConnectionResetError,
-    FileExistsError,
-    FileNotFoundError,
-    InterruptedError,
-    IsADirectoryError,
-    NotADirectoryError,
-    PermissionError,
-    ProcessLookupError,
-    TimeoutError,
-    BlockingIOError,
-    ChildProcessError,
-    ConnectionError,
-    BrokenPipeError,
-)
+class FaunaException(Exception):
+    STATUS_MAP = {
+        100: "primary",
+        200: "success",
+        300: "info",
+        400: "warning",
+        500: "error",
+    }
+
+    def __init__(self, status: int, message: str, request_result):
+        super(FaunaException, self).__init__(message, request_result)
+        self.status = status
+        self.message = message
+
+    def json(self):
+        return {"status": self.raise_for_status(), "message": self.message}
+
+    def raise_for_status(self) -> str:
+        for key, value in self.STATUS_MAP.items():
+            if self.status < key + 100:
+                return value
+        return "error"

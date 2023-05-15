@@ -22,7 +22,7 @@ try:
 except ImportError:
     from . import query as q
 
-from .errors import AioFaunaException
+from .errors import FaunaException
 
 
 from .json import JSONModel  # pylint: disable=no-name-in-module
@@ -146,7 +146,7 @@ class AsyncFaunaModel(JSONModel):
 
             return True
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return False
@@ -184,7 +184,7 @@ class AsyncFaunaModel(JSONModel):
                 q.exists(q.ref(q.collection(cls.__name__.lower()), ref))
             )
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return False
@@ -235,7 +235,7 @@ class AsyncFaunaModel(JSONModel):
                 }
             )
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return None  # type: ignore # pylint: disable=unreachable
@@ -303,7 +303,7 @@ class AsyncFaunaModel(JSONModel):
                 for d in data
             ]
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return []
@@ -346,7 +346,7 @@ class AsyncFaunaModel(JSONModel):
                 }
             )
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return None  # type: ignore # pylint: disable=unreachable
@@ -397,7 +397,7 @@ class AsyncFaunaModel(JSONModel):
                 for d in data
             ]
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
 
             logging.error(exc)
 
@@ -448,7 +448,7 @@ class AsyncFaunaModel(JSONModel):
 
             return True
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return False
@@ -462,7 +462,7 @@ class AsyncFaunaModel(JSONModel):
 
             return True
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return False
@@ -500,7 +500,8 @@ class AsyncFaunaModel(JSONModel):
             for field in self.__fields__.values():
                 if field.field_info.extra.get("unique"):
                     instance = await self.find_unique(
-                        field.name, self.__dict__[field.name])
+                        field.name, self.__dict__[field.name]
+                    )
                     if instance is None:
                         continue
                     if issubclass(instance.__class__, AsyncFaunaModel):
@@ -514,7 +515,7 @@ class AsyncFaunaModel(JSONModel):
             self.ts = data["ts"] / 1000
             return self
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return None  # type: ignore # pylint: disable=unreachable
@@ -553,7 +554,7 @@ class AsyncFaunaModel(JSONModel):
                 for d in data
             ]
 
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
             return []
@@ -578,7 +579,7 @@ class AsyncFaunaModel(JSONModel):
                 )
             else:
                 raise ValueError(f"Field {ref} not found")
-        except AioFaunaException as exc:
+        except( FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
             raise ValueError(f"Field {ref} not found")
 
@@ -722,7 +723,7 @@ class AsyncFaunaModel(JSONModel):
                     try {{
                         const {{ data }} =  await useFetch("/api/{cls.__name__.lower()}s").json()
                         state.{cls.__name__.lower()}s = unref(data)
-                    }} catch (error) {{
+                    }} catch (KeyError, TypeError) {{
                         state.error = error.message
                     }} finally {{
                         state.loading = false
@@ -733,7 +734,7 @@ class AsyncFaunaModel(JSONModel):
                     try {{
                         const {{ data }} =  await useFetch("/api/{cls.__name__.lower()}s/" + id).json()
                         state.{cls.__name__.lower()} = unref(data)
-                    }} catch (error) {{
+                    }} catch (KeyError, TypeError) {{
                         state.error = error.message
                     }} finally {{
                         state.loading = false
@@ -750,7 +751,7 @@ class AsyncFaunaModel(JSONModel):
                             body: JSON.stringify({cls.__name__.lower()})
                         }}).json()
                         state.{cls.__name__.lower()} = unref(data)
-                    }} catch (error) {{
+                    }} catch (KeyError, TypeError) {{
                         state.error = error.message
                     }} finally {{
                         state.loading = false
@@ -767,7 +768,7 @@ class AsyncFaunaModel(JSONModel):
                             body: JSON.stringify({cls.__name__.lower()})
                         }}).json()
                         state.{cls.__name__.lower()} = unref(data)
-                    }} catch (error) {{
+                    }} catch (KeyError, TypeError) {{
                         state.error = error.message
                     }} finally {{
                         state.loading = false
@@ -780,7 +781,7 @@ class AsyncFaunaModel(JSONModel):
                             method: "DELETE"
                         }}).json()
                         state.{cls.__name__.lower()} = unref(data)
-                    }} catch (error) {{
+                    }} catch (KeyError, TypeError) {{
                         state.error = error.message
                     }} finally {{
                         state.loading = false
