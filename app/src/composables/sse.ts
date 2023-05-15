@@ -1,7 +1,7 @@
-export const useSSE = (props:{url:string, refParam:string}) => {
+export const useSSE = (props:{url:string, query:string}) => {
 
 
-  const { status, data, eventSource, close } = useEventSource(`${props.url}?ref=${props.refParam}`);
+  const { status, data, eventSource, close } = useEventSource(`${props.url}?ref=${props.query}`);
 
   const messages = ref<any[]>([]);
 

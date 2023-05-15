@@ -3,6 +3,23 @@ import { useAuth0 } from "@auth0/auth0-vue"
 const { state } = useStore()
 const { logout } = useAuth0()
 const showModal = ref(false);
+const numberRef = ref("")
+const { request, response } = useRequest()
+const dofetch = async()=>{
+  const userRef = state.user.ref
+  if (!numberRef.value || !userRef) {
+    return
+  }
+  await request("/api/new_conversation/"+userRef+"?contact="+numberRef.value, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  state.conversation = response
+}
+
+ 
 </script>
 <template>
   <div class="header">
@@ -20,6 +37,10 @@ const showModal = ref(false);
   </div>
   <Modal v-if="showModal"
   @close="showModal = false">
-  <h1>Hello World</h1>
+  <template class="col center">
+  <label for="number">Number:</label>
+  <input type="text" id="number" name="number" input-text v-model="numberRef"><br><br>
+</template>
+  <button @click="dofetch()" btn-get>Add Contact</button>
   </Modal>
 </template>

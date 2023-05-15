@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRequest } from "~/composables/request"
-const { request } = useRequest()
+const { request, response } = useRequest()
 const { state } = useStore()
 const postMessage = async ()=>{
     if (!state.conversation.ref || !state.user.ref || !message.value) {
@@ -34,7 +34,13 @@ const postMessage = async ()=>{
         })
     })
     message.value = ""
+
 }
+watch(() => response.value, (response) => {
+    if (response) {
+        state.conversation = response
+    }
+})
 const message = ref("")
 const showModal = ref(false);
 </script>
