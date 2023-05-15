@@ -58,7 +58,7 @@ class AsyncFaunaModel(JSONModel):
 
     ts: Optional[str] = None
 
-    def __init__(self, **data: Any) -> None:
+    def __init__(self, **data: Any):
         super().__init__(**data)
 
         for field in self.__fields__.values():
@@ -73,17 +73,17 @@ class AsyncFaunaModel(JSONModel):
                 continue
 
     @classmethod
-    def client(cls) -> AsyncFaunaClient:
+    def client(cls):
         fauna_secret = os.getenv("FAUNA_SECRET")
 
         return AsyncFaunaClient(secret=fauna_secret)
 
     @classmethod
-    def q(cls) -> Callable:
+    def q(cls):
         return cls.client().query
 
     @classmethod
-    async def provision(cls) -> bool:
+    async def provision(cls):
         _q = cls.q()
         try:
             if not await _q(q.exists(q.collection(cls.__name__.lower()))):
@@ -152,7 +152,7 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def exists(cls, ref: str) -> bool:
+    async def exists(cls, ref: str):
         """
 
 
@@ -190,7 +190,7 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def find_unique(cls, field: str, value: Any) -> AsyncFaunaModel:
+    async def find_unique(cls, field: str, value: Any):
         """
 
 
@@ -241,7 +241,7 @@ class AsyncFaunaModel(JSONModel):
             return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
-    async def find_many(cls, field: str, value: Any) -> List[AsyncFaunaModel]:
+    async def find_many(cls, field: str, value: Any):
         """
 
 
@@ -309,7 +309,7 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def get(cls, ref: str) -> AsyncFaunaModel:
+    async def get(cls, ref: str):
         """
 
 
@@ -352,7 +352,7 @@ class AsyncFaunaModel(JSONModel):
             return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
-    async def all(cls, limit: int = 100, offset: int = 0) -> List[AsyncFaunaModel]:
+    async def all(cls, limit: int = 100, offset: int = 0):
         """
         Returns all documents of a collection.
 
@@ -404,7 +404,7 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def delete_unique(cls, field: str, value: Any) -> bool:
+    async def delete_unique(cls, field: str, value: Any):
         """
 
 
@@ -454,7 +454,7 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def delete(cls, ref: str) -> bool:
+    async def delete(cls, ref: str):
         """Delete a document by id"""
 
         try:
@@ -467,7 +467,7 @@ class AsyncFaunaModel(JSONModel):
 
             return False
 
-    async def create(self) -> AsyncFaunaModel:
+    async def create(self):
         """
 
 
@@ -500,17 +500,11 @@ class AsyncFaunaModel(JSONModel):
             for field in self.__fields__.values():
                 if field.field_info.extra.get("unique"):
                     instance = await self.find_unique(
-                        field.name, getattr(self, field.name)
-                    )
+                        field.name, self.__dict__[field.name])
                     if instance is None:
                         continue
-                    await instance.__class__.q()(
-                        q.create(
-                            q.collection(self.__class__.__name__.lower()),
-                            {"data": self.dict()},
-                        )
-                    )  # type: ignore
-                    return instance  # type: ignore
+                    if issubclass(instance.__class__, AsyncFaunaModel):
+                        return instance
             data = await self.__class__.q()(
                 q.create(
                     q.collection(self.__class__.__name__.lower()), {"data": self.dict()}
@@ -526,7 +520,7 @@ class AsyncFaunaModel(JSONModel):
             return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
-    async def query(cls, query: str) -> List[AsyncFaunaModel]:
+    async def query(cls, query: str):
         """
 
 
@@ -565,13 +559,14 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def update(cls, ref: str, **kwargs) -> AsyncFaunaModel:
+    async def update(cls, ref: str, **kwargs):
         try:
             instance = await cls.get(ref)
             if isinstance(instance, cls):
                 instance_updated = await cls.q()(
                     q.update(
-                        q.ref(q.collection(cls.__name__.lower()), ref), {"data": kwargs}
+                        q.ref(q.collection(cls.__name__.lower()), ref),
+                        {"data": kwargs.get("kwargs", kwargs)},
                     )
                 )
                 return cls(
@@ -587,7 +582,7 @@ class AsyncFaunaModel(JSONModel):
             logging.error(exc)
             raise ValueError(f"Field {ref} not found")
 
-    async def save(self) -> AsyncFaunaModel:
+    async def save(self):
         """
 
 

@@ -265,7 +265,7 @@ async def inject_signature(request: Request, params: dict):
             args_to_apply[name] = new_request
         elif issubclass(annotation, BaseModel):
             data = await request.json(loads=JSONDecoder().decode)
-            if isinstance(data, Union[str, bytes]):
+            if isinstance(data, (str, bytes)):
                 data = json.loads(data, object_hook=parse_json_or_none)
             args_to_apply[name] = annotation(**data)
         else:
