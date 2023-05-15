@@ -1,9 +1,15 @@
 <script setup lang="ts">
 const { state } = useStore()
-const setConversation = (conversation: any) => {
-    state.conversation = conversation
+const selectedConversation = ref(null)
+
+const setConversation = async(conversation: any) => {
+    selectedConversation.value = conversation
+   
 }
 
+watch(selectedConversation, (newConversation) => {
+    state.conversation = newConversation
+})
 </script>
 
 <template>
@@ -27,7 +33,7 @@ const setConversation = (conversation: any) => {
                 </div>
                 <div class="text-message">
                     <p>{{ response.messages.length > 0 ? response.messages.reverse()[0].text : '[Start the conversation]' }}</p>
-                    <b>1</b>
+                    <b>{{ response.messages.reduce((acc:any, cur:any) => cur.read ? acc : acc + 1, 0) }}</b>
                 </div>
             </div>
         </div>

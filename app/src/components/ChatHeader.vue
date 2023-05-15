@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const { state } = useStore()
+const copy = (text: string) => navigator.clipboard.writeText(text)
+const val = ref(false)
+
 </script>
 <template>
      <div class="header" v-if="state.conversation">
@@ -10,6 +13,13 @@ const { state } = useStore()
             <h4>{{ state.conversation.guest.name }}<br>
                 <Request :url="'/api/online/'+state.conversation.guest.ref">
                     <template v-slot="response">
+                        <small class="text-xs gap-4 row"  
+                            @mouseover="val=true"
+                            @mouseleave="val=false"
+                            :class="val ? '' : 'opacity-0 fixed'"
+                        >{{ state.conversation.guest.ref }}  <Icon icon="mdi-clipboard"
+                            @click="copy(state.conversation.guest.ref)"
+                            />   </small>
                         <span v-if="response.json.online" class="online">Online</span>
                         <span v-else class="offline">Last Seen: {{ new Date(Number(state.conversation.ts)).toLocaleTimeString() }}</span>
                     </template>

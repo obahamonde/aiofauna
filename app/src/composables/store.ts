@@ -4,11 +4,7 @@ import { reactive } from 'vue'
 export const useStore = defineStore('whatsApp',()=>{
     const state = reactive({
         user: null as any,
-        contact: null as any,
-        messages: [] as any,
-        contacts: [] as any,
         conversation: null as any,
-        whispers: [] as any,
         notifications: [] as any,
     })
 
