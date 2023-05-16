@@ -40,7 +40,7 @@ class Message(FaunaModel):
         default="TEXT", oneOf=["TEXT", "IMAGE", "VIDEO", "AUDIO"], index=True
     )
     conversation: str = Field(..., index=True)
-    
+    read: O[bool] = Field(default=False, index=True)
     
 class Conversation(FaunaModel):
     """Messages"""

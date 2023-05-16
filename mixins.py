@@ -1,19 +1,21 @@
-import json
-import botocore
-from typing import Dict, List
-from pydantic import BaseModel, BaseConfig, BaseSettings, Field
-from aiohttp_sse import EventSourceResponse, sse_response
-from models import *
+"""API Components"""
 import asyncio
-from aiofauna import Request, Response, Api, HTTPClient
-from aioboto3 import Session
+import botocore
+from multidict import MultiDict
 from dotenv import load_dotenv
-from aiofauna.api import UploadFile, FileField
+from pydantic import BaseConfig, BaseSettings, Field # pylint: disable=no-name-in-module
+from aiohttp_sse import EventSourceResponse, sse_response
+from aioboto3 import Session
+from aiofauna import Request, Api, HTTPClient
+from aiofauna.api import FileField
+from models import *
+
 load_dotenv()
 
-# Settings1
+# Settings
 
 class Env(BaseSettings):
+    """Environment Variables"""
     class Config(BaseConfig):
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -26,22 +28,20 @@ class Env(BaseSettings):
     REDIS_PASSWORD:str=Field(..., env="REDIS_PASSWORD")
     REDIS_HOST:str=Field(..., env="REDIS_HOST")
     REDIS_PORT:int=Field(..., env="REDIS_PORT")
-    
-    
-    def __init__(self):
-        super().__init__()
+
+
 
 # Singletons
 
-session = Session()
+session = Session() # boto3 session
 
-client = HTTPClient()
+client = HTTPClient() # http client
         
-env = Env()
+env = Env() # environment variables
 
-app = Api()
+app = Api() # application instance
 
-state = {}
+state:D[str,L[EventSourceResponse]]=MultiDict() # state
 
 # Mixins
 
@@ -53,7 +53,10 @@ async def sse_handler(request:Request)->EventSourceResponse:
         if "ref" not in params:
             raise Exception("Missing ref")
         ref = params["ref"]
-        state[ref] = resp
+        if ref in state:
+            state[ref].append(resp)
+        else:
+            state[ref] = [resp]
         while True:
             await asyncio.sleep(1)
     return resp
@@ -62,8 +65,11 @@ async def sse_handler(request:Request)->EventSourceResponse:
 async def post_message(msg:Message):
     message = await msg.create()
     assert isinstance(message, Message)
-    if message.conversation in state:
-        await state[message.conversation].send(message.json())
+    tasks = []
+    for k, v in state.items():
+        if k == message.conversation:
+            tasks.extend([v_.send(message.json()) for v_ in v]) 
+    await asyncio.gather(*tasks)
     conversation = await Conversation.get(message.conversation)
     assert isinstance(conversation, Conversation)
     conversation.messages.append(message.dict())

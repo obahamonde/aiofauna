@@ -7,6 +7,23 @@ export const useRequest = ()=>{
         response.value = unref(data)
         iserror.value = unref(error)
         isloading.value = unref(isFetching.value)
+
+        const fetchData = async ()=>{
+            const { data, error, isFetching} = await useFetch(url, options, {refetch:true}).json()
+            response.value = unref(data)
+            iserror.value = unref(error)
+            isloading.value = unref(isFetching.value)
+        }
+
+        onMounted(()=>{
+            fetchData()
+        })
+
+        watch(response, ()=>{
+            fetchData()
+        }
+        )
+
     }
     return {
         response,

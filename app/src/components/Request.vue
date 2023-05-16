@@ -19,6 +19,16 @@ const props = defineProps(
         }
     }
 )
+
+const Rxprops = reactive(props)
+
+const fetchData = async () => {
+    await request(Rxprops.url, Rxprops.options);
+}
+
+watch(Rxprops,fetchData)
+
+onMounted(fetchData);
 const { state } = useStore();
 onMounted(async () => {
     await request(props.url, props.options);

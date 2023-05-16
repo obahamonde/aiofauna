@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Notifier from "./components/Notifier.vue";
 import { useAuth0 } from '@auth0/auth0-vue'
-import { watch, ref } from 'vue'
 const { state } = useStore()
 const { isAuthenticated, loginWithRedirect, getAccessTokenSilently, user } = useAuth0()
 

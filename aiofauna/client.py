@@ -126,7 +126,7 @@ class AsyncFaunaClient(object):
                     return data["resource"]
 
                 except( FaunaException, ValueError, KeyError, TypeError, Exception) as exc:
-                    print(exc)
+                    p2
 
                     return None
 

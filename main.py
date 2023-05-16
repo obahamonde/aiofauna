@@ -1,6 +1,7 @@
+import inspect
+import models
 from aiofauna import Api
 from mixins import *
-
 
 @app.get("/")
 async def index():
@@ -34,11 +35,8 @@ async def get_users():
     """Fetch all users"""
     return await Wuser.all()
 
-
 #@app.on_event("startup")
 async def startup(_) -> None:
     """Runs on startup"""
-    import models
-    import inspect
     _models = [o for n, o in inspect.getmembers(models) if inspect.isclass(o) and issubclass(o, FaunaModel) and o != FaunaModel]
     await asyncio.gather(*[m.provision() for m in _models])
