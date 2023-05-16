@@ -15,7 +15,6 @@ declare module '@vue/runtime-core' {
     ChatContainer: typeof import('./components/ChatContainer.vue')['default']
     ChatHeader: typeof import('./components/ChatHeader.vue')['default']
     ChatList: typeof import('./components/ChatList.vue')['default']
-    ChatMessages: typeof import("./components/ChatMessages.vue")["default"]
     Credits: typeof import('./components/Credits.vue')['default']
     MessageInput: typeof import('./components/MessageInput.vue')['default']
     MessageUpload: typeof import('./components/MessageUpload.vue')['default']
