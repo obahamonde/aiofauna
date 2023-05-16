@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const { state } = useStore()
+const { state } = useStore();
 </script>
 <template>
-<div>
-    {{  state  }}
-</div>
+  <div>
+    {{ state }}
+  </div>
 </template>

@@ -1,19 +1,16 @@
 import io
-
 import os
-
-from typing import Optional as O, Dict as D, Any as A, AsyncGenerator as AG
+from typing import Any as A
+from typing import AsyncGenerator as AG
+from typing import Dict as D
+from typing import Optional as O
 
 from aiohttp import ClientSession
-
 from dotenv import load_dotenv
 
 from .errors import FaunaException
-
-from .objects import Expr
-
-
 from .json import FaunaJSONEncoder
+from .objects import Expr
 
 load_dotenv()
 
@@ -126,7 +123,6 @@ class AsyncFaunaClient(object):
                     return data["resource"]
 
                 except( FaunaException, ValueError, KeyError, TypeError, Exception) as exc:
-                    p2
 
                     return None
 

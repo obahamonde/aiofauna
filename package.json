@@ -1,5 +1,5 @@
 {
-    "scripts": {
-        "dev":"adev runserver --livereload --port 5000"
-    }
+  "scripts": {
+    "dev": "adev runserver --livereload --port 8888"
+  }
 }

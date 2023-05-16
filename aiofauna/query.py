@@ -1,4 +1,5 @@
 from types import FunctionType
+
 from aiofauna import deprecated
 
 

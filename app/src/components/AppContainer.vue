@@ -1,5 +1,5 @@
 <template>
-    <AppBar/>
+  <AppBar />
   <SideBar />
   <ChatArea />
 </template>

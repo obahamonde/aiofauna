@@ -1,7 +1,7 @@
 <template>
-    <div class="right-container">
-        <ChatHeader />
-        <ChatContainer />
-        <MessageInput />
-    </div>
+  <div class="right-container">
+    <ChatHeader />
+    <ChatContainer />
+    <MessageInput />
+  </div>
 </template>

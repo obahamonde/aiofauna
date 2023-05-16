@@ -85,7 +85,7 @@ export default defineConfig({
     ],
     ["icon-btn", "p-1 scale cp x2 rounded-full"],
     ["over", "shadow-gray-500 shadow-lg"],
-    ["chat-slug","text-center px-4 py-2 rounded-lg bg-gray-300 w-64 mx-auto"]
+    ["chat-slug", "text-center px-4 py-2 rounded-lg bg-gray-300 w-64 mx-auto"],
   ],
   presets: [
     presetUno(),

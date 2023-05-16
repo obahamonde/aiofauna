@@ -1,12 +1,15 @@
 """API Components"""
 import asyncio
+
 import botocore
-from multidict import MultiDict
-from dotenv import load_dotenv
-from pydantic import BaseConfig, BaseSettings, Field # pylint: disable=no-name-in-module
-from aiohttp_sse import EventSourceResponse, sse_response
 from aioboto3 import Session
-from aiofauna import Request, Api, HTTPClient
+from aiohttp_sse import EventSourceResponse, sse_response
+from dotenv import load_dotenv
+from multidict import MultiDict
+from pydantic import (BaseConfig,  # pylint: disable=no-name-in-module
+                      BaseSettings, Field)
+
+from aiofauna import Api, HTTPClient, Request
 from aiofauna.api import FileField
 from models import *
 

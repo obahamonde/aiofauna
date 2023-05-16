@@ -15,20 +15,30 @@ watchEffect(() => {
 </script>
 <template>
   <section>
-    <div style="z-index: 9999" v-for="(n, index) in state.notifications" :style="{ top: index * 15 + 'px' }"
-      :class="n.status" class="noti">
+    <div
+      style="z-index: 9999"
+      v-for="(n, index) in state.notifications"
+      :style="{ top: index * 15 + 'px' }"
+      :class="n.status"
+      class="noti"
+    >
       {{ n.message }}
-      <Icon :icon="n.status === 'error'
-        ? 'mdi-alert-circle'
-        : n.status === 'warning'
-          ? 'mdi-alert'
-          : n.status === 'success'
+      <Icon
+        :icon="
+          n.status === 'error'
+            ? 'mdi-alert-circle'
+            : n.status === 'warning'
+            ? 'mdi-alert'
+            : n.status === 'success'
             ? 'mdi-check-circle'
             : 'mdi-information-variant'
-        " class="rf scale cp tr absolute" @click="state.notifications.pop()" />
+        "
+        class="rf scale cp tr absolute"
+        @click="state.notifications.pop()"
+      />
     </div>
   </section>
-</template> 
+</template>
 <style scoped>
 .noti {
   @apply tr fixed m-4 py-4 px-2 row center sh border-2 border-solid w-96;

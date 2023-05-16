@@ -5,24 +5,30 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@vueuse/core": "^9.13.0",
-    "vue": "^3.2.47",
-    "vue-router": "^4.1.6",
-    "pinia": "*",
-    "@auth0/auth0-vue": "*"
+    "@auth0/auth0-vue": "*",
+    "@vueuse/core": "^10.1.2",
+    "pinia": "^2.0.36",
+    "vue": "^3.3.2",
+    "vue-router": "^4.2.0"
   },
   "devDependencies": {
     "@iconify/vue": "*",
+    "@types/markdown-it-link-attributes": "^3.0.1",
     "@types/node": "^18.15.11",
-    "@vitejs/plugin-vue": "^4.1.0",
-    "@vue-macros/volar": "^0.9.5",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue-macros/volar": "^0.9.8",
+    "@vueuse/head": "^1.1.26",
+    "markdown-it-link-attributes": "^4.0.1",
+    "markdown-it-shiki": "^0.9.0",
+    "shiki": "^0.14.2",
     "typescript": "^5.0.4",
-    "unocss": "^0.51.4",
-    "unplugin-auto-import": "^0.15.2",
+    "unocss": "^0.51.13",
+    "unplugin-auto-import": "^0.15.3",
     "unplugin-vue-components": "^0.24.1",
-    "unplugin-vue-macros": "^2.0.0",
-    "vite": "^4.2.1",
+    "unplugin-vue-macros": "^2.1.6",
+    "vite": "^4.3.5",
     "vite-plugin-pages": "^0.29.0",
-    "vue-tsc": "^1.2.0"
+    "vite-plugin-vue-markdown": "^0.23.4",
+    "vue-tsc": "^1.6.5"
   }
 }
