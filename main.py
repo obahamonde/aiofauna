@@ -1,12 +1,8 @@
 import inspect
 import models
-from aiofauna import Api
+from aiofauna import Api, render_template
 from mixins import *
 
-@app.get("/")
-async def index():
-    """Health check endpoint"""
-    return {"message": "Accepted", "status": "success"}
 
 
 @app.get("/api/auth")
@@ -34,6 +30,18 @@ async def get_upload(user: str):
 async def get_users():
     """Fetch all users"""
     return await Wuser.all()
+
+
+
+
+@app.get("/")
+async def index():
+    """Renders the index page"""
+    return render_template("index.html")
+
+
+app.router.add_static("/","./static", name="static")
+
 
 #@app.on_event("startup")
 async def startup(_) -> None:

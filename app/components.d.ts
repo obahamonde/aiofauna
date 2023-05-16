@@ -9,6 +9,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AppBar: typeof import('./src/components/AppBar.vue')['default']
+    AppContainer: typeof import('./src/components/AppContainer.vue')['default']
     ChatArea: typeof import('./src/components/ChatArea.vue')['default']
     ChatContainer: typeof import('./src/components/ChatContainer.vue')['default']
     ChatHeader: typeof import('./src/components/ChatHeader.vue')['default']
@@ -21,14 +23,9 @@ declare module '@vue/runtime-core' {
     Request: typeof import('./src/components/Request.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Search: typeof import('./src/components/Search.vue')['default']
     SearchContact: typeof import('./src/components/SearchContact.vue')['default']
-    SearchInput: typeof import('./src/components/SearchInput.vue')['default']
     SideBar: typeof import('./src/components/SideBar.vue')['default']
     Sse: typeof import('./src/components/Sse.vue')['default']
-    TheCounter: typeof import('./src/components/TheCounter.vue')['default']
-    TheFooter: typeof import('./src/components/TheFooter.vue')['default']
-    TheInput: typeof import('./src/components/TheInput.vue')['default']
     UserHeader: typeof import('./src/components/UserHeader.vue')['default']
   }
 }

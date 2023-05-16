@@ -20,19 +20,17 @@ const props = defineProps(
     }
 )
 
-const Rxprops = reactive(props)
+const { state } = useStore();
 
 const fetchData = async () => {
-    await request(Rxprops.url, Rxprops.options);
+    await request(props.url, props.options);
 }
 
-watch(Rxprops,fetchData)
-
 onMounted(fetchData);
-const { state } = useStore();
-onMounted(async () => {
-    await request(props.url, props.options);
-});
+
+const rxProps = reactive(props);
+
+watch(rxProps, fetchData);
 
 watchEffect(() => {
     if (iserror.value) {
@@ -45,6 +43,7 @@ watchEffect(() => {
 
 const loaderActive = computed(() => isloading.value);
 </script>
+
 <template>
     <div v-if="!iserror && !loaderActive && response">
         <slot :json="response"></slot>

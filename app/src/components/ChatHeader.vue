@@ -1,15 +1,8 @@
 <script setup lang="ts">
 const { state } = useStore()
-const copy = (text: string) => {
-    navigator.clipboard.writeText(text)
-    state.notifications.push({
-        status: 'success',
-        message: 'Copied to clipboard'
-    })
-}
+const copy = (text: string) => navigator.clipboard.writeText(text)
+const val = ref(false)
 
-const showRef = ref(false)
-const show = computed(() => showRef.value)
 </script>
 <template>
     <div class="header py-2" v-if="state.conversation">
@@ -18,17 +11,15 @@ const show = computed(() => showRef.value)
                 <img class="dp" :src="state.conversation.guest.picture" alt="">
             </div>
             <h4>{{ state.conversation.guest.name }}<br>
-                <p class="row start items-center"
-                :class="show ? '' : 'opacity-0 h-1'"
-                @mouseover="showRef = true"
-                @mouseleave="showRef = false"
-                > <small class="text-sm  text-gray-500">{{ state.conversation.guest.ref
-                }}</small>
-                    <Icon @click="copy(state.conversation.guest.ref)" icon="mdi-content-copy" class="text-gray-500 mx-2" />
-                </p>
-
-                <Request :url="'/api/online/' + state.conversation.guest.ref">
+                <Request :url="'/api/online/'+state.conversation.guest.ref">
                     <template v-slot="response">
+                        <small class="text-xs gap-4 row"  
+                            @mouseover="val=true"
+                            @mouseleave="val=false"
+                            :class="val ? '' : 'opacity-0 fixed'"
+                        >{{ state.conversation.guest.ref }}  <Icon icon="mdi-clipboard"
+                            @click="copy(state.conversation.guest.ref)"
+                            />   </small>
                         <span v-if="response.json.online" class="online">Online</span>
                         <span v-else class="offline">Last Seen: {{ new
                             Date(Number(state.conversation.ts)).toLocaleTimeString() }}</span>
