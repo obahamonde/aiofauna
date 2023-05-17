@@ -1,8 +1,9 @@
 import inspect
+
 import models
 from aiofauna import Api, render_template
+from aiofauna.asgi import aioasgi
 from mixins import *
-
 
 
 @app.get("/api/auth")
@@ -48,3 +49,5 @@ async def startup(_) -> None:
     """Runs on startup"""
     _models = [o for n, o in inspect.getmembers(models) if inspect.isclass(o) and issubclass(o, FaunaModel) and o != FaunaModel]
     await asyncio.gather(*[m.provision() for m in _models])
+
+

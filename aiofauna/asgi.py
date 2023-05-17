@@ -1,7 +1,9 @@
 """ASGI Middleware"""
-import typing
 import io
+import typing
+
 from aiohttp.web import Request
+
 from aiofauna.api import Api
 
 Scope = typing.MutableMapping[str, typing.Any]
@@ -34,7 +36,7 @@ def aioasgi(app: Api) -> ASGIApp:
             content_length -= len(_body)
 
         request = Request(
-            method=method,
+            _method=method,
             path=path,
             query_string=query_string,
             headers=headers,

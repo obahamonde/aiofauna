@@ -45,3 +45,4 @@ title: AioFauna
 📦 [GitHub](https://github.com/obahamonde/aiofauna)
 
 📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Real time Latency Monitoring between FaunaDB and Google Cloud Run)
+

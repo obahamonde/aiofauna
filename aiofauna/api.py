@@ -1,18 +1,20 @@
 """REST API Module with automatic OpenAPI generation."""
-import json
-import base64
 import asyncio
+import base64
+import json
+from datetime import date, datetime, time
+from enum import Enum
+from functools import singledispatch
+from inspect import signature
 from json import JSONDecoder
 from typing import Any, Dict, List, Union
-from inspect import signature
 from uuid import UUID
-from datetime import datetime, date, time
-from functools import singledispatch
-from enum import Enum
+
 from aiohttp.web import Application, Request, Response, json_response
 from aiohttp.web_request import FileField
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from multidict import CIMultiDict
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
+
 from .json import FaunaJSONEncoder, parse_json_or_none
 from .odm import AsyncFaunaModel
 
@@ -552,3 +554,7 @@ class Api(Application):
             return func
 
         return decorator
+
+
+    def __call__(self, scope):
+        pass
