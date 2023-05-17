@@ -1,7 +1,10 @@
 """ASGI Middleware"""
-import typing
 import io
+import typing
+from functools import partial
+
 from aiohttp.web import Request
+
 from aiofauna.api import Api
 
 Scope = typing.MutableMapping[str, typing.Any]
@@ -11,8 +14,8 @@ Receive = typing.Callable[[], typing.Awaitable[Message]]
 Send = typing.Callable[[Message], typing.Awaitable[None]]
 
 ASGIApp = typing.Callable[[Scope, Receive, Send], typing.Awaitable[None]]
-
-
+  
+    
 def aioasgi(app: Api) -> ASGIApp:
     async def asgi(scope: Scope, receive: Receive, send: Send) -> None:
         nonlocal app
@@ -89,3 +92,5 @@ def aioasgi(app: Api) -> ASGIApp:
         await send({"type": "http.response.body", "body": response_body})
 
     return asgi
+
+
