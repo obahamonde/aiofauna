@@ -4,14 +4,15 @@ import base64
 import json
 from datetime import date, datetime, time
 from enum import Enum
-from functools import singledispatch
+from functools import singledispatch, wraps
 from inspect import signature
 from json import JSONDecoder
-from typing import Any, Dict, List, Union
+from typing import Any, Callable, Dict, List, Union
 from uuid import UUID
 
 from aiohttp.web import Application, Request, Response, json_response
 from aiohttp.web_request import FileField
+from aiohttp.web_ws import WebSocketResponse
 from multidict import CIMultiDict
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
@@ -555,3 +556,27 @@ class Api(Application):
 
         return decorator
     
+    
+    def websocket(self, path: str) -> Callable:
+        def decorator(func: Callable) -> Callable:
+            @wraps(func)
+            async def wrapper(request: Request) -> WebSocketResponse:
+                wsocket = WebSocketResponse()
+                await wsocket.prepare(request)
+                if asyncio.iscoroutinefunction(func):
+                    await func(request, wsocket)
+                else:
+                    func(request, wsocket)
+                return wsocket
+            self.router.add_get(path, wrapper)
+            return wrapper
+        return decorator
+    
+    
+    def use(self, prefix, api):
+        self.add_subapp(prefix,api)
+        self.openapi["paths"].update(api.openapi["paths"])
+        self.openapi["components"]["schemas"].update(
+            api.openapi["components"]["schemas"]
+        )
+        return self
