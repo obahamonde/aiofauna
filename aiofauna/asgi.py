@@ -1,7 +1,6 @@
 """ASGI Middleware"""
 import io
 import typing
-from functools import partial
 
 from aiohttp.web import Request
 
@@ -37,7 +36,7 @@ def aioasgi(app: Api) -> ASGIApp:
             content_length -= len(_body)
 
         request = Request(
-            method=method,
+            _method=method,
             path=path,
             query_string=query_string,
             headers=headers,

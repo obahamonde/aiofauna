@@ -95,7 +95,7 @@ body {
 }
 
 .nav-icons li {
-  backgroud-color: pink;
+  background-color: pink;
   list-style: none;
   display: flex;
   cursor: pointer;
