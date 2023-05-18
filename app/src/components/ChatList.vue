@@ -20,7 +20,7 @@ watch(selectedConversation, (newConversation) => {
 
 <template>
           <div v-if="state.user && state.user.ref">
-        >  <Request :url="'/api/conversations/' + state.user.ref">
+            <Request :url="'/api/conversations/' + state.user.ref">
             <template #="responses">
               <div class="chat-list">
                 <!--chat item -->
