@@ -19,6 +19,7 @@ def git_commit(path:str="."):
             if file.endswith('.py'):
                 with open(os.path.join(root, file), 'rb') as f:
                     sha.update(f.read())
+                    print(sha.hexdigest())
         for path in dirs:
             git_commit(path)
 
