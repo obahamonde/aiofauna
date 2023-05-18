@@ -4,10 +4,7 @@ import Vue from "@vitejs/plugin-vue";
 import Pages from "vite-plugin-pages";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
-import Markdown from "vite-plugin-vue-markdown";
-import LinkAttributes from "markdown-it-link-attributes";
 import Unocss from "unocss/vite";
-import Shiki from "markdown-it-shiki";
 import VueMacros from "unplugin-vue-macros/vite";
 export default defineConfig({
   resolve: {
@@ -18,7 +15,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8888/api",
+        target: "http://localhost:8080/api",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
@@ -33,14 +30,14 @@ export default defineConfig({
       plugins: {
         vue: Vue({
           reactivityTransform: true,
-          include: [/\.vue$/, /\.md$/],
+          include: [/\.vue$/],
         }),
       },
     }),
 
     // https://github.com/hannoeru/vite-plugin-pages
     Pages({
-      extensions: ["vue", "md"],
+      extensions: ["vue"],
     }),
 
     // https://github.com/antfu/unplugin-auto-import
@@ -62,25 +59,10 @@ export default defineConfig({
       // allow auto load markdown components under `./src/components/`
       extensions: ["vue", "md"],
       // allow auto import and register components used in markdown
-      include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+      include: [/\.vue$/, /\.vue\?vue/],
       dts: "src/components.d.ts",
     }),
-    Markdown({
-      wrapperComponent: "post",
-      headEnabled: true,
-      markdownItSetup(md: any) {
-        md.use(Shiki, {
-          theme: "dark-plus",
-        });
-        md.use(LinkAttributes, {
-          pattern: /^https?:/,
-          attrs: {
-            target: "_blank",
-            rel: "noopener",
-          },
-        });
-      },
-    }),
+   
 
     // https://github.com/antfu/unocss
     // see uno.config.ts for config

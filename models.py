@@ -12,7 +12,7 @@ from aiofauna import Union as U
 from aiofauna.api import UploadFile
 
 
-class Wuser(FaunaModel):
+class User(FaunaModel):
     """Auth0 User"""
 
     email: O[str] = Field(default=None, index=True)
@@ -30,7 +30,7 @@ class Wuser(FaunaModel):
 
 
 
-class Wmessage(FaunaModel):
+class Message(FaunaModel):
     """Message"""
 
     text: str = Field(..., index=True)
@@ -41,12 +41,12 @@ class Wmessage(FaunaModel):
     conversation: str = Field(..., index=True)
     read: O[bool] = Field(default=False, index=True)
     
-class WConversation(FaunaModel):
+class Conversation(FaunaModel):
     """Messages"""
     name:O[str] = Field(default=None, unique=True)
     owner: str = Field(..., index=True)
     guest: str = Field(..., index=True)
-    messages: L[Wmessage] = Field(default_factory=list)
+    messages: L[Message] = Field(default_factory=list)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -54,7 +54,7 @@ class WConversation(FaunaModel):
             self.name = f"{self.owner}-{self.guest}"
     
     
-class WUpload(FaunaModel):
+class Upload(FaunaModel):
     """
     
     R2 Upload Record

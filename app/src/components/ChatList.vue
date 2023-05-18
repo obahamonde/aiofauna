@@ -63,8 +63,7 @@ watch(selectedConversation, (newConversation) => {
             </div>
           </div>
         </div>
-      </div>
-      3
+        </div>
     </template>
   </Request>
 </template>

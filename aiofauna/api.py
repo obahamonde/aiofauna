@@ -580,3 +580,10 @@ class Api(Application):
             api.openapi["components"]["schemas"]
         )
         return self
+    
+    
+    def static(self):
+        import os
+        os.makedirs("static", exist_ok=True)
+        self.router.add_static("/", "static")
+        return self
