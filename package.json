@@ -1,6 +1,6 @@
 {
   "scripts": {
     "dev": "poetry run build && adev runserver --port 5000",
-    "kill": "kill -9 %1 %2"
+    "kill": "kill -9 $(lsof -t -i:<port>)"
   }
 }

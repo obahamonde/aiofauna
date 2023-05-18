@@ -4,8 +4,8 @@
     <RouterLink to="/"
       ><Icon icon="logos:whatsapp-icon" x4 mx-4 icon-btn
     /></RouterLink>
-    <RouterLink to="/test"
-      ><Icon icon="logos:testlodge" x4 mx-4 icon-btn
+      <RouterLink to="/bucket"
+          ><Icon icon="logos:aws-s3" x4 mx-4 icon-btn
     /></RouterLink>
     <RouterLink to="/about"
       ><Icon icon="logos:markdown" x4 mx-4 icon-btn

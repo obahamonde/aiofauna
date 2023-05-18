@@ -5,7 +5,7 @@ const { isAuthenticated, loginWithRedirect, getAccessTokenSilently, user } =
   useAuth0();
 
 watch(user, async () => {
-  user.value ? (state.user = await authorize()) : (state.user = null);
+  user.value ? (state.user = await authorize()) : null;
 });
 
 const authorize = async () => {

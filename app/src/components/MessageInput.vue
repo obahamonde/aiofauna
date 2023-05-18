@@ -14,8 +14,8 @@
     <i class="fa-solid fa-microphone"></i>
   </div>
   <Modal v-if="showModal" @close="showModal = false">
-    <MessageUpload />
-  </Modal>
+            <MessageUpload @upload="handleUpload($event)" />
+      </Modal>
 </template>
 
 <script setup lang="ts">
@@ -23,6 +23,17 @@ import { ref } from "vue";
 import { useRequest } from "~/composables/request";
 const { request, response } = useRequest();
 const { state } = useStore();
+const handleUpload = async (e: any) => {
+  await request("/api/messages", {
+    method: "POST",
+    body: JSON.stringify({
+      text: e.url,
+      user: state.user.ref,
+      conversation: state.conversation.ref,
+      kind: e.type,
+    }),
+  });
+};
 const postMessage = async () => {
   if (!state.conversation.ref || !state.user.ref || !message.value) {
     return;

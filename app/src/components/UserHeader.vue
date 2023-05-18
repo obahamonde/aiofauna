@@ -7,6 +7,9 @@ const numberRef = ref("");
 const { request, response } = useRequest();
 const dofetch = async () => {
   const userRef = state.user.ref;
+  if (!userRef) {
+    return;
+  }
   if (!numberRef.value || !userRef) {
     return;
   }
@@ -24,7 +27,7 @@ const dofetch = async () => {
 const openmodal = ref(false);
 </script>
 <template>
-  <div class="header">
+    <div class="header" v-if="state.user && state.user.ref">
     <div class="user-img">
       <img
         class="dp"

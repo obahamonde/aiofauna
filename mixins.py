@@ -125,7 +125,7 @@ async def fetch_conversation_details(conversation_id: str):
     }
 
 @app.get("/api/conversations/{user_id}")
-async def fetch_user_conversations(user_id: str,owner:bool=True):
+async def fetch_user_conversations(user_id: str):
     '''Fetches all conversations for a user'''
     results = []
     user = await User.get(user_id)

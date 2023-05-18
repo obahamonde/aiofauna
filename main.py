@@ -3,6 +3,7 @@ import inspect
 import models
 from aiofauna import Api, render_template
 from aiofauna.asgi import aioasgi
+from aiofauna.helpers import markdown_it
 from mixins import *
 
 
@@ -37,6 +38,11 @@ async def get_users():
 async def index():
     """Renders the index page"""
     return render_template("index.html")
+
+@app.get("/api/about")
+async def about():
+    """Renders the about page"""
+    return markdown_it("index.md")
 
 app.static()
 

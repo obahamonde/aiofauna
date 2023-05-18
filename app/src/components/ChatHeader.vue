@@ -2,14 +2,16 @@
 const { state } = useStore();
 const copy = (text: string) => navigator.clipboard.writeText(text);
 const val = ref(false);
-const contact = computed(() =>
-  state.conversation.guest.name == state.user.name
+const contact = computed(() => {
+  if (!state.conversation) return
+  const ctc = state.conversation.guest.name == state.user.name
     ? state.conversation.owner
     : state.conversation.guest
-);
+  return ctc
+})
 </script>
 <template>
-  <div class="header py-2" v-if="state.conversation">
+    <div class="header py-2" v-if="state.conversation && contact">
     <div class="img-text">
       <div class="user-img">
         <img class="dp" :src="contact.picture" alt="" />

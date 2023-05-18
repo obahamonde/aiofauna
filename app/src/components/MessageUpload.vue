@@ -1,7 +1,22 @@
 <script setup lang="ts">
+type Upload = { ref: string | undefined, ts: string | undefined, user: string, name: string, key: string, size: number, type: string, lastModified: number, url: string }
+
 const filesData = reactive<any[]>([]);
-const filesUpload = reactive<any[]>([]);
+const filesUpload = reactive<Upload[]>([]);
 const { state } = useStore();
+
+
+const getFiles = async () => {
+  const { data } = await useFetch(`/api/upload?user=${state.user.ref}`, {
+    method: "GET",
+  }).json();
+  const files = unref(data);
+  files.forEach((file: any) => {
+    filesUpload.push(file);
+  });
+};
+
+
 
 const onDrop = async (files: File[] | null) => {
   if (!files || files.length === 0) return;
@@ -62,19 +77,13 @@ const deleteFile = async (file: any) => {
   });
 };
 
-const getFiles = async () => {
-  const { data } = await useFetch(`/api/upload?user=${state.user.ref}`, {
-    method: "GET",
-  }).json();
-  const files = unref(data);
-  files.forEach((file: any) => {
-    filesUpload.push(file);
-  });
-};
 
 onMounted(async () => {
+  if (!state.user) return;
   await getFiles();
 });
+
+
 </script>
 
 <template>
@@ -91,7 +100,7 @@ onMounted(async () => {
         </div>
       </div>
       <div class="col center m-8">
-        <div class="grid3 p-8 gap-8" v-if="filesData.length > 0">
+                        <div class="grid3 p-8 gap-8" >
           <div
             v-for="(file, index) in filesUpload"
             :key="index"

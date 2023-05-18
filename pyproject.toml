@@ -29,3 +29,4 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 build = 'scripts.build:main'
 push = 'scripts.git:main'
+kill = 'scripts.kill:main'
