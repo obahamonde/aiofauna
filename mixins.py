@@ -6,8 +6,8 @@ from aioboto3 import Session
 from aiohttp_sse import EventSourceResponse, sse_response
 from dotenv import load_dotenv
 from multidict import MultiDict
-from pydantic import (BaseConfig,  # pylint: disable=no-name-in-module
-                      BaseSettings, Field)
+from pydantic import BaseConfig  # pylint: disable=no-name-in-module
+from pydantic import BaseSettings, Field
 
 from aiofauna import Api, HTTPClient, Request
 from aiofauna.api import FileField
@@ -32,6 +32,8 @@ class Env(BaseSettings):
     REDIS_HOST:str=Field(..., env="REDIS_HOST")
     REDIS_PORT:int=Field(..., env="REDIS_PORT")
 
+    def __init__(self):
+        super().__init__()
 
 
 # Singletons
@@ -44,7 +46,7 @@ env = Env() # environment variables
 
 app = Api() # application instance
 
-state:D[str,L[EventSourceResponse]]=MultiDict() # state
+state=MultiDict() # state
 
 # Mixins
 
@@ -65,18 +67,19 @@ async def sse_handler(request:Request)->EventSourceResponse:
     return resp
 
 @app.post("/api/messages")
-async def post_message(msg:Message):
+async def post_message(msg:Wmessage):
     message = await msg.create()
-    assert isinstance(message, Message)
+    assert isinstance(message, Wmessage)
     tasks = []
     for k, v in state.items():
         if k == message.conversation:
             tasks.extend([v_.send(message.json()) for v_ in v]) 
     await asyncio.gather(*tasks)
-    conversation = await Conversation.get(message.conversation)
-    assert isinstance(conversation, Conversation)
-    conversation.messages.append(message.dict())
+    conversation = await WConversation.get(message.conversation)
+    assert isinstance(conversation, WConversation)
+    conversation.messages.append(message)
     instance = await conversation.save()
+    assert isinstance(instance, WConversation)
     assert isinstance(instance.ref, str)
     response = await fetch_conversation_details(instance.ref)
     return response
@@ -103,13 +106,13 @@ async def upload_handler(request:Request):
                 key_ = f"{key}/{file.filename}" # type: ignore
                 await s3client.put_object(Bucket=env.AWS_S3_BUCKET, Key=key_, Body=file.file.read(), ContentType=file.content_type, ACL="public-read")
                 url = await s3client.generate_presigned_url("get_object", Params={"Bucket": env.AWS_S3_BUCKET, "Key": key_}, ExpiresIn=3600*7*24)
-                return await Upload(user=user,key=key_, name=file.filename, size=size, type=file.content_type, url=url).save()     
+                return await WUpload(user=user,key=key_, name=file.filename, size=size, type=file.content_type, url=url).save()     
     return {"message": "Invalid request", "status": "error"}
 
 async def fetch_conversation_details(conversation_id: str):
     '''Fetches all messages for a conversation'''
-    conversation = await Conversation.get(conversation_id)
-    assert isinstance(conversation, Conversation)
+    conversation = await WConversation.get(conversation_id)
+    assert isinstance(conversation, WConversation)
     assert isinstance(conversation.messages, list)
     owner = await Wuser.get(conversation.owner)
     assert isinstance(owner, Wuser)
@@ -125,19 +128,21 @@ async def fetch_conversation_details(conversation_id: str):
     }
 
 @app.get("/api/conversations/{user_id}")
-async def fetch_user_conversations(user_id: str,owner:bool=True):
+async def fetch_user_conversations(user_id: str):
     '''Fetches all conversations for a user'''
     results = []
     user = await Wuser.get(user_id)
     assert isinstance(user, Wuser)
-    instances = await Conversation.find_many("owner", user_id) + await Conversation.find_many("guest", user_id)
+    instances = await WConversation.find_many("owner", user_id) + await WConversation.find_many("guest", user_id)
     if len(instances) == 0:
-        instances.append(await Conversation(
-            owner=user_id,  
+        instance = await WConversation(
+            owner=user_id,
             guest=user_id
-        ).save())
+        ).save()
+        assert isinstance(instance, WConversation)
+        instances.append(instance)
     for instance in instances:
-        assert isinstance(instance, Conversation)
+        assert isinstance(instance, WConversation)
         assert isinstance(instance.ref, str)
         results.append(fetch_conversation_details(instance.ref))
     return await asyncio.gather(*results)
@@ -149,22 +154,22 @@ async def create_new_conversation(user_id: str, contact: str):
     owner = await Wuser.get(contact)
     assert isinstance(user, Wuser)
     assert isinstance(owner, Wuser)
-    instance = await Conversation(owner=user_id, guest=contact).save()
-    assert isinstance(instance, Conversation)
+    instance = await WConversation(owner=user_id, guest=contact).save()
+    assert isinstance(instance, WConversation)
     assert isinstance(instance.ref, str)
     return await fetch_conversation_details(instance.ref)
     
 @app.post("/api/conversations/{conversation_id}")
-async def post_message_to_conversation(conversation_id: str, msg: Message):
+async def post_message_to_conversation(conversation_id: str, msg: Wmessage):
     '''Posts a message to a conversation'''
     message = await msg.save()
-    assert isinstance(message, Message)
-    instance = await Conversation.get(conversation_id)
-    assert isinstance(instance, Conversation)
+    assert isinstance(message, Wmessage)
+    instance = await WConversation.get(conversation_id)
+    assert isinstance(instance, WConversation)
     assert isinstance(instance.messages, list)
     instance.messages.append(message)
     instance = await instance.save()
-    assert isinstance(instance, Conversation)
+    assert isinstance(instance, WConversation)
     assert isinstance(instance.ref, str)
     return await fetch_conversation_details(instance.ref)
 
@@ -172,8 +177,8 @@ async def post_message_to_conversation(conversation_id: str, msg: Message):
 async def is_user_online(user_id: str):
     '''Checks if a user is online'''
     for k, v in state.items():
-        instance = await Conversation.get(k)
-        assert isinstance(instance, Conversation)
+        instance = await WConversation.get(k)
+        assert isinstance(instance, WConversation)
         if user_id in (instance.owner, instance.guest):
             return {"online": True}
     return {"online": False}
@@ -182,6 +187,6 @@ async def is_user_online(user_id: str):
 @app.get("/api/messages/{conversation_id}")
 async def fetch_messages(conversation_id: str):
     '''Fetches all messages for a conversation'''
-    messages = await Message.find_many("conversation", conversation_id)
+    messages = await Wmessage.find_many("conversation", conversation_id)
     assert isinstance(messages, list)
     return [m.dict() for m in messages]

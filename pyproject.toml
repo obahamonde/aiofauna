@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.1.12"
+version = "0.1.13"
 description = ""
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 repository = "https://github.com/obahamonde/aiofauna"
@@ -28,3 +28,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 build = 'scripts.build:main'
+push = 'scripts.git:main'

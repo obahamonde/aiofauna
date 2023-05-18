@@ -17,14 +17,14 @@ async def auth(token: str):
 @app.delete("/api/upload")
 async def delete_upload(ref: str):
     """Delete an uploaded file given it's document reference"""
-    await Upload.delete(ref)
+    await WUpload.delete(ref)
     return {"message": "Asset deleted successfully", "status": "success"}
 
 
 @app.get("/api/upload")
 async def get_upload(user: str):
     """Fetch Uploaded files for a given user"""
-    return await Upload.find_many("user", user)
+    return await WUpload.find_many("user", user)
 
 
 @app.get("/api/users")

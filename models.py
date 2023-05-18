@@ -1,17 +1,16 @@
 import asyncio
-from aiofauna import (
-    FaunaModel,
-    BaseModel,
-    Field,
-    Optional as O,
-    Dict as D,
-    List as L,
-    Any as A,
-    Union as U,
-    Callable as C,
-)
-from aiofauna.api import UploadFile
 from datetime import datetime
+
+from aiofauna import Any as A
+from aiofauna import BaseModel
+from aiofauna import Callable as C
+from aiofauna import Dict as D
+from aiofauna import FaunaModel, Field
+from aiofauna import List as L
+from aiofauna import Optional as O
+from aiofauna import Union as U
+from aiofauna.api import UploadFile
+
 
 class Wuser(FaunaModel):
     """Auth0 User"""
@@ -31,7 +30,7 @@ class Wuser(FaunaModel):
 
 
 
-class Message(FaunaModel):
+class Wmessage(FaunaModel):
     """Message"""
 
     text: str = Field(..., index=True)
@@ -42,12 +41,12 @@ class Message(FaunaModel):
     conversation: str = Field(..., index=True)
     read: O[bool] = Field(default=False, index=True)
     
-class Conversation(FaunaModel):
+class WConversation(FaunaModel):
     """Messages"""
     name:O[str] = Field(default=None, unique=True)
     owner: str = Field(..., index=True)
     guest: str = Field(..., index=True)
-    messages: L[Message] = Field(default_factory=list)
+    messages: L[Wmessage] = Field(default_factory=list)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -55,7 +54,7 @@ class Conversation(FaunaModel):
             self.name = f"{self.owner}-{self.guest}"
     
     
-class Upload(FaunaModel):
+class WUpload(FaunaModel):
     """
     
     R2 Upload Record

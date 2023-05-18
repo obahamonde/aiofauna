@@ -10,7 +10,7 @@ watch(user, async () => {
 
 const authorize = async () => {
   const token = await getAccessTokenSilently();
-  const res = await fetch("http://localhost:3000/api/auth?token=" + token);
+  const res = await fetch("/api/auth?token=" + token);
   const data = await res.json();
   state.notifications.push({
     message: "Welcome " + user.value.name,
