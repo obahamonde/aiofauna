@@ -1,7 +1,6 @@
 ---
 title: AioFauna
 ---
-
 # AioFauna
 
 🚀 Introducing aiofauna: A full-stack framework built on top of Aiohttp, Pydantic and FaunaDB.
@@ -12,25 +11,27 @@ title: AioFauna
 
 ✅ Supports Python 3.7+, comes with an opinionated ODM (Object Document Mapper) out of the box for FaunaDB that abstracts out complex FQL expressions into pythonic, fully typed asynchronous methods for all CRUD operations.
 
-✅ Performant and scalable: Built on top of Aiohttp a powerful http server and client and FaunaDB an scalable serverless database for modern applications.
+✅ Powerful and Scalable: Being built on top of Aiohttp an asyncio based http server/client and FaunaDB an scalable serverless database for modern applications allows for powerful and seamless integrations.
 
-✅ Async/await coroutines: Leverage the power of async programming for enhanced performance and responsiveness, being ASGI compliant is compatible with most async python frameworks.
+✅ Performant: As a framework built on top of Aiohttp it leverages the power of asyncio and the fastest python `HTTPClient` aiohttp plus the ubiquiness of FaunaDB to achieve high performance.
 
-✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your API.
+✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your `Api`.
 
 ✅ SSE (Server Sent Events): Built-in support for SSE (Server Sent Events) for real-time streaming of data from FaunaDB to your application.
 
-✅ Robust data validation: Built-in support for Pydantic models for robust data validation and serialization.
+✅ Websockets: Built-in support for Websockets for real-time bidirectional communication between your application and the resources served by AioFauna `Api`.
 
-✅ Auto-provisioning: Automatic management of indexes, unique indexes, and collections with FaunaModel ODM.
+✅ Robust data validation: Utilizes the rich features of Pydantic for data validation and serialization.
 
-✅ Full JSON communication: Custom encoder to ensure seamless data exchange between your application and FaunaDB backend.
+✅ Auto-provisioning: Automatic management of indexes, unique indexes, and collections with `FaunaModel` ODM.
 
-✅ Markdown and Jinja support with live reload: experiment an smooth frontend devserver experience without leaving your backend code.
+✅ Full JSON communication: Focus on your data, don't worry about the communication protocol. Your `Api` will receive and return JSON.
 
-✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes and more.
+✅ Markdown and Html support with live reload: experiment an smooth frontend devserver experience without leaving your backend code with familiar syntax, `render_template` and `markdown_it` functions enable you to render static markdown files and html jinja templates with live reload.
 
-💡 With aiofauna, you can build fast, scalable, and reliable modern applications, while building seamless integrations thanks to the fastest http client aiohttp and the most versatile database FaunaDB, you will enjoy integrating with third party services such as APIs, Data Sources and Cloud Services.
+✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes, `/docs` automatic interactive API documentation, and decorated view functions and automatic serialization and deserialization of your data.
+
+💡 With aiofauna, you can build fast, scalable, and reliable modern applications, avoiding decision fatigue and focusing on what really matters, your data and your business logic.
 
 📚 Check out the aiofauna library, and start building your next-gen applications today! 🚀
 
@@ -42,7 +43,8 @@ title: AioFauna
 
 📦 [PyPi](https://pypi.org/project/aiofauna/)
 
+📦 [Demo](https://aiofauna-fwuw7gz7oq-uc.a.run.app/) (Whatsapp clone built with aiofauna)
+
+📦 [Swagger UI](https://aiofauna-fwuw7gz7oq-uc.a.run.app/docs) (Whatsapp clone built with aiofauna)
+
 📦 [GitHub](https://github.com/obahamonde/aiofauna)
-
-📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Real time Latency Monitoring between FaunaDB and Google Cloud Run)
-

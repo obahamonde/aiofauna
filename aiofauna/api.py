@@ -10,7 +10,7 @@ from json import JSONDecoder
 from typing import Any, Callable, Dict, List, Union
 from uuid import UUID
 
-from aiohttp.web import Application, Request, Response, json_response
+from aiohttp.web import Application, Request, Response, json_response, run_app
 from aiohttp.web_request import FileField
 from aiohttp.web_ws import WebSocketResponse
 from multidict import CIMultiDict
@@ -587,3 +587,7 @@ class Api(Application):
         os.makedirs("static", exist_ok=True)
         self.router.add_static("/", "static")
         return self
+    
+    
+    def run(self, host: str = "0.0.0.0", port=8080):
+        run_app(self, host=host, port=port)
