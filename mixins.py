@@ -48,22 +48,22 @@ state:D[str,L[EventSourceResponse]]=MultiDict() # state
 
 # Mixins
 
-@app.get("/api/sse")
-async def sse_handler(request:Request)->EventSourceResponse:
-    async with sse_response(request) as resp:
-        await resp.prepare(request)
-        params = dict(request.query)
-        if "ref" not in params:
-            raise Exception("Missing ref")
-        ref = params["ref"]
-        if ref in state:
-            state[ref].append(resp)
-        else:
-            state[ref] = [resp]
-        while True:
-            await asyncio.sleep(1)
-    return resp
-
+@app.sse("/api/sse")
+async def sse_handler(sse:EventSourceResponse,ref:str):
+    """
+    Server Sent Events Endpoint
+    """
+    if ref in state:
+        state[ref].append(sse)
+    else:
+        state[ref] = [sse]
+    while True:
+        await asyncio.sleep(1)
+        if sse.task and sse.task.done():
+            break
+    state[ref].remove(sse)
+    return sse
+    
 @app.post("/api/messages")
 async def post_message(msg:Message):
     message = await msg.create()

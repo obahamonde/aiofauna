@@ -13,6 +13,7 @@ from uuid import UUID
 from aiohttp.web import Application, Request, Response, json_response, run_app
 from aiohttp.web_request import FileField
 from aiohttp.web_ws import WebSocketResponse
+from aiohttp_sse import EventSourceResponse, sse_response
 from multidict import CIMultiDict
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
@@ -558,30 +559,73 @@ class Api(Application):
     
     
     def websocket(self, path: str) -> Callable:
+        """Websocket decorator"""
         def decorator(func: Callable) -> Callable:
             @wraps(func)
             async def wrapper(request: Request) -> WebSocketResponse:
                 wsocket = WebSocketResponse()
                 await wsocket.prepare(request)
-                if asyncio.iscoroutinefunction(func):
-                    await func(request, wsocket)
-                else:
-                    func(request, wsocket)
+                args_to_apply = await inject_signature(request, signature(func).parameters.copy())
+                definitive_args = {}
+                for name, param in signature(func).parameters.items():
+                    if name in args_to_apply:
+                        definitive_args[name] = args_to_apply[name]
+                    elif param.default is not param.empty:
+                        definitive_args[name] = param.default
+                    else:
+                        raise ValueError(
+                            f"Missing parameter {name} for {func.__name__}"
+                        )
+                await func(wsocket, **definitive_args)
                 return wsocket
+            self.router.add_get(path, wrapper)
+            return wrapper
+        return decorator
+    
+    def sse(self, path: str) -> Callable: # pylint: disable=invalid-name
+        """Server-Sent Events decorator"""
+        def decorator(func: Callable) -> Callable:
+            @wraps(func)
+            async def wrapper(request: Request):
+                async with sse_response(request) as resp:
+                    args_to_apply = await inject_signature(request, signature(func).parameters.copy())
+                    definitive_args = {}
+                    for name, param in signature(func).parameters.items():
+                        if name in args_to_apply:
+                            definitive_args[name] = args_to_apply[name]
+                        elif param.default is not param.empty:
+                            definitive_args[name] = param.default
+                        else:
+                            raise ValueError(
+                                f"Missing parameter {name} for {func.__name__}"
+                            )
+                    await func(resp, **definitive_args)
+                    return resp
             self.router.add_get(path, wrapper)
             return wrapper
         return decorator
     
     
     def use(self, prefix, api):
-        self.add_subapp(prefix,api)
+        if not isinstance(api, Api):
+            raise TypeError(str(api) + " is not an Api instance")
+        if not prefix.startswith("/"):
+            prefix = "/" + prefix
+        if not prefix.endswith("/"):
+            prefix += "/"
+        api.prefix = prefix
+        self.add_subapp(prefix, api)
         self.openapi["paths"].update(api.openapi["paths"])
         self.openapi["components"]["schemas"].update(
             api.openapi["components"]["schemas"]
         )
-        return self
-    
-    
+        self.openapi["components"]["securitySchemes"].update(
+            api.openapi["components"]["securitySchemes"]
+        )
+        self.openapi["components"]["responses"].update(
+            api.openapi["components"]["responses"]
+        )
+        
     def static(self):
         import os
         os.makedirs("static", exist_ok=True)
