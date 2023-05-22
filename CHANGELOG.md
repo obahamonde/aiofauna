@@ -8,7 +8,7 @@
 - Not properly deleting instances in some cases.
 - Not showing docs for FileField.
 
-$$
+## [0.1.16] - Public Release
 
-
-$$
+- Public release of aiofauna.
+- See the docs [aiofauna](https://aiofauna.smartpro.solutions)
