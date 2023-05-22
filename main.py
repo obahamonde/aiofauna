@@ -52,3 +52,7 @@ async def startup(_) -> None:
     """Runs on startup"""
     _models = [o for n, o in inspect.getmembers(models) if inspect.isclass(o) and issubclass(o, FaunaModel) and o != FaunaModel]
     await asyncio.gather(*[m.provision() for m in _models])
+    
+    
+if __name__ == "__main__":
+    app.run()

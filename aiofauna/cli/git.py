@@ -33,7 +33,3 @@ def main():
     git_add()
     git_commit()
     git_push()
-    
-if __name__ == '__main__':
-    main()
-    

@@ -101,7 +101,7 @@ The results were unexpected, `aiofauna` was the fastest as twice as its follower
 
 ## Conclusion
 
-> `"aiofauna` is the fastest python web framework, it is faster than    `fastapi` and `flask` and it is also faster than `nodejs` and `go` frameworks."
+> `"aiofauna` is the fastest python web framework, it is faster than    `fastapi` and `flask` and it is also faster than `nodejs` and `go` frameworks.""
 
 > Said no one ever.
 

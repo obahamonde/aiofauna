@@ -27,6 +27,4 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-build = 'scripts.build:main'
-push = 'scripts.git:main'
-kill = 'scripts.kill:main'
+aiofauna = 'aiofauna.cli:main'

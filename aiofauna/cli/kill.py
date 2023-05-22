@@ -24,6 +24,3 @@ def kill_process_on_port(port):
 def main():
     port = input("Enter port number to kill process: ")
     kill_process_on_port(port)
-    
-if __name__ == "__main__":
-    main()

@@ -7,37 +7,33 @@
 
 from __future__ import annotations
 
-
-import logging
-
-import os
-
 import asyncio
-
-
-from typing import List, Optional, Any, Callable, Union
+import logging
+import os
+from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
 try:
     import query as q  # type: ignore
 except ImportError:
     from . import query as q
 
-from .errors import FaunaException
-
-
-from .json import JSONModel  # pylint: disable=no-name-in-module
-
-
-from .client import AsyncFaunaClient
-
-
+from dotenv import load_dotenv
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-
-from dotenv import load_dotenv
-
+from .client import AsyncFaunaClient
+from .errors import FaunaException
+from .json import JSONModel  # pylint: disable=no-name-in-module
 
 load_dotenv()
+
+
+T = TypeVar("T")
+
+Model = Type[T]
+
+ModelOrNone = Optional[Model]
+
+ModelList = List[Model]
 
 
 class Fql(BaseModel):
@@ -46,6 +42,7 @@ class Fql(BaseModel):
     operator: str
 
     value: Any
+
 
 
 class AsyncFaunaModel(JSONModel):
@@ -73,7 +70,7 @@ class AsyncFaunaModel(JSONModel):
                 continue
 
     @classmethod
-    def client(cls):
+    def client(cls)-> AsyncFaunaClient:
         fauna_secret = os.getenv("FAUNA_SECRET")
 
         return AsyncFaunaClient(secret=fauna_secret)
@@ -83,7 +80,7 @@ class AsyncFaunaModel(JSONModel):
         return cls.client().query
 
     @classmethod
-    async def provision(cls):
+    async def provision(cls)-> bool:
         _q = cls.q()
         try:
             if not await _q(q.exists(q.collection(cls.__name__.lower()))):
@@ -147,12 +144,13 @@ class AsyncFaunaModel(JSONModel):
             return True
 
         except( FaunaException, KeyError, TypeError) as exc:
+            
             logging.error(exc)
 
             return False
 
     @classmethod
-    async def exists(cls, ref: str):
+    async def exists(cls, ref: str)-> bool:
         """
 
 
@@ -190,7 +188,7 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def find_unique(cls, field: str, value: Any):
+    async def find_unique(cls, field: str, value: Any)->ModelOrNone:
         """
 
 
@@ -241,7 +239,7 @@ class AsyncFaunaModel(JSONModel):
             return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
-    async def find_many(cls, field: str, value: Any):
+    async def find_many(cls, field: str, value: Any)->ModelList:
         """
 
 
@@ -309,7 +307,7 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def get(cls, ref: str):
+    async def get(cls, ref: str)->ModelOrNone:
         """
 
 
@@ -352,7 +350,7 @@ class AsyncFaunaModel(JSONModel):
             return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
-    async def all(cls, limit: int = 100, offset: int = 0):
+    async def all(cls, limit: int = 100, offset: int = 0)->ModelList:
         """
         Returns all documents of a collection.
 
@@ -404,7 +402,7 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def delete_unique(cls, field: str, value: Any):
+    async def delete_unique(cls, field: str, value: Any)->bool:
         """
 
 
@@ -454,7 +452,7 @@ class AsyncFaunaModel(JSONModel):
             return False
 
     @classmethod
-    async def delete(cls, ref: str):
+    async def delete(cls, ref: str)->bool:
         """Delete a document by id"""
 
         try:
@@ -467,7 +465,7 @@ class AsyncFaunaModel(JSONModel):
 
             return False
 
-    async def create(self):
+    async def create(self)->ModelOrNone:
         """
 
 
@@ -521,7 +519,7 @@ class AsyncFaunaModel(JSONModel):
             return None  # type: ignore # pylint: disable=unreachable
 
     @classmethod
-    async def query(cls, query: str):
+    async def query(cls, query: str)->ModelList:
         """
 
 
@@ -560,7 +558,11 @@ class AsyncFaunaModel(JSONModel):
             return []
 
     @classmethod
-    async def update(cls, ref: str, **kwargs):
+    async def update(cls, ref: str, **kwargs)->ModelOrNone:
+        """
+        Updates a document in FaunaDB.
+        """
+                
         try:
             instance = await cls.get(ref)
             if isinstance(instance, cls):
@@ -583,7 +585,7 @@ class AsyncFaunaModel(JSONModel):
             logging.error(exc)
             raise ValueError(f"Field {ref} not found")
 
-    async def save(self):
+    async def save(self)->ModelOrNone:
         """
 
 
@@ -606,7 +608,7 @@ class AsyncFaunaModel(JSONModel):
         return await self.create()
 
     @classmethod
-    def gen_ts(cls):
+    def gen_ts(cls)->str:
         """Health check endpoint"""
         schema = cls.schema()
         ts_config = {}
@@ -701,9 +703,10 @@ class AsyncFaunaModel(JSONModel):
         ts_type = f"type {cls.__name__} = {ts_config}"
 
         return ts_type.replace("'", "")
-
+    
+    
     @classmethod
-    def gen_store(cls):
+    def gen_store(cls)->str:
         return f"""
         import {cls.__name__} from '~/types/{cls.__name__.lower()}'
         import {{ defineStore, acceptHMRUpdate }} from 'pinia'
@@ -800,3 +803,6 @@ class AsyncFaunaModel(JSONModel):
             import.meta.hot.accept(acceptHMRUpdate({cls.__name__}Store, import.meta.hot))
         }}
         """
+
+
+    
