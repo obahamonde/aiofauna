@@ -1,9 +1,7 @@
 import inspect
 
 import models
-from aiofauna import Api, render_template
-from aiofauna.asgi import aioasgi
-from aiofauna.helpers import markdown_it
+from aiofauna import Api, markdown_it, render_template
 from mixins import *
 
 
@@ -53,6 +51,6 @@ async def startup(_) -> None:
     _models = [o for n, o in inspect.getmembers(models) if inspect.isclass(o) and issubclass(o, FaunaModel) and o != FaunaModel]
     await asyncio.gather(*[m.provision() for m in _models])
     
-    
+   
 if __name__ == "__main__":
-    app.run()
+    app.run(port=8080)

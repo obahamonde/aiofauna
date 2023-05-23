@@ -591,15 +591,18 @@ class Api(Application):
                     args_to_apply = await inject_signature(request, signature(func).parameters.copy())
                     definitive_args = {}
                     for name, param in signature(func).parameters.items():
-                        if name in args_to_apply:
+                        if param.annotation == EventSourceResponse:
+                            definitive_args[name] = resp
+                        elif name in args_to_apply:
                             definitive_args[name] = args_to_apply[name]
+                            args_to_apply.pop(name)
                         elif param.default is not param.empty:
                             definitive_args[name] = param.default
                         else:
                             raise ValueError(
                                 f"Missing parameter {name} for {func.__name__}"
                             )
-                    await func(resp, **definitive_args)
+                    await func(**definitive_args)
                     return resp
             self.router.add_get(path, wrapper)
             return wrapper

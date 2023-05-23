@@ -9,8 +9,7 @@ from multidict import MultiDict
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseSettings, Field
 
-from aiofauna import Api, HTTPClient, Request
-from aiofauna.api import FileField
+from aiofauna import Api, FileField, HTTPClient, Request
 from models import *
 
 load_dotenv()
@@ -59,11 +58,7 @@ async def sse_handler(sse:EventSourceResponse,ref:str):
         state[ref] = [sse]
     while True:
         await asyncio.sleep(1)
-        if sse.task and sse.task.done():
-            break
-    state[ref].remove(sse)
-    return sse
-    
+        
 @app.post("/api/messages")
 async def post_message(msg:Message):
     message = await msg.create()
