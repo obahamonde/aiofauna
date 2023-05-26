@@ -1,14 +1,21 @@
 """
 Flaskaesque helper functions for aiohttp.
 """
+import json
 import re
-from markdown import markdown  # pylint: disable=import-error
+from functools import singledispatch
+from typing import Any, Dict, List, Optional, Union
+
 from aiohttp import web
-from aiofauna import Response
+from aiohttp.web import Response
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pygments import highlight
 from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
 from pygments.lexers import get_lexer_by_name
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+from markdown import markdown  # pylint: disable=import-error
+
+from .odm import BaseModel, FaunaModel
 
 MD_FMT_CDN = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">"""  # pylint: disable=line-too-long
 CODE_FMT_CDN = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pygments-css@1.0.0/github.min.css">"""  # pylint: disable=line-too-long
@@ -124,3 +131,73 @@ def render_template(template_name, **kwargs):
     """
     template = jinja_env.get_template(template_name).render(**kwargs)
     return web.Response(body=template.encode(), content_type="text/html")
+
+
+@singledispatch
+def do_response(response: Any) -> Response:
+    """
+    Flask-esque function to make a response from a function.
+    """
+    return response
+
+
+@do_response.register(BaseModel)
+def _(response: BaseModel) -> Response:
+    return Response(
+        status=200, body=json.dumps(response.dict()), content_type="application/json"
+    )
+
+
+@do_response.register(FaunaModel)
+def _(response: FaunaModel) -> Response:
+    response.ref = str(response.ref)
+    return Response(
+        status=200, body=json.dumps(response.dict()), content_type="application/json"
+    )
+
+
+@do_response.register(dict)
+def _(response: dict) -> Response:
+    return Response(
+        status=200, body=json.dumps(response), content_type="application/json"
+    )
+
+
+@do_response.register(str)
+def _(response: str) -> Response:
+    return Response(status=200, body=response.encode(), content_type="text/plain")
+
+
+@do_response.register(bytes)
+def _(response: bytes) -> Response:
+    return Response(status=200, body=response, content_type="application/octet-stream")
+
+
+@do_response.register(int)
+def _(response: int) -> Response:
+    return Response(status=200, body=str(response).encode(), content_type="text/plain")
+
+
+@do_response.register(float)
+def _(response: float) -> Response:
+    return Response(status=200, body=str(response).encode(), content_type="text/plain")
+
+
+@do_response.register(bool)
+def _(response: bool) -> Response:
+    return Response(status=200, body=str(response).encode(), content_type="text/plain")
+
+
+@do_response.register(list)
+def _(response: List[Union[FaunaModel, BaseModel, dict, str, int, float]]) -> Response:
+    processed_response = []
+
+    for item in response:
+        if issubclass(item.__class__, BaseModel):
+            processed_response.append(item.dict())  # type: ignore
+        else:
+            processed_response.append(item)
+
+    return Response(
+        status=200, body=json.dumps(processed_response), content_type="application/json"
+    )

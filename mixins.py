@@ -16,68 +16,80 @@ load_dotenv()
 
 # Settings
 
+
 class Env(BaseSettings):
     """Environment Variables"""
+
     class Config(BaseConfig):
         env_file = ".env"
         env_file_encoding = "utf-8"
-    FAUNA_SECRET:str=Field(..., env="FAUNA_SECRET")
-    AUTH0_DOMAIN:str=Field(..., env="AUTH0_DOMAIN")
-    AWS_ACCESS_KEY_ID:str=Field(..., env="AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY:str=Field(..., env="AWS_SECRET_ACCESS_KEY")
-    AWS_S3_BUCKET:str=Field(..., env="AWS_S3_BUCKET")
-    AWS_S3_ENDPOINT:str=Field(..., env="AWS_S3_ENDPOINT")
-    REDIS_PASSWORD:str=Field(..., env="REDIS_PASSWORD")
-    REDIS_HOST:str=Field(..., env="REDIS_HOST")
-    REDIS_PORT:int=Field(..., env="REDIS_PORT")
 
+    FAUNA_SECRET: str = Field(..., env="FAUNA_SECRET")
+    AUTH0_DOMAIN: str = Field(..., env="AUTH0_DOMAIN")
+    AWS_ACCESS_KEY_ID: str = Field(..., env="AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY: str = Field(..., env="AWS_SECRET_ACCESS_KEY")
+    AWS_S3_BUCKET: str = Field(..., env="AWS_S3_BUCKET")
+    AWS_S3_ENDPOINT: str = Field(..., env="AWS_S3_ENDPOINT")
+    REDIS_PASSWORD: str = Field(..., env="REDIS_PASSWORD")
+    REDIS_HOST: str = Field(..., env="REDIS_HOST")
+    REDIS_PORT: int = Field(..., env="REDIS_PORT")
 
 
 # Singletons
 
-session = Session() # boto3 session
+session = Session()  # boto3 session
 
-client = HTTPClient() # http client
-        
-env = Env() # environment variables
+client = HTTPClient()  # http client
 
-app = Api() # application instance
+env = Env()  # environment variables
 
-state:D[str,L[EventSourceResponse]]=MultiDict() # state
+app = Api()  # application instance
+
+state: D[str, L[EventSourceResponse]] = MultiDict()  # state
 
 # Mixins
 
-@app.sse("/api/sse")
-async def sse_handler(sse:EventSourceResponse,ref:str):
-    """
-    Server Sent Events Endpoint
-    """
-    if ref in state:
-        state[ref].append(sse)
-    else:
-        state[ref] = [sse]
-    while True:
-        await asyncio.sleep(1)
-        
+
+@app.get("/api/sse")
+async def sse_handler(request: Request) -> EventSourceResponse:
+    async with sse_response(request) as resp:
+        await resp.prepare(request)
+        params = dict(request.query)
+        if "ref" not in params:
+            raise Exception("Missing ref")
+        ref = params["ref"]
+        if ref in state:
+            state[ref].append(resp)
+        else:
+            state[ref] = [resp]
+        while True:
+            await asyncio.sleep(1)
+    return resp
+
+
 @app.post("/api/messages")
-async def post_message(msg:Message):
+async def post_message(msg: Message):
     message = await msg.create()
     assert isinstance(message, Message)
     tasks = []
     for k, v in state.items():
         if k == message.conversation:
-            tasks.extend([v_.send(message.json()) for v_ in v]) 
+            tasks.extend([v_.send(message.json()) for v_ in v])
     await asyncio.gather(*tasks)
     conversation = await Conversation.get(message.conversation)
     assert isinstance(conversation, Conversation)
-    conversation.messages.append(message.dict())
+    assert isinstance(conversation.messages, list)
+    assert isinstance(message, Message)
+    conversation.messages.append(message)
     instance = await conversation.save()
+    assert isinstance(instance, Conversation)
     assert isinstance(instance.ref, str)
-    response = await fetch_conversation_details(instance.ref)
-    return response
+    instance = await fetch_conversation_details(instance.ref)
+    return instance
+
 
 @app.post("/api/upload")
-async def upload_handler(request:Request):
+async def upload_handler(request: Request):
     """
     Upload Endpoint
     """
@@ -90,19 +102,39 @@ async def upload_handler(request:Request):
         size = int(size)
         file = data["file"]
         if isinstance(file, FileField):
-            async with session.client(service_name="s3", 
-            aws_access_key_id=env.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY,
-            endpoint_url=env.AWS_S3_ENDPOINT,
-            config=botocore.config.Config(signature_version="s3v4")) as s3client: # type: ignore
-                key_ = f"{key}/{file.filename}" # type: ignore
-                await s3client.put_object(Bucket=env.AWS_S3_BUCKET, Key=key_, Body=file.file.read(), ContentType=file.content_type, ACL="public-read")
-                url = await s3client.generate_presigned_url("get_object", Params={"Bucket": env.AWS_S3_BUCKET, "Key": key_}, ExpiresIn=3600*7*24)
-                return await Upload(user=user,key=key_, name=file.filename, size=size, type=file.content_type, url=url).save()     
+            async with session.client(
+                service_name="s3",
+                aws_access_key_id=env.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY,
+                endpoint_url=env.AWS_S3_ENDPOINT,
+                config=botocore.config.Config(signature_version="s3v4"),
+            ) as s3client:  # type: ignore
+                key_ = f"{key}/{file.filename}"  # type: ignore
+                await s3client.put_object(
+                    Bucket=env.AWS_S3_BUCKET,
+                    Key=key_,
+                    Body=file.file.read(),
+                    ContentType=file.content_type,
+                    ACL="public-read",
+                )
+                url = await s3client.generate_presigned_url(
+                    "get_object",
+                    Params={"Bucket": env.AWS_S3_BUCKET, "Key": key_},
+                    ExpiresIn=3600 * 7 * 24,
+                )
+                return await Upload(
+                    user=user,
+                    key=key_,
+                    name=file.filename,
+                    size=size,
+                    type=file.content_type,
+                    url=url,
+                ).save()
     return {"message": "Invalid request", "status": "error"}
 
+
 async def fetch_conversation_details(conversation_id: str):
-    '''Fetches all messages for a conversation'''
+    """Fetches all messages for a conversation"""
     conversation = await Conversation.get(conversation_id)
     assert isinstance(conversation, Conversation)
     assert isinstance(conversation.messages, list)
@@ -116,30 +148,31 @@ async def fetch_conversation_details(conversation_id: str):
         "name": conversation.name,
         "owner": owner.dict(),
         "guest": guest.dict(),
-        "messages": [m.dict() for m in conversation.messages]
+        "messages": [m.dict() for m in conversation.messages],
     }
+
 
 @app.get("/api/conversations/{user_id}")
 async def fetch_user_conversations(user_id: str):
-    '''Fetches all conversations for a user'''
+    """Fetches all conversations for a user"""
     results = []
     user = await User.get(user_id)
     assert isinstance(user, User)
-    instances = await Conversation.find_many("owner", user_id) + await Conversation.find_many("guest", user_id)
+    instances = await Conversation.find_many(
+        "owner", user_id
+    ) + await Conversation.find_many("guest", user_id)
     if len(instances) == 0:
-        instances.append(await Conversation(
-            owner=user_id,  
-            guest=user_id
-        ).save())
+        instances.append(await Conversation(owner=user_id, guest=user_id).save())
     for instance in instances:
         assert isinstance(instance, Conversation)
         assert isinstance(instance.ref, str)
         results.append(fetch_conversation_details(instance.ref))
     return await asyncio.gather(*results)
 
+
 @app.get("/api/new_conversation/{user_id}")
 async def create_new_conversation(user_id: str, contact: str):
-    '''Creates a new conversation'''
+    """Creates a new conversation"""
     user = await User.get(user_id)
     owner = await User.get(contact)
     assert isinstance(user, User)
@@ -148,10 +181,11 @@ async def create_new_conversation(user_id: str, contact: str):
     assert isinstance(instance, Conversation)
     assert isinstance(instance.ref, str)
     return await fetch_conversation_details(instance.ref)
-    
+
+
 @app.post("/api/conversations/{conversation_id}")
 async def post_message_to_conversation(conversation_id: str, msg: Message):
-    '''Posts a message to a conversation'''
+    """Posts a message to a conversation"""
     message = await msg.save()
     assert isinstance(message, Message)
     instance = await Conversation.get(conversation_id)
@@ -163,9 +197,10 @@ async def post_message_to_conversation(conversation_id: str, msg: Message):
     assert isinstance(instance.ref, str)
     return await fetch_conversation_details(instance.ref)
 
+
 @app.get("/api/online/{user_id}")
 async def is_user_online(user_id: str):
-    '''Checks if a user is online'''
+    """Checks if a user is online"""
     for k, v in state.items():
         instance = await Conversation.get(k)
         assert isinstance(instance, Conversation)
@@ -176,7 +211,7 @@ async def is_user_online(user_id: str):
 
 @app.get("/api/messages/{conversation_id}")
 async def fetch_messages(conversation_id: str):
-    '''Fetches all messages for a conversation'''
+    """Fetches all messages for a conversation"""
     messages = await Message.find_many("conversation", conversation_id)
     assert isinstance(messages, list)
     return [m.dict() for m in messages]

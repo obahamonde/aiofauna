@@ -955,7 +955,7 @@ def _fn(dct):
 
 
 def _params(main_params, optional_params):
-    for (key, val) in optional_params.items():
+    for key, val in optional_params.items():
         if val is not None:
             main_params[key] = val
     return _fn(main_params)

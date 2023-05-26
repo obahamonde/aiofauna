@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import List
-from pydantic import Field, BaseModel  # pylint: disable=no-name-in-module
+
+from typing import Dict, List
+
+from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
 
 
 class Graph(BaseModel):
@@ -88,3 +90,15 @@ class Graph(BaseModel):
             if node in edge:
                 Graph._topological_sort_helper(edge[1], visited, edges, sorted_nodes)
         sorted_nodes.append(node)
+
+
+class UploadFile(BaseModel):
+    """
+    File Upload Model
+    """
+
+    filename: str
+    content_type: str
+    data: bytes
+    size: int
+    headers: Dict[str, str]

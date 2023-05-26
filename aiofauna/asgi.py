@@ -1,95 +1,102 @@
-"""ASGI Middleware"""
+import asyncio
 import io
 import typing
+from typing import Awaitable, Callable, Dict, Literal, MutableMapping, Tuple
 
-from aiohttp.web import Request
+from aiohttp import web
+from aiohttp.http_parser import RawRequestMessage
+from aiohttp.payload import StringPayload
+from multidict import CIMultiDict, CIMultiDictProxy, MultiDict
+from yarl import URL
 
-from aiofauna.api import Api
+from aiofauna import Api
 
-Scope = typing.MutableMapping[str, typing.Any]
-Message = typing.MutableMapping[str, typing.Any]
+Scope = MutableMapping[str, typing.Any]
+Message = MutableMapping[str, typing.Any]
+Receive = Callable[[], Awaitable[Message]]
+Send = Callable[[Message], Awaitable[None]]
 
-Receive = typing.Callable[[], typing.Awaitable[Message]]
-Send = typing.Callable[[Message], typing.Awaitable[None]]
+ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 
-ASGIApp = typing.Callable[[Scope, Receive, Send], typing.Awaitable[None]]
-  
-    
-def aioasgi(app: Api) -> ASGIApp:
-    async def asgi(scope: Scope, receive: Receive, send: Send) -> None:
-        nonlocal app
+
+class ASGIApi(Api):
+    """
+    An ASGI-compatible API.
+
+    Currently only supports HTTP and is compatible with ASGI 2.0.
+
+    Tested with:
+    `uvicorn`
+    `daphne`[TODO]
+
+    """
+
+    async def asgi(self, scope: Scope, _, send: Send) -> None:
+        """ASGI Wrapper."""
+
         if scope["type"] != "http":
             raise RuntimeError("Only HTTP is supported")
 
-        method = scope["method"]
-        path = scope["path"]
-        query_string = scope.get("query_string", b"").decode()
-        headers = [[key.decode(), value.decode()] for key, value in scope["headers"]]
-        body = b""
+        raw_headers: Tuple[Tuple[bytes, bytes], ...] = scope["headers"]
+        headers: Dict[str, str] = {}
+        for k, v in raw_headers:
+            headers[k.decode().lower()] = v.decode()
 
-        content_length = int(scope.get("content_length", 0))
-
-        while content_length:
-            message = await receive()
-            _body = message.get("body", b"")
-            body += _body
-            content_length -= len(_body)
-
-        request = Request(
-            _method=method,
-            path=path,
-            query_string=query_string,
-            headers=headers,
-            body=body,
+        message = RawRequestMessage(
+            method=scope["method"],
+            path=scope["path"],
+            version=scope["http_version"],
+            headers=CIMultiDictProxy(CIMultiDict(MultiDict(headers))),
+            raw_headers=raw_headers,
+            should_close=True,
+            compression=None,
+            upgrade=False,
+            chunked=True,
+            url=URL(scope["path"]),
         )
 
-        response = await app._handle(request)  # pylint: disable=protected-access
+        class _tranport:
+            scheme = scope["scheme"]
 
-        body_length = response.body_length
+            def get_extra_info(
+                self, info: Literal["sslcontext"]
+            ):  # pylint: disable=unused-argument
+                """Mock method to match `aiohttp.web.BaseRequestTransport` contract."""
+                return None
 
-        response_body = b""
+        class _proto(web.RequestHandler):
+            http_version = scope["http_version"]
+            transport = _tranport()
 
-        while body_length:
-            if response.chunked:
-                writer = response._payload_writer  # pylint: disable=protected-access
-                if writer is None:
-                    response_body = (
-                        response._content_dict
-                    )  # pylint: disable=protected-access
-                    break
-                buffer_size = writer.buffer_size
-                with io.BytesIO() as buffer:
-                    while buffer_size:
-                        await writer.drain()
-                        chunk = response._body  # pylint: disable=protected-access
-                        if not chunk:  # pylint: disable=protected-access
-                            break
-                        if isinstance(chunk, bytes):
-                            buffer.write(chunk)
-                            buffer_size -= len(chunk)
-                        elif isinstance(chunk, str):
-                            buffer.write(chunk.encode())
-                            buffer_size -= len(chunk.encode())
-                        else:
-                            raise RuntimeError("Invalid chunk type")
-                    response_body += buffer.getvalue()
-                    body_length -= len(response_body)
-            else:
-                response_body = (
-                    response._content_dict
-                )  # pylint: disable=protected-access
-                break
+        request = web.Request(
+            message=message,
+            payload=io.BytesIO(),
+            protocol=_proto,
+            payload_writer=None,
+            task=None,
+            loop=asyncio.get_running_loop(),
+        )
+
+        response = await self._handle(request)
+
+        body = response._body
+        if isinstance(body, StringPayload):
+            body = body._value
+        if isinstance(body, str):
+            body = body.encode()
 
         await send(
             {
                 "type": "http.response.start",
                 "status": response.status,
-                "headers": response.headers,
+                "headers": [
+                    (k.encode(), v.encode()) for k, v in response.headers.items()
+                ],
             }
         )
 
-        await send({"type": "http.response.body", "body": response_body})
+        await send({"type": "http.response.body", "body": body, "more_body": False})
 
-    return asgi
-
-
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """ASGI callable."""
+        return await self.asgi(scope, receive, send)

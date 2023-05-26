@@ -122,8 +122,13 @@ class AsyncFaunaClient(object):
 
                     return data["resource"]
 
-                except( FaunaException, ValueError, KeyError, TypeError, Exception) as exc:
-
+                except (
+                    FaunaException,
+                    ValueError,
+                    KeyError,
+                    TypeError,
+                    Exception,
+                ) as exc:
                     return None
 
     async def stream(self, expr: Expr) -> AG[A, None]:
