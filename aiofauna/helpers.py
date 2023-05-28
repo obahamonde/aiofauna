@@ -10,11 +10,13 @@ from aiohttp import web
 from aiohttp.web import Response
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pygments import highlight
-from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
+from pygments.formatters import \
+    HtmlFormatter  # pylint: disable=no-name-in-module
 from pygments.lexers import get_lexer_by_name
 
 from markdown import markdown  # pylint: disable=import-error
 
+from .exceptions import HttpException
 from .odm import BaseModel, FaunaModel
 
 MD_FMT_CDN = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">"""  # pylint: disable=line-too-long
@@ -144,7 +146,9 @@ def do_response(response: Any) -> Response:
 @do_response.register(BaseModel)
 def _(response: BaseModel) -> Response:
     return Response(
-        status=200, body=json.dumps(response.dict()), content_type="application/json"
+        status=200, body=response.json(
+            exclude_none=True, exclude_unset=True
+            ), content_type="application/json"
     )
 
 
@@ -152,7 +156,9 @@ def _(response: BaseModel) -> Response:
 def _(response: FaunaModel) -> Response:
     response.ref = str(response.ref)
     return Response(
-        status=200, body=json.dumps(response.dict()), content_type="application/json"
+        status=200, body=response.json(
+            exclude_none=True, exclude_unset=True
+            ), content_type="application/json"
     )
 
 
@@ -200,4 +206,10 @@ def _(response: List[Union[FaunaModel, BaseModel, dict, str, int, float]]) -> Re
 
     return Response(
         status=200, body=json.dumps(processed_response), content_type="application/json"
+    )
+
+@do_response.register(HttpException)
+def _(response: HttpException) -> Response:
+    return Response(
+        status=response.status_code, body=json.dumps(response.json()), content_type="application/json"
     )

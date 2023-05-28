@@ -1,16 +1,18 @@
 """API Components"""
 import asyncio
+from typing import Optional
 
-import botocore
 from aioboto3 import Session
 from aiohttp_sse import EventSourceResponse, sse_response
+from botocore.config import Config
 from dotenv import load_dotenv
 from multidict import MultiDict
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseSettings, Field
 
-from aiofauna import Api, FileField, HTTPClient, Request
-from models import *
+from aiofauna import ASGIApi as Api
+from aiofauna import FileField, HTTPClient, Request
+from models import Conversation, Message, Upload, User
 
 load_dotenv()
 
@@ -19,6 +21,8 @@ load_dotenv()
 
 class Env(BaseSettings):
     """Environment Variables"""
+
+    env_str: Optional[str]
 
     class Config(BaseConfig):
         env_file = ".env"
@@ -34,6 +38,22 @@ class Env(BaseSettings):
     REDIS_HOST: str = Field(..., env="REDIS_HOST")
     REDIS_PORT: int = Field(..., env="REDIS_PORT")
 
+    def __init__(self, *args, **kwargs):
+        """Constructs the .env file string"""
+        super().__init__(*args, **kwargs)
+        _dct = self.dict()
+        _str = "\n".join([f"{k}={v}" for k, v in _dct.items()])
+        self.env_str = _str
+
+    def __str__(self):
+        return self.env_str
+
+    def __repr__(self):
+        return self.env_str
+
+    def __iter__(self):
+        return iter(self.dict().items())
+
 
 # Singletons
 
@@ -45,7 +65,7 @@ env = Env()  # environment variables
 
 app = Api()  # application instance
 
-state: D[str, L[EventSourceResponse]] = MultiDict()  # state
+state = MultiDict()  # state
 
 # Mixins
 
@@ -56,15 +76,16 @@ async def sse_handler(request: Request) -> EventSourceResponse:
         await resp.prepare(request)
         params = dict(request.query)
         if "ref" not in params:
-            raise Exception("Missing ref")
-        ref = params["ref"]
-        if ref in state:
-            state[ref].append(resp)
-        else:
-            state[ref] = [resp]
+            return resp
         while True:
-            await asyncio.sleep(1)
-    return resp
+            ref = params["ref"]
+            if ref in state:
+                state[ref].append(resp)
+            else:
+                state[ref] = [resp]
+            while True:
+                await asyncio.sleep(1)
+        return resp
 
 
 @app.post("/api/messages")
@@ -107,7 +128,7 @@ async def upload_handler(request: Request):
                 aws_access_key_id=env.AWS_ACCESS_KEY_ID,
                 aws_secret_access_key=env.AWS_SECRET_ACCESS_KEY,
                 endpoint_url=env.AWS_S3_ENDPOINT,
-                config=botocore.config.Config(signature_version="s3v4"),
+                config=Config(signature_version="s3v4"),
             ) as s3client:  # type: ignore
                 key_ = f"{key}/{file.filename}"  # type: ignore
                 await s3client.put_object(

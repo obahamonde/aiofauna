@@ -1,18 +1,17 @@
 import asyncio
 import io
-import typing
-from typing import Awaitable, Callable, Dict, Literal, MutableMapping, Tuple
+from typing import Any, Awaitable, Callable, Literal, MutableMapping, Tuple
 
 from aiohttp import web
 from aiohttp.http_parser import RawRequestMessage
 from aiohttp.payload import StringPayload
-from multidict import CIMultiDict, CIMultiDictProxy, MultiDict
+from multidict import CIMultiDict, CIMultiDictProxy
 from yarl import URL
 
 from aiofauna import Api
 
-Scope = MutableMapping[str, typing.Any]
-Message = MutableMapping[str, typing.Any]
+Scope = MutableMapping[str, Any]
+Message = MutableMapping[str, Any]
 Receive = Callable[[], Awaitable[Message]]
 Send = Callable[[Message], Awaitable[None]]
 
@@ -38,7 +37,7 @@ class ASGIApi(Api):
             raise RuntimeError("Only HTTP is supported")
 
         raw_headers: Tuple[Tuple[bytes, bytes], ...] = scope["headers"]
-        headers: Dict[str, str] = {}
+        headers = CIMultiDict()
         for k, v in raw_headers:
             headers[k.decode().lower()] = v.decode()
 
@@ -46,7 +45,7 @@ class ASGIApi(Api):
             method=scope["method"],
             path=scope["path"],
             version=scope["http_version"],
-            headers=CIMultiDictProxy(CIMultiDict(MultiDict(headers))),
+            headers=CIMultiDictProxy(headers),
             raw_headers=raw_headers,
             should_close=True,
             compression=None,

@@ -3,6 +3,7 @@ import functools
 import os
 import pathlib
 import signal
+import socket
 import subprocess
 import sys
 import traceback
@@ -19,8 +20,10 @@ from aiohttp_devtools.runserver import runserver as _runserver
 from aiohttp_devtools.runserver import serve_static
 
 from .build import main as build_main
+from .curl import main as curl_main
 from .git import main as git_main
 from .kill import main as kill_main
+from .vue import main as vue_main
 
 _dir_existing = click.Path(exists=True, dir_okay=True, file_okay=False)
 _file_dir_existing = click.Path(exists=True, dir_okay=True, file_okay=True)
@@ -55,6 +58,13 @@ app_factory_help = (
 )
 port_help = "Port to serve app from, default 8000. env variable: AIO_PORT"
 aux_port_help = "Port to serve auxiliary app (reload and static) on, default port + 1. env variable: AIO_AUX_PORT"
+
+def gen_port() -> int:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("", 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
 
 
 @click.group()
@@ -125,7 +135,7 @@ def main(ctx: click.Context, verbose: bool) -> None:
     envvar="AIO_AUX_PORT",
     type=click.INT,
     help=aux_port_help,
-    default=8081,
+    default=gen_port(),
 )
 @click.option("-v", "--verbose", is_flag=True, help=verbose_help, default=True)
 @click.argument("project_args", nargs=-1)
@@ -158,10 +168,8 @@ def prod():
     """
     Run a production server for aiofauna/aiohttp apps.
     """
-    from main import app
-
-    app.run(host="0.0.0.0", port=8080)
-
+    subprocess.check_output(["python", "main.py"])
+    
 
 @main.command()
 def build():
@@ -185,3 +193,17 @@ def kill():
     Kill port
     """
     kill_main()
+    
+@main.command()
+def curl():
+    """
+    Run curl
+    """
+    curl_main()
+    
+@main.command()
+def components():
+    """
+    Generate components
+    """
+    vue_main()

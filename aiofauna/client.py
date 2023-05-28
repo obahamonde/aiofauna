@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from .errors import FaunaException
 from .json import FaunaJSONEncoder
 from .objects import Expr
+from .datastructures import LazyProxy
 
 load_dotenv()
 
@@ -43,7 +44,7 @@ def to_json(obj: Expr) -> str:
     return FaunaJSONEncoder().encode(obj)
 
 
-class AsyncFaunaClient(object):
+class FaunaClient(LazyProxy):
     """
 
 
@@ -187,6 +188,10 @@ class AsyncFaunaClient(object):
 
                             else:
                                 yield line
+
+    async def __load__(self) -> ClientSession:
+        async with ClientSession() as session:
+            return session
 
 
 class HTTPClient:

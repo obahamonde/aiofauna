@@ -1,8 +1,10 @@
+import asyncio
 import inspect
 
 import models
-from aiofauna import Api, markdown_it, render_template
-from mixins import *
+from aiofauna import FaunaModel, markdown_it, render_template
+from mixins import app, client
+from models import Upload, User
 
 
 @app.get("/api/auth")
@@ -25,6 +27,7 @@ async def delete_upload(ref: str):
 @app.get("/api/upload")
 async def get_upload(user: str):
     """Fetch Uploaded files for a given user"""
+    
     return await Upload.find_many("user", user)
 
 

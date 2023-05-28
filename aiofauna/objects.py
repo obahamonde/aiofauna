@@ -3,7 +3,9 @@ Types used in queries and responses.
 See the `docs <https://app.fauna.com/documentation/reference/queryapi#simple-type>`__.
 """
 from datetime import datetime
+
 from iso8601 import parse_date
+
 from aiofauna.deprecated import deprecated
 from aiofauna.query import Expr
 
@@ -71,23 +73,27 @@ class Ref(Expr):
 
     def __str__(self):
         col = (
-            ", collection=%s" % self.value["collection"]
+            f", collection={self.value['collection']}"
             if "collection" in self.value
             else ""
         )
         db = (
-            ", database=%s" % self.value["database"] if "database" in self.value else ""
+            f", database={self.value.get('database')}"
+            if "database" in self.value
+            else ""
         )
         return "Ref(id=%s%s%s)" % (self.value["id"], col, db)
 
     def __repr__(self):
         col = (
-            ", collection=%s" % self.value["collection"]
+            f", collection={self.value['collection']}"
             if "collection" in self.value
             else ""
         )
         db = (
-            ", database=%r" % self.value["database"] if "database" in self.value else ""
+            f", database={self.value.get('database')}"
+            if "database" in self.value
+            else ""
         )
         return "Ref(id=%s%s%s)" % (self.value["id"], col, db)
 
@@ -137,7 +143,7 @@ class SetRef(Expr):
         return {"@set": self.value}
 
     def __repr__(self):
-        return "SetRef(%s)" % repr(self.value)
+        return f"SetRef({repr(self.value)})"
 
     def __eq__(self, other):
         return isinstance(other, SetRef) and self.value == other.value

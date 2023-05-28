@@ -149,7 +149,7 @@ class Api(Application):
         """On event handler"""
 
         def decorator(func):
-            if event not in ["startup", "shutdown"]:
+            if event not in ("startup", "shutdown"):
                 raise ValueError("Event must be startup or shutdown")
             elif event == "startup":
                 self.on_startup.append(func)

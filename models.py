@@ -1,14 +1,13 @@
 import asyncio
 from datetime import datetime
+from typing import Any as A
+from typing import Callable as C
+from typing import Dict as D
+from typing import List as L
+from typing import Optional as O
+from typing import Union as U
 
-from aiofauna import Any as A
-from aiofauna import BaseModel
-from aiofauna import Callable as C
-from aiofauna import Dict as D
-from aiofauna import FaunaModel, Field
-from aiofauna import List as L
-from aiofauna import Optional as O
-from aiofauna import Union as U
+from aiofauna import BaseModel, FaunaModel, Field
 from aiofauna.datastructures import UploadFile
 
 

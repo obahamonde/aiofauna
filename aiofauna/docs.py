@@ -182,41 +182,54 @@ html = """<!DOCTYPE html>
                 <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-16x16.png" sizes="16x16" />
                 <style>
                 html
-                {{
+                {
                     box-sizing: border-box;
                     overflow: -moz-scrollbars-vertical;
                     overflow-y: scroll;
-                }}
+                }
                 
                 .swagger-ui .topbar
-                {{
+                {
                     display: none;
-                }}
+                }
                     
                     
                 *,
                 *:before,
                 *:after
-                {{
+                {
                     box-sizing: inherit;
-                }}
+                }
 
                 body
-                {{
+                {
                     margin:0;
                     background: #fafafa;
-                }}
+                }
                 </style>
             </head>
 
             <body>
+                <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/mini.global.js"></script>
+                <nav class="bg-gray-800 text-white w-full">
+                    <div class="container mx-auto px-6 py-3">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+                            <div class="flex justify-between items-center">
+                                My API
+                            </div>
+                            <div class="flex mt-2 md:mt-0">
+                                <a class="block md:inline-block mt-0 text-gray-200 hover:text-white mr-4" href="/docs">Documentation</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
                 <div id="swagger-ui"></div>
 
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-bundle.js"> </script>
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-standalone-preset.js"> </script>
                 <script>
-                window.onload = function() {{
-                const ui = SwaggerUIBundle({{
+                window.onload = function() {
+                const ui = SwaggerUIBundle({
                     url: "/openapi.json",
                     dom_id: '#swagger-ui',
                     deepLinking: true,
@@ -228,9 +241,9 @@ html = """<!DOCTYPE html>
                     SwaggerUIBundle.plugins.DownloadUrl
                     ],
                     layout: "StandaloneLayout"
-                }})
+                })
                 window.ui = ui
-                }}
+                }
             </script>
             </body>
             </html>
