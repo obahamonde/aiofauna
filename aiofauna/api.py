@@ -254,3 +254,9 @@ class Api(Application):
 
     def run(self, host: str = "0.0.0.0", port=8080):
         run_app(self, host=host, port=port)
+
+
+    def add_middleware(self, middleware_class, options):
+        middleware = middleware_class(self, defaults=options)
+        for route in list(self.router.routes()):
+            middleware.add(route)

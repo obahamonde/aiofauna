@@ -120,10 +120,10 @@ title: AioFauna
 
 from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
-import aiohttp_cors as cors
 from aiohttp.web import Request, Response
 from aiohttp.web_request import FileField
 from aiohttp.web_ws import WebSocketResponse
+from aiohttp_cors import CorsConfig as CORSMiddleware
 from aiohttp_sse import EventSourceResponse
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseModel  # pylint: disable=no-name-in-module

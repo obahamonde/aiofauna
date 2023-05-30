@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.1.20"
+version = "0.1.22"
 description = ""
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 repository = "https://github.com/obahamonde/aiofauna"
@@ -18,6 +18,7 @@ Markdown = "^3.4.3"
 Pygments = "^2.15.1"
 pydantic = {extras = ["dotenv"], version = "^1.10.7"}
 Jinja2 = "^3.1.2"
+tomlkit = "^0.11.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.3.1"
@@ -28,3 +29,5 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 aiofauna = 'aiofauna.cli:main'
+aioprisma = 'aiofauna.prisma.cli:main'
+
