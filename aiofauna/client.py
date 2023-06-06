@@ -1,114 +1,35 @@
 import io
 import os
-from typing import Any as A
-from typing import AsyncGenerator as AG
-from typing import Dict as D
-from typing import Optional as O
+from typing import Any, AsyncGenerator, Dict, List, Literal, Optional, Union
 
 from aiohttp import ClientSession
 from dotenv import load_dotenv
 
-from .errors import FaunaException
-from .json import FaunaJSONEncoder
-from .objects import Expr
 from .datastructures import LazyProxy
+from .errors import FaunaException
+from .json import to_json
+from .objects import Expr
 
 load_dotenv()
 
+Method = Literal["GET", "POST", "PUT", "PATCH", "DELETE"]
+Json = Union[Dict[str, Any], List[Dict[str, Any]]]
+MaybeJson = Optional[Json]
+Headers = Dict[str, str]
+MaybeHeaders = Optional[Headers]
+CurrentSession = Optional[Union[ClientSession, LazyProxy[ClientSession]]]
 
-def to_json(obj: Expr) -> str:
-    """
-
-
-    `to_json`
-
-
-    Summary:
-
-
-        Serialize a FaunaDB query.
-
-
-    Args:
-
-
-        obj: A FaunaDB query.
-
-
-    Returns:
-
-
-        A JSON string representing the FaunaDB query.
-    """
-
-    return FaunaJSONEncoder().encode(obj)
-
-
-class FaunaClient(LazyProxy):
-    """
-
-
-    `AsyncFaunaClient`
-
-
-    Summary:
-
-
-        Introducing support for coroutines and async/await syntax for FaunaDB python driver.
-
-
-    Description:
-
-
-        Using `_Expr` data type as an input for `AsyncFaunaClient.query` method.
-
-
-        We can build fauna queries using `q` module methods and pass them to `AsyncFaunaClient.query` method
-
-
-        as an instance of `_Expr` data type to execute them.
-
-
-        The `_Expr` object will be serialized with `FaunaJSONEncoder` from json module so the FaunaDB API can understand it.
-
-
-        The response will be deserialized by the `FaunaModel` class from orm module.
-    """
-
+class FaunaClient(LazyProxy[ClientSession]):
     def __init__(self, secret=None):
         if secret is None:
             secret = os.getenv("FAUNA_SECRET")
-
         self.secret = secret
-
-    async def query(self, expr: Expr) -> A:
-        """
-
-
-        `AsyncFaunaClient.query`
-
-
-        Summary:
-
-
-            Execute a FaunaDB query.
-
-
-
-        Args:
-
-
-            expr: A FaunaDB query.
-
-
-
-        Returns:
-
-
-            A FaunaDB response.
-        """
-
-        async with ClientSession() as session:
+        
+    def __load__(self) -> ClientSession:
+        return ClientSession()
+    
+    async def query(self, expr: Expr) -> MaybeJson:
+        async with self.__load__() as session:
             async with session.post(
                 "https://db.fauna.com",
                 data=to_json(expr),
@@ -132,31 +53,8 @@ class FaunaClient(LazyProxy):
                 ) as exc:
                     return None
 
-    async def stream(self, expr: Expr) -> AG[A, None]:
-        """
-
-        `AsyncFaunaClient.stream`
-
-
-        Summary:
-
-
-                Streams a FaunaDB document.
-
-
-        Args:
-
-
-                expr: A FaunaDB query.
-
-
-        Returns:
-
-
-                An Event Stream Generator.
-        """
-
-        async with ClientSession() as session:
+    async def stream(self, expr: Expr) -> AsyncGenerator[str, None]:
+        async with self.__load__() as session:
             async with session.post(
                 "https://db.fauna.com",
                 data=to_json(expr),
@@ -189,108 +87,50 @@ class FaunaClient(LazyProxy):
                             else:
                                 yield line
 
-    async def __load__(self) -> ClientSession:
-        async with ClientSession() as session:
-            return session
-
-
-class HTTPClient:
+class ApiClient(LazyProxy[ClientSession]):
     """
 
     Generic HTTP Client
 
     """
+     
+    def __load__(self) -> ClientSession:
+        return ClientSession()
 
-    async def fetch(
-        self,
-        url: str,
-        method: str = "GET",
-        headers: O[D[str, str]] = None,
-        data: O[D[str, A]] = None,
-    ) -> A:
-        """
-        Generic function to retrieve data from an URL in json format
-        """
-        if method in ["GET", "DELETE"]:
-            async with ClientSession() as session:
-                async with session.request(method, url, headers=headers) as response:
-                    return await response.json()
-        elif method in ["POST", "PUT", "PATCH"]:
-            async with ClientSession() as session:
-                async with session.request(
-                    method, url, headers=headers, json=data
-                ) as response:
-                    return await response.json()
-        else:
-            raise FaunaException(400, "Invalid method", None)
-
-    async def text(
-        self,
-        url: str,
-        method: str = "GET",
-        headers: O[D[str, str]] = None,
-        data: O[D[str, A]] = None,
-    ) -> str:
-        """
-        Generic function to retrieve data from an URL in text format
-        """
-        if method in ["GET", "DELETE"]:
-            async with ClientSession() as session:
-                async with session.request(method, url, headers=headers) as response:
-                    return await response.text()
-        elif method in ["POST", "PUT", "PATCH"]:
-            async with ClientSession() as session:
-                async with session.request(
-                    method, url, headers=headers, json=data
-                ) as response:
-                    return await response.text()
-        else:
-            raise FaunaException(400, "Invalid method", None)
-
-    async def blob(
-        self,
-        url: str,
-        method: str = "GET",
-        headers: O[D[str, str]] = None,
-        data: O[D[str, A]] = None,
-    ) -> bytes:
-        """
-        Generic function to retrieve data from an URL in binary format
-        """
-        if method in ["GET", "DELETE"]:
-            async with ClientSession() as session:
-                async with session.request(method, url, headers=headers) as response:
-                    return await response.read()
-        elif method in ["POST", "PUT", "PATCH"]:
-            async with ClientSession() as session:
-                async with session.request(
-                    method, url, headers=headers, json=data
-                ) as response:
-                    return await response.read()
-        else:
-            raise FaunaException(400, "Invalid method", None)
-
-    async def stream(
-        self,
-        url: str,
-        method: str = "GET",
-        headers: O[D[str, str]] = None,
-        data: O[D[str, A]] = None,
-    ) -> AG[str, None]:
-        """
-        Generic function to retrieve data from an URL in streaming format
-        """
-        if method in ["GET", "DELETE"]:
-            async with ClientSession() as session:
-                async with session.request(method, url, headers=headers) as response:
-                    async for chunk in response.content.iter_chunked(1024):
-                        yield chunk.decode("utf-8")
-        elif method in ["POST", "PUT", "PATCH"]:
-            async with ClientSession() as session:
-                async with session.request(
-                    method, url, headers=headers, json=data
-                ) as response:
-                    async for chunk in response.content.iter_chunked(1024):
-                        yield chunk.decode("utf-8")
-        else:
-            raise FaunaException(400, "Invalid method", None)
+    async def fetch(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> MaybeJson:
+        async with self.__load__() as session:
+            async with session.request(method, url, headers=headers, json=json) as response:
+                try:
+                    data = await response.json()
+                    return data
+                except (
+                    FaunaException,
+                    ValueError,
+                    KeyError,
+                    TypeError,
+                    Exception,
+                ) as exc:
+                    return None
+                
+    async def text(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> Optional[str]:
+        async with self.__load__() as session:
+            async with session.request(method, url, headers=headers, json=json) as response:
+                try:
+                    data = await response.text()
+                    return data
+                except (
+                    FaunaException,
+                    ValueError,
+                    KeyError,
+                    TypeError,
+                    Exception,
+                ) as exc:
+                    return None
+                
+    async def stream(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> AsyncGenerator[str, None]:
+        async with self.__load__() as session:
+            async with session.request(method, url, headers=headers, json=json) as response:
+                async for chunk in response.content.iter_chunked(1024):
+                    yield chunk.decode()
+                    
+    

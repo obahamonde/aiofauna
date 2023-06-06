@@ -16,7 +16,6 @@ from pygments.lexers import get_lexer_by_name
 
 from markdown import markdown  # pylint: disable=import-error
 
-from .exceptions import HttpException
 from .odm import BaseModel, FaunaModel
 
 MD_FMT_CDN = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">"""  # pylint: disable=line-too-long
@@ -147,17 +146,16 @@ def do_response(response: Any) -> Response:
 def _(response: BaseModel) -> Response:
     return Response(
         status=200, body=response.json(
-            exclude_none=True, exclude_unset=True
+            exclude_none=True
             ), content_type="application/json"
     )
 
 
 @do_response.register(FaunaModel)
 def _(response: FaunaModel) -> Response:
-    response.ref = str(response.ref)
     return Response(
-        status=200, body=response.json(
-            exclude_none=True, exclude_unset=True
+        status=200, text=response.json(
+            exclude_none=True
             ), content_type="application/json"
     )
 
@@ -171,8 +169,9 @@ def _(response: dict) -> Response:
 
 @do_response.register(str)
 def _(response: str) -> Response:
-    return Response(status=200, body=response.encode(), content_type="text/plain")
-
+    if "<html>" in response:
+        return Response(status=200, text=response, content_type="text/html")
+    return Response(status=200, text=response, content_type="text/plain")
 
 @do_response.register(bytes)
 def _(response: bytes) -> Response:
@@ -181,17 +180,17 @@ def _(response: bytes) -> Response:
 
 @do_response.register(int)
 def _(response: int) -> Response:
-    return Response(status=200, body=str(response).encode(), content_type="text/plain")
+    return Response(status=200, text=str(response), content_type="text/plain")
 
 
 @do_response.register(float)
 def _(response: float) -> Response:
-    return Response(status=200, body=str(response).encode(), content_type="text/plain")
+    return Response(status=200, text=str(response), content_type="text/plain")
 
 
 @do_response.register(bool)
 def _(response: bool) -> Response:
-    return Response(status=200, body=str(response).encode(), content_type="text/plain")
+    return Response(status=200, text=str(response), content_type="text/plain")
 
 
 @do_response.register(list)
@@ -199,17 +198,16 @@ def _(response: List[Union[FaunaModel, BaseModel, dict, str, int, float]]) -> Re
     processed_response = []
 
     for item in response:
-        if issubclass(item.__class__, BaseModel):
-            processed_response.append(item.dict())  # type: ignore
-        else:
+        if isinstance(item, (FaunaModel, BaseModel)):
+            processed_response.append(item.json(exclude_none=True))
+        elif isinstance(item, dict):
             processed_response.append(item)
-
+        elif isinstance(item, str):
+            processed_response.append(item)
+        elif isinstance(item, (int, float, bool)):
+            processed_response.append(str(item))
+        else:
+            raise TypeError(f"Cannot serialize type {type(item)}")
     return Response(
         status=200, body=json.dumps(processed_response), content_type="application/json"
-    )
-
-@do_response.register(HttpException)
-def _(response: HttpException) -> Response:
-    return Response(
-        status=response.status_code, body=json.dumps(response.json()), content_type="application/json"
     )

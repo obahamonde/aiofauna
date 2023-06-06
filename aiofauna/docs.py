@@ -14,15 +14,7 @@ from .odm import FaunaModel
 
 def extract(params: dict, path: str):
     """
-    Extract OpenAPI parameters from the function parameters.
-
-    Args:
-        params (dict): The parameters of the function.
-        path (str): The URL path of the endpoint.
-
-    Returns:
-        Dict[str, Any]: The extracted OpenAPI parameters.
-    """
+    Extracts openapi parameters from the function signature."""
     open_api_params = {}
 
     for name, param in params.items():
@@ -75,9 +67,7 @@ def transform(
     open_api_params: Dict[str, Any],
 ):
     """
-    Update the OpenAPI documentation with the endpoint information.
-
-    Args:
+    Transforms the function signature into OpenAPI documentation.
         open_api (Dict[str, Any]): The OpenAPI documentation.
         path (str): The URL path of the endpoint.
         method (str): The HTTP method of the endpoint.
@@ -138,13 +128,7 @@ def transform(
 
 async def load(request: Request, params: dict):
     """
-    Shape the endpoint function parameters to match the request.
-
-    Args:
-        request (Request): The HTTP request.
-        params (dict): The parameters of the function.
-
-    Returns:
+    Loads the function parameters from the request.
         Dict[str, Any]: The updated parameters to apply to the function.
     """
     args_to_apply = {}

@@ -10,8 +10,9 @@ from multidict import MultiDict
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseSettings, Field
 
+from aiofauna import ApiClient
 from aiofauna import ASGIApi as Api
-from aiofauna import FileField, HTTPClient, Request
+from aiofauna import FileField, Request
 from models import Conversation, Message, Upload, User
 
 load_dotenv()
@@ -59,7 +60,7 @@ class Env(BaseSettings):
 
 session = Session()  # boto3 session
 
-client = HTTPClient()  # http client
+client = ApiClient()  # http client
 
 env = Env()  # environment variables
 

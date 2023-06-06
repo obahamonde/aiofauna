@@ -6,7 +6,6 @@ from datetime import datetime
 
 from iso8601 import parse_date
 
-from aiofauna.deprecated import deprecated
 from aiofauna.query import Expr
 
 
@@ -46,13 +45,6 @@ class Ref(Expr):
     def collection(self):
         """
         Gets the collection part out of the Ref.
-        """
-        return self.value.get("collection")
-
-    @deprecated("use collection instead")
-    def class_(self):
-        """
-        Gets the class part out of the Ref.
         """
         return self.value.get("collection")
 
@@ -214,3 +206,5 @@ class Query(Expr):
     def __ne__(self, other):
         # pylint: disable=unneeded-not
         return not self == other
+
+

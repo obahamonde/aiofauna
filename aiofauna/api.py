@@ -10,17 +10,12 @@ from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse, sse_response
 
 from .docs import extract, html, load, transform
-from .helpers import do_response
+from .helpers import do_response, render_template
 from .json import jsonable_encoder
 
 
 class Api(Application):
-    """
-
-    Api class to create a fastapi-like api.
-
-    """
-
+    """Aiohttp Application with automatic OpenAPI generation."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.openapi = {
@@ -164,7 +159,7 @@ class Api(Application):
 
         def decorator(func: Callable) -> Callable:
             @wraps(func)
-            async def wrapper(request: Request):
+            async def wrapper(request: Request)->EventSourceResponse:
                 async with sse_response(request) as resp:
                     args_to_apply = await load(
                         request, signature(func).parameters.copy()
@@ -184,7 +179,6 @@ class Api(Application):
                             )
                     await func(**definitive_args)
                     return resp
-
             self.router.add_get(path, wrapper)
             return wrapper
 
@@ -243,20 +237,36 @@ class Api(Application):
     def static(self):
         """Static folder creation and serving"""
         try:
-            os.mkdir("static")
-        except FileExistsError:
+            os.makedirs("static", exist_ok=True)
+        except OSError:
             pass
         try:
-            os.mkdir("templates")
-        except FileExistsError:
+            os.makedirs("static/docs", exist_ok=True)
+        except OSError:
             pass
         self.router.add_static("/", "static")
+        @self.get("/")
+        def index():
+            return render_template("index.html")
+        return self
 
     def run(self, host: str = "0.0.0.0", port=8080):
         run_app(self, host=host, port=port)
 
 
-    def add_middleware(self, middleware_class, options):
-        middleware = middleware_class(self, defaults=options)
+    def cors(self):
+        """CORS middleware"""
+        try:
+            import aiohttp_cors
+        except ImportError:
+            raise ImportError("Please install aiohttp_cors to use cors middleware")
+        cors = aiohttp_cors.setup(self, defaults={
+            "*": aiohttp_cors.ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+            )
+        })
         for route in list(self.router.routes()):
-            middleware.add(route)
+            cors.add(route)
+        return self

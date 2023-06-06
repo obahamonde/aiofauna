@@ -3,7 +3,7 @@ import inspect
 
 import models
 from aiofauna import FaunaModel, markdown_it, render_template
-from mixins import app, client
+from mixins import app, client, env
 from models import Upload, User
 
 
@@ -52,7 +52,7 @@ async def about():
 app.static()
 
 
-# @app.on_event("startup")
+#@app.on_event("startup")
 async def startup(_) -> None:
     """Runs on startup"""
     _models = [

@@ -1,7 +1,5 @@
 from types import FunctionType
 
-from aiofauna import deprecated
-
 
 def abort(msg):
     return _fn({"abort": msg})
@@ -13,9 +11,6 @@ def ref(collection_ref, id=None):
     return _fn({"ref": collection_ref, "id": id})
 
 
-@deprecated.deprecated("use collections instead")
-def classes(scope=None):
-    return _fn({"classes": scope})
 
 
 def collections(scope=None):
@@ -83,10 +78,6 @@ def var(var_name):
     return _fn({"var": var_name})
 
 
-@deprecated.deprecated("use if_ instead")
-def ifExpr(condition, then, else_):
-    return if_(condition, then, else_)
-
 
 def if_(condition, then, else_):
     return _fn({"if": condition, "then": then, "else": else_})
@@ -108,11 +99,6 @@ def lambda_query(func):
         return lambda_(vars, func(*[var(v) for v in vars]))
 
 
-@deprecated.deprecated("use lambda_ instead")
-def lambdaExpr(var_name_or_pattern, expr):
-    return lambda_(var_name_or_pattern, expr)
-
-
 def lambda_(var_name_or_pattern, expr):
     return _fn({"lambda": var_name_or_pattern, "expr": expr})
 
@@ -127,24 +113,12 @@ def query(_lambda):
     return _fn({"query": _lambda})
 
 
-@deprecated.deprecated("use map_ instead")
-def mapExpr(expr, collection):
-    return map_(expr, collection)
-
-
 def map_(expr, collection):
     return _fn({"map": expr, "collection": collection})
 
 
 def foreach(expr, collection):
     return _fn({"foreach": expr, "collection": collection})
-
-
-@deprecated.deprecated("use filter_ instead")
-def filterExpr(expr, collection):
-    return filter_(expr, collection)
-
-
 def filter_(expr, collection):
     return _fn({"filter": expr, "collection": collection})
 
@@ -315,11 +289,6 @@ def remove(ref_, ts, action):
     return _fn({"remove": ref_, "ts": ts, "action": action})
 
 
-@deprecated.deprecated("use create_collection instead")
-def create_class(class_params):
-    return _fn({"create_class": class_params})
-
-
 def create_collection(collection_params):
     return _fn({"create_collection": collection_params})
 
@@ -413,11 +382,6 @@ def logout(delete_tokens):
 
 def identify(ref_, password):
     return _fn({"identify": ref_, "password": password})
-
-
-@deprecated.deprecated("Use `current_identity` instead")
-def identity():
-    return _fn({"identity": None})
 
 
 def current_identity():
@@ -566,10 +530,6 @@ def time_diff(start, finish, unit):
     return _fn({"time_diff": start, "other": finish, "unit": unit})
 
 
-@deprecated.deprecated("use new_id instead")
-def next_id():
-    return _fn({"next_id": None})
-
 
 def new_id():
     return _fn({"new_id": None})
@@ -582,15 +542,6 @@ def database(db_name, scope=None):
 def index(index_name, scope=None):
     return _params({"index": index_name}, {"scope": scope})
 
-
-@deprecated.deprecated("use collection instead")
-def classExpr(class_name, scope=None):
-    return class_(class_name, scope)
-
-
-@deprecated.deprecated("use collection instead")
-def class_(class_name, scope=None):
-    return _params({"class": class_name}, {"scope": scope})
 
 
 def collection(collection_name, scope=None):
@@ -613,10 +564,6 @@ def equals(*values):
     return _fn({"equals": _varargs(values)})
 
 
-@deprecated.deprecated("use `contains_path` instead.")
-def contains(path, in_):
-    return _fn({"contains": path, "in": in_})
-
 
 def contains_path(path, in_):
     return _fn({"contains_path": path, "in": in_})
@@ -638,11 +585,6 @@ def select(path, from_, default=_NO_DEFAULT):
     if default is not _NO_DEFAULT:
         _dict["default"] = default
     return _fn(_dict)
-
-
-@deprecated.deprecated("Use `select` instead")
-def select_with_default(path, from_, default):
-    return _fn({"select": path, "from": from_, "default": default})
 
 
 def select_all(path, from_):
@@ -817,27 +759,13 @@ def gte(*values):
     return _fn({"gte": _varargs(values)})
 
 
-@deprecated.deprecated("use and_ instead")
-def andExpr(*booleans):
-    return and_(*booleans)
-
 
 def and_(*booleans):
     return _fn({"and": _varargs(booleans)})
 
 
-@deprecated.deprecated("use or_ instead")
-def orExpr(*booleans):
-    return or_(*booleans)
-
-
 def or_(*booleans):
     return _fn({"or": _varargs(booleans)})
-
-
-@deprecated.deprecated("use not_ instead")
-def notExpr(boolean):
-    return not_(boolean)
 
 
 def not_(boolean):
