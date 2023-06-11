@@ -8,45 +8,47 @@ const contact = computed(() =>
 </script>
 <template>
   <div class="chat-container">
-      <div v-if="state.conversation && state.conversation.ref">
-        <Request :url="'/api/messages/' + state.conversation.ref">
-          <template v-slot="response">
-            <div v-for="message in response.json">
+    <div v-if="state.conversation && state.conversation.ref">
+      <Request :url="'/api/messages/' + state.conversation.ref">
+        <template v-slot="response">
+          <div v-for="message in response.json">
+            <div
+              :class="
+                contact.ref !== message.user
+                  ? 'message-box my-message'
+                  : 'message-box friend-message'
+              "
+            >
+              <p>
+                {{ message.text }}<br /><span>{{
+                  new Date(Number(message.ts)).toLocaleString()
+                }}</span>
+              </p>
+            </div>
+          </div>
+        </template>
+      </Request>
+      <div v-if="state.conversation">
+        <Sse :query="state.conversation.ref">
+          <template v-slot="message">
+            <div>
               <div
-                :class="contact.ref !== message.user
+                :class="
+                  contact.ref !== message.sse.user
                     ? 'message-box my-message'
                     : 'message-box friend-message'
-                  "
+                "
               >
                 <p>
-                  {{ message.text }}<br /><span>{{
-                    new Date(Number(message.ts)).toLocaleString()
+                  {{ message.sse.text }}<br /><span>{{
+                    new Date(Number(message.sse.ts)).toLocaleString()
                   }}</span>
                 </p>
               </div>
             </div>
           </template>
-        </Request>
-          <div v-if="state.conversation">
-          <Sse :query="state.conversation.ref">
-            <template v-slot="message">
-              <div>
-                <div
-                  :class="contact.ref !== message.sse.user
-                    ? 'message-box my-message'
-                    : 'message-box friend-message'
-                    "
-                >
-                  <p>
-                    {{ message.sse.text }}<br /><span>{{
-                      new Date(Number(message.sse.ts)).toLocaleString()
-                    }}</span>
-                  </p>
-                </div>
-              </div>
-            </template>
-          </Sse>
-          </div>
+        </Sse>
+      </div>
     </div>
 
     <div v-else class="chat-container">

@@ -14,8 +14,8 @@
     <i class="fa-solid fa-microphone"></i>
   </div>
   <Modal v-if="showModal" @close="showModal = false">
-            <MessageUpload @upload="handleUpload($event)" />
-      </Modal>
+    <MessageUpload @upload="handleUpload($event)" />
+  </Modal>
 </template>
 
 <script setup lang="ts">

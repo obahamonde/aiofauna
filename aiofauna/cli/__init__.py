@@ -23,7 +23,6 @@ from .build import main as build_main
 from .curl import main as curl_main
 from .git import main as git_main
 from .kill import main as kill_main
-from .vue import main as vue_main
 
 _dir_existing = click.Path(exists=True, dir_okay=True, file_okay=False)
 _file_dir_existing = click.Path(exists=True, dir_okay=True, file_okay=True)
@@ -200,10 +199,3 @@ def curl():
     Run curl
     """
     curl_main()
-    
-@main.command()
-def components():
-    """
-    Generate components
-    """
-    vue_main()

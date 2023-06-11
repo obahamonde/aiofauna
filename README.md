@@ -1,6 +1,7 @@
 ---
 title: AioFauna
 ---
+
 # AioFauna
 
 🚀 Introducing aiofauna: A full-stack framework built on top of Aiohttp, Pydantic and FaunaDB.
