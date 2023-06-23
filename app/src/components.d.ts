@@ -16,8 +16,10 @@ declare module '@vue/runtime-core' {
     ChatHeader: typeof import('./components/ChatHeader.vue')['default']
     ChatList: typeof import('./components/ChatList.vue')['default']
     Credits: typeof import('./components/Credits.vue')['default']
+    DriveContainer: typeof import('./components/DriveContainer.vue')['default']
+    DriveDrawer: typeof import('./components/DriveDrawer.vue')['default']
+    DriveHeader: typeof import('./components/DriveHeader.vue')['default']
     MessageInput: typeof import('./components/MessageInput.vue')['default']
-    MessageUpload: typeof import('./components/MessageUpload.vue')['default']
     Modal: typeof import('./components/Modal.vue')['default']
     Notifier: typeof import('./components/Notifier.vue')['default']
     Request: typeof import('./components/Request.vue')['default']
@@ -26,6 +28,8 @@ declare module '@vue/runtime-core' {
     SearchContact: typeof import('./components/SearchContact.vue')['default']
     SideBar: typeof import('./components/SideBar.vue')['default']
     Sse: typeof import('./components/Sse.vue')['default']
+    Upload: typeof import('./components/Upload.vue')['default']
     UserHeader: typeof import('./components/UserHeader.vue')['default']
+    UserList: typeof import('./components/UserList.vue')['default']
   }
 }

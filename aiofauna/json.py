@@ -80,44 +80,25 @@ class FaunaJSONEncoder(JSONEncoder):
         if isinstance(obj, Expr):
             return obj.to_fauna_json()
         elif isinstance(obj, datetime):
-            return FaunaTime(obj).to_fauna_json()
+            return obj.astimezone().isoformat()
         elif isinstance(obj, date):
             return {"@date": obj.isoformat()}
         elif isinstance(obj, (bytes, bytearray)):
-            return {"@bytes": urlsafe_b64encode(obj).decode("utf-8")}
+            _val = None
+            try:
+                _val = obj.decode()
+            except:
+                _val = urlsafe_b64encode(obj).decode() # pylint: disable=all
+            return {"@bytes": _val}
         elif isinstance(obj, BaseModel):
             return obj.dict()
-        elif isinstance(obj, Request):
-            if obj.content_type in (
-                "application/json",
-                "application/x-www-form-urlencoded",
-            ):
-                data = parse_json(obj.content.read_nowait().decode())
-                if data:
-                    return {
-                        "method": obj.method,
-                        "path": obj.path,
-                        "headers": dict(obj.headers),
-                        "body": data,
-                    }
-            elif obj.content_type == "multipart/form-data":
-                data = {}
-                for k, v in asyncio.run(obj.post()):
-                    _v = None
-                    try:
-                        _v = loads(v)
-                    except ValueError:
-                        _v = "file"
-                    data[k] = v
-            else:
-                data = None
-                return {
-                    "method": obj.method,
-                    "query_params": dict(obj.query),
-                    "path_params": dict(obj.match_info),
-                    "headers": dict(obj.headers),
-                    "body": data,
-                }
+        elif isinstance(obj, Enum):
+            return obj.value
+        elif isinstance(obj, UUID):
+            return {"@uuid": str(obj)}
+        else:
+            return super().default(obj)
+
 
 
 class JSONModel(BaseModel):

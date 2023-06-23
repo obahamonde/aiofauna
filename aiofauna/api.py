@@ -3,16 +3,21 @@ import asyncio
 import os
 from functools import wraps
 from inspect import signature
-from typing import Callable
+from typing import Awaitable, Callable
 
-from aiohttp.web import Application, Request, Response, json_response, run_app
+from aiohttp.typedefs import Handler
+from aiohttp.web import (Application, Request, Response, StreamResponse,
+                         json_response, run_app)
+from aiohttp.web_exceptions import HTTPException
+from aiohttp.web_middlewares import middleware
 from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse, sse_response
 
 from .docs import extract, html, load, transform
-from .helpers import do_response, render_template
+from .helpers import do_response
 from .json import jsonable_encoder
 
+Middleware = Callable[[Request, Handler], Awaitable[StreamResponse]]
 
 class Api(Application):
     """Aiohttp Application with automatic OpenAPI generation."""
@@ -34,7 +39,7 @@ class Api(Application):
 
         @self.get("/docs")
         async def docs():
-            return Response(body=html.encode(), content_type="text/html")
+            return Response(text=html, content_type="text/html")
 
     def document(self, path: str, method: str):
         """
@@ -69,7 +74,7 @@ class Api(Application):
                 else:
                     response = func(*args, **kwargs, **definitive_args)
                 return do_response(response)
-
+            func.injectable = True
             wrapper._handler = func
             return wrapper
 
@@ -247,26 +252,24 @@ class Api(Application):
         self.router.add_static("/", "static")
         @self.get("/")
         def index():
-            return render_template("index.html")
+            return Response(
+                    text=open("static/index.html", "r").read(),
+                    content_type="text/html",
+                )
         return self
+    
+    def middleware(self, func: Middleware) -> Middleware:
+        @wraps(func)
+        @middleware
+        async def wrapper(request: Request, handler: Handler) -> Response:
+            response = await func(request, handler)
+            if isinstance(response, Response):
+                return response
+            return do_response(response)
+        
+        self.middlewares.append(wrapper)
+        return wrapper
+    
 
     def run(self, host: str = "0.0.0.0", port=8080):
         run_app(self, host=host, port=port)
-
-
-    def cors(self):
-        """CORS middleware"""
-        try:
-            import aiohttp_cors
-        except ImportError:
-            raise ImportError("Please install aiohttp_cors to use cors middleware")
-        cors = aiohttp_cors.setup(self, defaults={
-            "*": aiohttp_cors.ResourceOptions(
-                allow_credentials=True,
-                expose_headers="*",
-                allow_headers="*",
-            )
-        })
-        for route in list(self.router.routes()):
-            cors.add(route)
-        return self

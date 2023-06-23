@@ -93,29 +93,17 @@ onMounted(async () => {
 <template>
   <div class="flex gap-4 max-h-400px">
     <div class="w-full relative rounded-lg sh">
-      <div
-        ref="dropZoneRef"
-        @click="useInputEl"
-        multiple
-        class="flex flex-col w-full min-h-200px h-auto bg-gray-400/10 justify-center items-center mt-6"
-      >
+      <div ref="dropZoneRef" @click="useInputEl" multiple
+        class="flex flex-col w-full min-h-200px h-auto bg-gray-400/10 justify-center items-center mt-6">
         <div>
           {{ isOverDropZone ? "Drop here" : "Drag and drop files here" }}
         </div>
       </div>
       <div class="col center m-8">
         <div class="grid3 p-8 gap-8">
-          <div
-            v-for="(file, index) in filesUpload"
-            :key="index"
-            class="col bg-gray-100 sh center gap-2 p-4"
-          >
+          <div v-for="(file, index) in filesUpload" :key="index" class="col bg-gray-100 sh center gap-2 p-4">
             <p class="row gap-4">
-              <Icon
-                icon="mdi-close"
-                @click="deleteFile(file)"
-                class="x2 cp hover:red-700 text-red-500 scale"
-              />
+              <Icon icon="mdi-close" @click="deleteFile(file)" class="x2 cp hover:red-700 text-red-500 scale" />
             </p>
             <p class="text-sm text-body">{{ file.name }}</p>
             <p class="text-sm text-body">

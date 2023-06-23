@@ -8,7 +8,6 @@ from typing import Optional as O
 from typing import Union as U
 
 from aiofauna import BaseModel, FaunaModel, Field
-from aiofauna.datastructures import UploadFile
 
 
 class User(FaunaModel):
@@ -71,3 +70,21 @@ class Upload(FaunaModel):
         index=True,
     )
     url: O[str] = Field(None, description="File url")
+
+
+class Invitation(FaunaModel):
+    """Invitation"""
+
+    sender: str = Field(..., index=True)
+    receiver: str = Field(..., index=True)
+    hashed: O[str] = Field(default=None, unique=True)
+    status: O[str] = Field(default="PENDING", oneOf=["PENDING", "ACCEPTED", "REJECTED"], index=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not self.hashed:
+            self.hashed = self.hash(self.sender, self.receiver)
+
+    def hash(self, sender: str, receiver: str) -> str:
+        """Hashes the sender and receiver"""
+        return f"{sender}-{receiver}"

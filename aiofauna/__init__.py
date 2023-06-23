@@ -157,19 +157,17 @@ from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 from aiohttp.web import Request, Response
 from aiohttp.web_request import FileField
 from aiohttp.web_ws import WebSocketResponse
-from aiohttp_cors import CorsConfig as CORSMiddleware
 from aiohttp_sse import EventSourceResponse
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from pydantic import BaseSettings
 
 from . import query as q
-from .api import Api
+from .api import Api, HTTPException
 from .asgi import ASGIApi
 from .client import ApiClient, FaunaClient
-from .datastructures import UploadFile
 from .fields import Field
-from .helpers import make_response, markdown_it, redirect, render_template
+from .helpers import make_response, redirect
 from .json import FaunaJSONEncoder as JSONEncoder
 from .json import _parse_json_hook as default
 from .json import parse_json as loads

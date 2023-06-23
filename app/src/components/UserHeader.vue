@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 const { state } = useStore();
 const { logout } = useAuth0();
 const showModal = ref(false);
+const showUsers = ref(false)
 const numberRef = ref("");
 const { request, response } = useRequest();
 const dofetch = async () => {
@@ -27,21 +28,24 @@ const dofetch = async () => {
 const openmodal = ref(false);
 </script>
 <template>
-  <div class="header" v-if="state.user && state.user.ref">
-    <div class="user-img">
-      <img
-        class="dp"
-        :src="state.user.picture"
-        :alt="state.user.name"
-        @click="openmodal = !openmodal"
-      />
-    </div>
-    <div class="nav-icons">
-      <li><i class="fa-solid fa-users"></i></li>
-      <li>
-        <i class="fa-solid fa-message" @click="showModal = !showModal"> </i>
-      </li>
-      <li><i class="fa-solid fa-ellipsis-vertical"></i></li>
+      <UserList v-if="showUsers" @close="showUsers = false" />
+      <div class="header" v-if="state.user && state.user.ref">
+        <div class="user-img">
+          <img
+            class="dp"
+            :src="state.user.picture"
+            :alt="state.user.name"
+            @click="openmodal = !openmodal"
+          />
+        </div>
+        <div class="nav-icons">
+          <li><i class="fa-solid fa-users"></i></li>
+          <li>
+            <i class="fa-solid fa-message" @click="showModal = !showModal"> </i>
+          </li>
+            <li><i class="fa-solid fa-ellipsis-vertical"
+              @click="showUsers = !showUsers"
+              ></i></li>
     </div>
   </div>
   <Modal v-if="showModal" @close="showModal = false">

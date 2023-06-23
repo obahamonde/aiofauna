@@ -1,10 +1,13 @@
 import asyncio
 import inspect
+import json
+
+from aiohttp.web_exceptions import HTTPException
 
 import models
-from aiofauna import FaunaModel, markdown_it, render_template
+from aiofauna import FaunaModel
 from mixins import app, client, env
-from models import Upload, User
+from models import *
 
 
 @app.get("/api/auth")
@@ -43,24 +46,54 @@ async def index():
     return render_template("index.html")
 
 
-@app.get("/api/about")
-async def about():
-    """Renders the about page"""
-    return markdown_it("index.md")
+@app.post("/api/invitations")
+async def send_invitation(inv: Invitation):
+    """Sends an invitation from one user to another."""
+    exists = await Invitation.find_unique("hash", inv.hash)
+    if exists:
+        raise HTTPException(text=json.dumps({"message": "Invitation already exists"}),content_type="application/json")
+    owner, guest = inv.sender, inv.receiver
+    hashed = f"{owner}-{guest}"
+    conversation = await Conversation.find_unique("name", hashed)
+    if isinstance(conversation, Conversation):
+        raise HTTPException(text=json.dumps({"message": "Conversation already exists"}),content_type="application/json")
+    invitation = await inv.create()
+    assert isinstance(invitation, Invitation)
+    return invitation
+
+@app.get("/api/invitations/{user_id}")
+async def get_invitations(user_id: str):
+    """Gets all invitations for a user."""
+    return await Invitation.find_many("receiver", user_id)
+
+@app.post("/api/invitations/{invitation_hash}/accept")
+async def accept_invitation(invitation_hash: str):
+    """Accepts an invitation."""
+    invitation = await Invitation.find_unique("hash", invitation_hash)
+    assert isinstance(invitation, Invitation)
+    # Create a new conversation between the sender and receiver.
+    conversation = await Conversation(owner=invitation.sender, guest=invitation.receiver).save()
+    assert isinstance(conversation, Conversation)
+    return conversation
+
+@app.post("/api/invitations/{invitation_hash}/reject")
+async def reject_invitation(invitation_hash: str):
+    """Rejects an invitation."""
+    invitation = await Invitation.find_unique("hash", invitation_hash)
+    assert isinstance(invitation, Invitation)
+    invitation.status = "REJECTED"
+    await invitation.save()
+    return invitation
 
 
 app.static()
 
 
-#@app.on_event("startup")
+@app.on_event("startup")
 async def startup(_) -> None:
     """Runs on startup"""
-    _models = [
-        o
-        for n, o in inspect.getmembers(models)
-        if inspect.isclass(o) and issubclass(o, FaunaModel) and o != FaunaModel
-    ]
-    await asyncio.gather(*[m.provision() for m in _models])
+    await FaunaModel.create_all()
+    print(FaunaModel.__subclasses__())
 
 
 if __name__ == "__main__":

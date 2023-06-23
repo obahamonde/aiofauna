@@ -1,4 +1,4 @@
-from aiofauna import query
+from . import query
 
 
 class Page:

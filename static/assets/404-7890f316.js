@@ -1,1 +1,0 @@
-import{d as o,g as a,e as n,h as s,i as r,u as c,o as u}from"./index-b3793dfe.js";const d={p:"x4 y10",text:"center teal-700 dark:gray-200"},m=o({__name:"404",setup(p){const t=a();return(_,e)=>(u(),n("main",d,[s(" 404 Not Found "),r("button",{class:"btn-get",onClick:e[0]||(e[0]=i=>c(t).back())},"Go Back")]))}});export{m as default};

@@ -1,1 +1,0 @@
-import{d as n,r as o,b as s,o as c,e as r,u as a,f as u}from"./index-b3793dfe.js";const _=["innerHTML"],l=n({__name:"about",setup(f){const e=o("");return s(async()=>{const{data:t}=await u("/api/about").text();e.value=a(t)}),(t,d)=>(c(),r("div",{innerHTML:a(e)},null,8,_))}});export{l as default};

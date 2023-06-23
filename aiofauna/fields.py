@@ -1,7 +1,6 @@
-from pydantic.fields import \
-    Field as PydanticField  # pylint: disable=no-name-in-module
+from pydantic.fields import Field as F  # pylint: disable=no-name-in-module
 
 
 def Field(*args, index:bool=False, unique:bool=False, **kwargs):
     """Field Factory"""
-    return PydanticField(*args, index=index, unique=unique, **kwargs)
+    return F(*args, index=index, unique=unique, **kwargs)

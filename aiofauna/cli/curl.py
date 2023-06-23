@@ -6,7 +6,7 @@ import json
 import urllib.parse
 from typing import Any, Dict, Optional
 
-from ..datastructures import LazyProxy
+from ..typedefs import LazyProxy
 
 
 class HttpClient(LazyProxy[http.client.HTTPConnection]):

@@ -1,3 +1,4 @@
+import base64
 import io
 import os
 from typing import Any, AsyncGenerator, Dict, List, Literal, Optional, Union
@@ -5,10 +6,10 @@ from typing import Any, AsyncGenerator, Dict, List, Literal, Optional, Union
 from aiohttp import ClientSession
 from dotenv import load_dotenv
 
-from .datastructures import LazyProxy
 from .errors import FaunaException
 from .json import to_json
 from .objects import Expr
+from .typedefs import LazyProxy
 
 load_dotenv()
 
@@ -17,7 +18,6 @@ Json = Union[Dict[str, Any], List[Dict[str, Any]]]
 MaybeJson = Optional[Json]
 Headers = Dict[str, str]
 MaybeHeaders = Optional[Headers]
-CurrentSession = Optional[Union[ClientSession, LazyProxy[ClientSession]]]
 
 class FaunaClient(LazyProxy[ClientSession]):
     def __init__(self, secret=None):
@@ -50,7 +50,7 @@ class FaunaClient(LazyProxy[ClientSession]):
                     KeyError,
                     TypeError,
                     Exception,
-                ) as exc:
+                ) as exc: # pylint:disable=all
                     return None
 
     async def stream(self, expr: Expr) -> AsyncGenerator[str, None]:
@@ -93,11 +93,23 @@ class ApiClient(LazyProxy[ClientSession]):
     Generic HTTP Client
 
     """
+    
+    def __init__(self, base_url:Optional[str]=None, headers:Optional[Headers]=None):
+        super().__init__()
+        self.base_url = base_url
+        self.headers = headers
+        
      
     def __load__(self) -> ClientSession:
         return ClientSession()
 
     async def fetch(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> MaybeJson:
+        if self.base_url is not None:
+            url = self.base_url + url
+        if self.headers is not None and headers is not None:
+            headers = {**self.headers, **headers}
+        elif self.headers is not None:
+            headers = self.headers
         async with self.__load__() as session:
             async with session.request(method, url, headers=headers, json=json) as response:
                 try:
@@ -109,10 +121,16 @@ class ApiClient(LazyProxy[ClientSession]):
                     KeyError,
                     TypeError,
                     Exception,
-                ) as exc:
+                ) as exc: # pylint:disable=broad-exception-caught, unused-variable
                     return None
                 
     async def text(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> Optional[str]:
+        if self.base_url is not None:
+            url = self.base_url + url
+        if self.headers is not None and headers is not None:
+            headers = {**self.headers, **headers}
+        elif self.headers is not None:
+            headers = self.headers
         async with self.__load__() as session:
             async with session.request(method, url, headers=headers, json=json) as response:
                 try:
@@ -124,13 +142,27 @@ class ApiClient(LazyProxy[ClientSession]):
                     KeyError,
                     TypeError,
                     Exception,
-                ) as exc:
-                    return None
+                ) as exc: # pylint:disable=broad-exception-caught, unused-variable
+                    return None # type: ignore
                 
     async def stream(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> AsyncGenerator[str, None]:
+        if self.base_url is not None:
+            url = self.base_url + url
+        if self.headers is not None and headers is not None:
+            headers = {**self.headers, **headers}
+        elif self.headers is not None:
+            headers = self.headers
         async with self.__load__() as session:
             async with session.request(method, url, headers=headers, json=json) as response:
                 async for chunk in response.content.iter_chunked(1024):
-                    yield chunk.decode()
-                    
-    
+                    try:
+                        yield chunk.decode()
+                    except (
+                        FaunaException,
+                        ValueError,
+                        KeyError,
+                        TypeError,
+                        Exception,
+                    ) as exc:
+                        print(exc) # pylint:disable=broad-exception-caught
+                        yield base64.b64encode(chunk).decode()

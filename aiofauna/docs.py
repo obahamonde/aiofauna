@@ -4,10 +4,8 @@ from typing import Any, Dict
 
 from aiohttp.web import Request
 from aiohttp.web_request import FileField
-from multidict import CIMultiDict
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-from .datastructures import UploadFile
 from .json import parse_json
 from .odm import FaunaModel
 
@@ -32,8 +30,8 @@ def extract(params: dict, path: str):
                 "required": True,
                 "schema": {"type": type_, "default": param.default, "required": True},
             }
-
-        elif type_ in [UploadFile, FileField]:
+        
+        elif type_ == FileField:
             open_api_params[name] = {
                 "in": "formData",
                 "name": name,
@@ -45,14 +43,15 @@ def extract(params: dict, path: str):
                 },
             }
 
-        elif issubclass(type_, (BaseModel, FaunaModel)) and type_ != UploadFile:
+        elif issubclass(type_, (BaseModel, FaunaModel)):
             open_api_params[name] = {
                 "in": "body",
                 "name": name,
                 "required": True,
                 "schema": type_.schema(),
             }
-
+    
+        
         else:
             continue
 
@@ -139,11 +138,9 @@ async def load(request: Request, params: dict):
             args_to_apply[name] = request.match_info[name]
         elif annotation in (str, int, float, bool) and name in request.query:
             args_to_apply[name] = annotation(request.query[name])
-        elif annotation in [FileField, UploadFile]:
+        elif annotation in [FileField]:
             headers = dict(request.headers)
-            new_headers = CIMultiDict(
-                **headers, **{"content-type": "multipart/form-data"}
-            )
+            new_headers ={"Content-Type": headers.get("Content-Type", "multipart/form-data")}
             new_request = request.clone(headers=new_headers)
             args_to_apply[name] = new_request
         elif issubclass(annotation, BaseModel):
