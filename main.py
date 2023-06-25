@@ -40,12 +40,6 @@ async def get_users():
     return await User.all()
 
 
-@app.get("/")
-async def index():
-    """Renders the index page"""
-    return render_template("index.html")
-
-
 @app.post("/api/invitations")
 async def send_invitation(inv: Invitation):
     """Sends an invitation from one user to another."""
@@ -93,7 +87,6 @@ app.static()
 async def startup(_) -> None:
     """Runs on startup"""
     await FaunaModel.create_all()
-    print(FaunaModel.__subclasses__())
 
 
 if __name__ == "__main__":

@@ -167,7 +167,7 @@ from .api import Api, HTTPException
 from .asgi import ASGIApi
 from .client import ApiClient, FaunaClient
 from .fields import Field
-from .helpers import make_response, redirect
+from .helpers import aio, asyncify, make_response, redirect
 from .json import FaunaJSONEncoder as JSONEncoder
 from .json import _parse_json_hook as default
 from .json import parse_json as loads

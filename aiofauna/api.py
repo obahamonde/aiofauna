@@ -34,8 +34,10 @@ class Api(Application):
 
         @self.get("/openapi.json")
         async def openapi():
+            print(self.openapi)
             response = jsonable_encoder(self.openapi)
-            return json_response(response)
+            print(response)
+            return response
 
         @self.get("/docs")
         async def docs():

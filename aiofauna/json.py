@@ -8,13 +8,12 @@ from time import time
 from typing import Any, Dict, List, Literal, TypeVar
 from uuid import UUID
 
-from aiohttp.web import Request
 from iso8601 import parse_date
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing_extensions import override
 
-from aiofauna.objects import FaunaTime, Native, Query, Ref, SetRef
-from aiofauna.query import Expr
+from .objects import FaunaTime, Native, Query, Ref, SetRef
+from .query import Expr
 
 T = TypeVar("T")
 
@@ -221,4 +220,14 @@ def jsonable_encoder(
         return obj.value
     if isinstance(obj, UUID):
         return str(obj)
+    if isinstance(obj, type):
+        return jsonable_encoder(
+            obj.__name__,
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            skip_defaults=skip_defaults,
+            custom_encoder=custom_encoder,
+        )
+        
     return custom_encoder().default(obj)

@@ -4,6 +4,7 @@ from typing import Any, Dict
 
 from aiohttp.web import Request
 from aiohttp.web_request import FileField
+from multidict import CIMultiDict
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 from .json import parse_json
@@ -12,7 +13,15 @@ from .odm import FaunaModel
 
 def extract(params: dict, path: str):
     """
-    Extracts openapi parameters from the function signature."""
+    Extract OpenAPI parameters from the function parameters.
+
+    Args:
+        params (dict): The parameters of the function.
+        path (str): The URL path of the endpoint.
+
+    Returns:
+        Dict[str, Any]: The extracted OpenAPI parameters.
+    """
     open_api_params = {}
 
     for name, param in params.items():
@@ -30,8 +39,8 @@ def extract(params: dict, path: str):
                 "required": True,
                 "schema": {"type": type_, "default": param.default, "required": True},
             }
-        
-        elif type_ == FileField:
+
+        elif type_ in [FileField]:
             open_api_params[name] = {
                 "in": "formData",
                 "name": name,
@@ -50,8 +59,7 @@ def extract(params: dict, path: str):
                 "required": True,
                 "schema": type_.schema(),
             }
-    
-        
+
         else:
             continue
 
@@ -66,7 +74,9 @@ def transform(
     open_api_params: Dict[str, Any],
 ):
     """
-    Transforms the function signature into OpenAPI documentation.
+    Update the OpenAPI documentation with the endpoint information.
+
+    Args:
         open_api (Dict[str, Any]): The OpenAPI documentation.
         path (str): The URL path of the endpoint.
         method (str): The HTTP method of the endpoint.
@@ -127,7 +137,13 @@ def transform(
 
 async def load(request: Request, params: dict):
     """
-    Loads the function parameters from the request.
+    Shape the endpoint function parameters to match the request.
+
+    Args:
+        request (Request): The HTTP request.
+        params (dict): The parameters of the function.
+
+    Returns:
         Dict[str, Any]: The updated parameters to apply to the function.
     """
     args_to_apply = {}
@@ -140,7 +156,9 @@ async def load(request: Request, params: dict):
             args_to_apply[name] = annotation(request.query[name])
         elif annotation in [FileField]:
             headers = dict(request.headers)
-            new_headers ={"Content-Type": headers.get("Content-Type", "multipart/form-data")}
+            new_headers = CIMultiDict(
+                **headers, **{"content-type": "multipart/form-data"}
+            )
             new_request = request.clone(headers=new_headers)
             args_to_apply[name] = new_request
         elif issubclass(annotation, BaseModel):
