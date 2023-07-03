@@ -87,7 +87,3 @@ app.static()
 async def startup(_) -> None:
     """Runs on startup"""
     await FaunaModel.create_all()
-
-
-if __name__ == "__main__":
-    app.run(port=8080)

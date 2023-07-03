@@ -271,7 +271,3 @@ class Api(Application):
         
         self.middlewares.append(wrapper)
         return wrapper
-    
-
-    def run(self, host: str = "0.0.0.0", port=8080):
-        run_app(self, host=host, port=port)

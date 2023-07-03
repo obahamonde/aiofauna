@@ -12,3 +12,7 @@
 
 - Public release of aiofauna.
 - See the docs [aiofauna](https://aiofauna.smartpro.solutions)
+
+## [0.1.33] - Added CLI
+
+- Added CLI to run dev server with live reload.

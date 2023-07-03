@@ -10,9 +10,8 @@ from multidict import MultiDict
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseSettings, Field
 
-from aiofauna import ApiClient
-from aiofauna import ASGIApi as Api
-from aiofauna import FileField, Request
+from aiofauna import AioFauna as Api
+from aiofauna import ApiClient, FileField, Request
 from models import Conversation, Message, Upload, User
 
 load_dotenv()

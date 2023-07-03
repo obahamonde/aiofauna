@@ -165,6 +165,7 @@ from pydantic import BaseSettings
 from . import query as q
 from .api import Api, HTTPException
 from .asgi import ASGIApi
+from .cli import AioFauna
 from .client import ApiClient, FaunaClient
 from .fields import Field
 from .helpers import aio, asyncify, make_response, redirect
@@ -173,3 +174,4 @@ from .json import _parse_json_hook as default
 from .json import parse_json as loads
 from .json import to_json as dumps
 from .odm import FaunaModel
+from .typedefs import LazyProxy
