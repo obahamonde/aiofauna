@@ -34,7 +34,7 @@ def asyncify(
 
 def aio(max_workers: int = 5) -> typing.Callable[[typing.Type], typing.Type]:
     """Decorator that converts all the methods of a class into async methods."""
-    
+
     def decorator(cls: typing.Type) -> typing.Type:
         attrs: typing.Dict[str, typing.Any] = {}
         attrs["executor"] = ThreadPoolExecutor(max_workers=max_workers)
@@ -79,6 +79,7 @@ def make_response(data, headers=None, status=200):
     """
     return web.Response(body=data, headers=headers, status=status)
 
+
 @singledispatch
 def do_response(response: Any) -> Response:
     """
@@ -90,18 +91,18 @@ def do_response(response: Any) -> Response:
 @do_response.register(BaseModel)
 def _(response: BaseModel) -> Response:
     return Response(
-        status=200, body=response.json(
-            exclude_none=True
-            ), content_type="application/json"
+        status=200,
+        body=response.json(exclude_none=True),
+        content_type="application/json",
     )
 
 
 @do_response.register(FaunaModel)
 def _(response: FaunaModel) -> Response:
     return Response(
-        status=200, text=response.json(
-            exclude_none=True
-            ), content_type="application/json"
+        status=200,
+        text=response.json(exclude_none=True),
+        content_type="application/json",
     )
 
 
@@ -117,6 +118,7 @@ def _(response: str) -> Response:
     if "<html>" in response:
         return Response(status=200, text=response, content_type="text/html")
     return Response(status=200, text=response, content_type="text/plain")
+
 
 @do_response.register(bytes)
 def _(response: bytes) -> Response:

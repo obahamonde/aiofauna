@@ -1,4 +1,0 @@
-<template>
-  <AppBar />
-  <RouterView />
-</template>

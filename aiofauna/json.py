@@ -87,7 +87,7 @@ class FaunaJSONEncoder(JSONEncoder):
             try:
                 _val = obj.decode()
             except:
-                _val = urlsafe_b64encode(obj).decode() # pylint: disable=all
+                _val = urlsafe_b64encode(obj).decode()  # pylint: disable=all
             return {"@bytes": _val}
         elif isinstance(obj, BaseModel):
             return obj.dict()
@@ -97,7 +97,6 @@ class FaunaJSONEncoder(JSONEncoder):
             return {"@uuid": str(obj)}
         else:
             return super().default(obj)
-
 
 
 class JSONModel(BaseModel):
@@ -229,5 +228,5 @@ def jsonable_encoder(
             skip_defaults=skip_defaults,
             custom_encoder=custom_encoder,
         )
-        
+
     return custom_encoder().default(obj)

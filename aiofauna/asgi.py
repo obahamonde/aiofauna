@@ -8,7 +8,7 @@ from aiohttp.payload import StringPayload
 from multidict import CIMultiDict, CIMultiDictProxy
 from yarl import URL
 
-from .cli import AioFauna as Api
+from .server import AioFauna as Api
 
 Scope = MutableMapping[str, Any]
 Message = MutableMapping[str, Any]

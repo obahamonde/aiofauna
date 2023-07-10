@@ -11,8 +11,6 @@ def ref(collection_ref, id=None):
     return _fn({"ref": collection_ref, "id": id})
 
 
-
-
 def collections(scope=None):
     return _fn({"collections": scope})
 
@@ -78,7 +76,6 @@ def var(var_name):
     return _fn({"var": var_name})
 
 
-
 def if_(condition, then, else_):
     return _fn({"if": condition, "then": then, "else": else_})
 
@@ -119,6 +116,8 @@ def map_(expr, collection):
 
 def foreach(expr, collection):
     return _fn({"foreach": expr, "collection": collection})
+
+
 def filter_(expr, collection):
     return _fn({"filter": expr, "collection": collection})
 
@@ -530,7 +529,6 @@ def time_diff(start, finish, unit):
     return _fn({"time_diff": start, "other": finish, "unit": unit})
 
 
-
 def new_id():
     return _fn({"new_id": None})
 
@@ -541,7 +539,6 @@ def database(db_name, scope=None):
 
 def index(index_name, scope=None):
     return _params({"index": index_name}, {"scope": scope})
-
 
 
 def collection(collection_name, scope=None):
@@ -562,7 +559,6 @@ def access_provider(access_provider_name, scope=None):
 
 def equals(*values):
     return _fn({"equals": _varargs(values)})
-
 
 
 def contains_path(path, in_):
@@ -757,7 +753,6 @@ def gt(*values):
 
 def gte(*values):
     return _fn({"gte": _varargs(values)})
-
 
 
 def and_(*booleans):

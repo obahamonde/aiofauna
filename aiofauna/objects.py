@@ -206,5 +206,3 @@ class Query(Expr):
     def __ne__(self, other):
         # pylint: disable=unneeded-not
         return not self == other
-
-

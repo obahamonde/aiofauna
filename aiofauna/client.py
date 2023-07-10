@@ -19,15 +19,16 @@ MaybeJson = Optional[Json]
 Headers = Dict[str, str]
 MaybeHeaders = Optional[Headers]
 
+
 class FaunaClient(LazyProxy[ClientSession]):
     def __init__(self, secret=None):
         if secret is None:
             secret = os.getenv("FAUNA_SECRET")
         self.secret = secret
-        
+
     def __load__(self) -> ClientSession:
         return ClientSession()
-    
+
     async def query(self, expr: Expr) -> MaybeJson:
         async with self.__load__() as session:
             async with session.post(
@@ -50,7 +51,7 @@ class FaunaClient(LazyProxy[ClientSession]):
                     KeyError,
                     TypeError,
                     Exception,
-                ) as exc: # pylint:disable=all
+                ) as exc:  # pylint:disable=all
                     return None
 
     async def stream(self, expr: Expr) -> AsyncGenerator[str, None]:
@@ -87,23 +88,31 @@ class FaunaClient(LazyProxy[ClientSession]):
                             else:
                                 yield line
 
+
 class ApiClient(LazyProxy[ClientSession]):
     """
 
     Generic HTTP Client
 
     """
-    
-    def __init__(self, base_url:Optional[str]=None, headers:Optional[Headers]=None):
+
+    def __init__(
+        self, base_url: Optional[str] = None, headers: Optional[Headers] = None
+    ):
         super().__init__()
         self.base_url = base_url
         self.headers = headers
-        
-     
+
     def __load__(self) -> ClientSession:
         return ClientSession()
 
-    async def fetch(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> MaybeJson:
+    async def fetch(
+        self,
+        url: str,
+        method: Method = "GET",
+        headers: MaybeHeaders = None,
+        json: MaybeJson = None,
+    ) -> MaybeJson:
         if self.base_url is not None:
             url = self.base_url + url
         if self.headers is not None and headers is not None:
@@ -111,7 +120,9 @@ class ApiClient(LazyProxy[ClientSession]):
         elif self.headers is not None:
             headers = self.headers
         async with self.__load__() as session:
-            async with session.request(method, url, headers=headers, json=json) as response:
+            async with session.request(
+                method, url, headers=headers, json=json
+            ) as response:
                 try:
                     data = await response.json()
                     return data
@@ -121,10 +132,16 @@ class ApiClient(LazyProxy[ClientSession]):
                     KeyError,
                     TypeError,
                     Exception,
-                ) as exc: # pylint:disable=broad-exception-caught, unused-variable
+                ) as exc:  # pylint:disable=broad-exception-caught, unused-variable
                     return None
-                
-    async def text(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> Optional[str]:
+
+    async def text(
+        self,
+        url: str,
+        method: Method = "GET",
+        headers: MaybeHeaders = None,
+        json: MaybeJson = None,
+    ) -> Optional[str]:
         if self.base_url is not None:
             url = self.base_url + url
         if self.headers is not None and headers is not None:
@@ -132,7 +149,9 @@ class ApiClient(LazyProxy[ClientSession]):
         elif self.headers is not None:
             headers = self.headers
         async with self.__load__() as session:
-            async with session.request(method, url, headers=headers, json=json) as response:
+            async with session.request(
+                method, url, headers=headers, json=json
+            ) as response:
                 try:
                     data = await response.text()
                     return data
@@ -142,10 +161,16 @@ class ApiClient(LazyProxy[ClientSession]):
                     KeyError,
                     TypeError,
                     Exception,
-                ) as exc: # pylint:disable=broad-exception-caught, unused-variable
-                    return None # type: ignore
-                
-    async def stream(self, url:str, method:Method="GET", headers:MaybeHeaders=None, json:MaybeJson=None) -> AsyncGenerator[str, None]:
+                ) as exc:  # pylint:disable=broad-exception-caught, unused-variable
+                    return None  # type: ignore
+
+    async def stream(
+        self,
+        url: str,
+        method: Method = "GET",
+        headers: MaybeHeaders = None,
+        json: MaybeJson = None,
+    ) -> AsyncGenerator[str, None]:
         if self.base_url is not None:
             url = self.base_url + url
         if self.headers is not None and headers is not None:
@@ -153,7 +178,9 @@ class ApiClient(LazyProxy[ClientSession]):
         elif self.headers is not None:
             headers = self.headers
         async with self.__load__() as session:
-            async with session.request(method, url, headers=headers, json=json) as response:
+            async with session.request(
+                method, url, headers=headers, json=json
+            ) as response:
                 async for chunk in response.content.iter_chunked(1024):
                     try:
                         yield chunk.decode()
@@ -164,5 +191,5 @@ class ApiClient(LazyProxy[ClientSession]):
                         TypeError,
                         Exception,
                     ) as exc:
-                        print(exc) # pylint:disable=broad-exception-caught
+                        print(exc)  # pylint:disable=broad-exception-caught
                         yield base64.b64encode(chunk).decode()

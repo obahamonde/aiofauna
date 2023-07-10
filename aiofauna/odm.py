@@ -33,22 +33,21 @@ ModelTypeList = List[ModelType]
 
 ModelList = List[T]
 
-class FaunaModelMetaclass(ModelMetaclass):
 
+class FaunaModelMetaclass(ModelMetaclass):
     def __new__(cls, name, bases, namespace, **kwargs):
         new_cls = super().__new__(cls, name, bases, namespace, **kwargs)
         cls.Metadata.__subclasses__.append(new_cls)
         return new_cls
-    
+
     class Metadata:
         __subclasses__: List[Type[FaunaModel]] = []
-        
+
+
 class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
-    
     ref: Optional[str] = None
 
     ts: Optional[str] = None
-    
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -63,11 +62,12 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
 
             except Exception:
                 continue
-    
+
     @classmethod
     async def create_all(cls):
-        await asyncio.gather(*[model.provision() for model in cls.Metadata.__subclasses__])
-
+        await asyncio.gather(
+            *[model.provision() for model in cls.Metadata.__subclasses__]
+        )
 
     @classmethod
     def client(cls) -> FaunaClient:
@@ -99,7 +99,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                 )
 
                 logging.info("Created index %s", cls.__name__.lower())
-                
+
             for field in cls.__fields__.values():
                 if field.field_info.extra.get("unique"):
                     if not await _q(
@@ -115,9 +115,11 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                                 }
                             )
                         )
-                        
+
                         logging.info(
-                            "Created unique index %s_%s", cls.__name__.lower(), field.name
+                            "Created unique index %s_%s",
+                            cls.__name__.lower(),
+                            field.name,
                         )
                     continue
 
@@ -135,7 +137,9 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                             )
                         )
 
-                        logging.info("Created index %s_%s", cls.__name__.lower(), field.name)
+                        logging.info(
+                            "Created index %s_%s", cls.__name__.lower(), field.name
+                        )
                         continue
 
             return True
@@ -146,25 +150,25 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return False
 
     @classmethod
-    async def find_unique(cls:Type[T], field: str, value: Any) -> Optional[T]:
+    async def find_unique(cls: Type[T], field: str, value: Any) -> Optional[T]:
         try:
             data = await cls.q()(
                 q.get(q.match(q.index(f"{cls.__name__.lower()}_{field}_unique"), value))
             )
             return cls(
                 **{
-                    **data["data"], # type: ignore
-                    "ref": data["ref"]["@ref"]["id"], # type: ignore
-                    "ts": data["ts"] / 1000, # type: ignore
+                    **data["data"],  # type: ignore
+                    "ref": data["ref"]["@ref"]["id"],  # type: ignore
+                    "ts": data["ts"] / 1000,  # type: ignore
                 }
-            ) 
+            )
 
         except (FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
             return None
 
     @classmethod
-    async def find_many(cls:Type[T], field: str, value: Any) -> List[T]:
+    async def find_many(cls: Type[T], field: str, value: Any) -> List[T]:
         try:
             _q = cls.q()
 
@@ -174,15 +178,17 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                         q.match(q.index(f"{cls.__name__.lower()}_{field}"), value)
                     )
                 )
-            )["data"] # type: ignore
+            )[
+                "data"
+            ]  # type: ignore
 
             collection_refs_map = defaultdict(list)
 
             for ref in refs:
                 collection = q.collection(cls.__name__.lower())
 
-                collection_refs_map[collection].append( 
-                    q.ref(collection, ref["@ref"]["id"]) # type: ignore
+                collection_refs_map[collection].append(
+                    q.ref(collection, ref["@ref"]["id"])  # type: ignore
                 )
 
             data = await asyncio.gather(
@@ -209,14 +215,14 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return []
 
     @classmethod
-    async def get(cls:Type[T], ref: str) -> Optional[T]:
+    async def get(cls: Type[T], ref: str) -> Optional[T]:
         try:
             data = await cls.q()(q.get(q.ref(q.collection(cls.__name__.lower()), ref)))
             return cls(
                 **{
-                    **data["data"], # type: ignore
-                    "ref": data["ref"]["@ref"]["id"], # type: ignore
-                    "ts": data["ts"] / 1000, # type: ignore
+                    **data["data"],  # type: ignore
+                    "ref": data["ref"]["@ref"]["id"],  # type: ignore
+                    "ts": data["ts"] / 1000,  # type: ignore
                 }
             )
 
@@ -225,13 +231,13 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return None
 
     @classmethod
-    async def all(cls:Type[T]) -> List[T]:
+    async def all(cls: Type[T]) -> List[T]:
         try:
             _q = cls.q()
 
             query = q.paginate(q.match(q.index(f"{cls.__name__.lower()}")))
 
-            refs = (await _q(query))["data"] # type: ignore
+            refs = (await _q(query))["data"]  # type: ignore
 
             data = await asyncio.gather(
                 *[
@@ -286,7 +292,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
 
             return False
 
-    async def create(self:T) -> Optional[T]:
+    async def create(self: T) -> Optional[T]:
         try:
             for field in self.__fields__.values():
                 if field.field_info.extra.get("unique"):
@@ -306,9 +312,9 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                 )
             )
 
-            self.ref = data["ref"]["@ref"]["id"] # type: ignore
+            self.ref = data["ref"]["@ref"]["id"]  # type: ignore
 
-            self.ts = data["ts"] / 1000 # type: ignore
+            self.ts = data["ts"] / 1000  # type: ignore
             return self
 
         except (FaunaException, KeyError, TypeError) as exc:
@@ -316,7 +322,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return None
 
     @classmethod
-    async def update(cls:Type[T], ref: str, **kwargs) -> T:
+    async def update(cls: Type[T], ref: str, **kwargs) -> T:
         try:
             instance = await cls.get(ref)
 
@@ -329,9 +335,9 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                 )
                 return cls(
                     **{
-                        **instance_updated["data"], # type: ignore
-                        "ref": instance_updated["ref"]["@ref"]["id"], # type: ignore
-                        "ts": instance_updated["ts"] / 1000, # type: ignore
+                        **instance_updated["data"],  # type: ignore
+                        "ref": instance_updated["ref"]["@ref"]["id"],  # type: ignore
+                        "ts": instance_updated["ts"] / 1000,  # type: ignore
                     }
                 )
 
@@ -341,9 +347,9 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
         except (FaunaException, KeyError, TypeError) as exc:
             logging.error(exc)
 
-            raise ValueError(f"Field {ref} not found") # pylint: disable=all
+            raise ValueError(f"Field {ref} not found")  # pylint: disable=all
 
-    async def save(self:T) -> Optional[T]:
+    async def save(self: T) -> Optional[T]:
         if isinstance(self.ref, str) and len(self.ref) == 18:
             return await self.update(self.ref, kwargs=self.dict())
 

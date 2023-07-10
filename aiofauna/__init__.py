@@ -9,17 +9,13 @@ AioFauna
 """
 
 
-
 __version__ = (0, 2, 0)
-
 
 
 __author__ = "obahamonde"
 
 
-
 __license__ = "MIT"
-
 
 
 __doc__ = """
@@ -163,9 +159,8 @@ from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from pydantic import BaseSettings
 
 from . import query as q
-from .api import Api, HTTPException
+from .api import HTTPException
 from .asgi import ASGIApi
-from .cli import AioFauna
 from .client import ApiClient, FaunaClient
 from .fields import Field
 from .helpers import aio, asyncify, make_response, redirect
@@ -174,4 +169,5 @@ from .json import _parse_json_hook as default
 from .json import parse_json as loads
 from .json import to_json as dumps
 from .odm import FaunaModel
+from .server import AioFauna
 from .typedefs import LazyProxy

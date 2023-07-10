@@ -6,8 +6,14 @@ from inspect import signature
 from typing import Awaitable, Callable
 
 from aiohttp.typedefs import Handler
-from aiohttp.web import (Application, Request, Response, StreamResponse,
-                         json_response, run_app)
+from aiohttp.web import (
+    Application,
+    Request,
+    Response,
+    StreamResponse,
+    json_response,
+    run_app,
+)
 from aiohttp.web_exceptions import HTTPException
 from aiohttp.web_middlewares import middleware
 from aiohttp.web_ws import WebSocketResponse
@@ -19,8 +25,10 @@ from .json import jsonable_encoder
 
 Middleware = Callable[[Request, Handler], Awaitable[StreamResponse]]
 
+
 class Api(Application):
     """Aiohttp Application with automatic OpenAPI generation."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.openapi = {
@@ -76,6 +84,7 @@ class Api(Application):
                 else:
                     response = func(*args, **kwargs, **definitive_args)
                 return do_response(response)
+
             func.injectable = True
             wrapper._handler = func
             return wrapper
@@ -166,7 +175,7 @@ class Api(Application):
 
         def decorator(func: Callable) -> Callable:
             @wraps(func)
-            async def wrapper(request: Request)->EventSourceResponse:
+            async def wrapper(request: Request) -> EventSourceResponse:
                 async with sse_response(request) as resp:
                     args_to_apply = await load(
                         request, signature(func).parameters.copy()
@@ -186,6 +195,7 @@ class Api(Application):
                             )
                     await func(**definitive_args)
                     return resp
+
             self.router.add_get(path, wrapper)
             return wrapper
 
@@ -221,26 +231,6 @@ class Api(Application):
 
         return decorator
 
-    def use(self, prefix, api):
-        if not isinstance(api, Api):
-            raise TypeError(str(api) + " is not an Api instance")
-        if not prefix.startswith("/"):
-            prefix = "/" + prefix
-        if not prefix.endswith("/"):
-            prefix += "/"
-        api.prefix = prefix
-        self.add_subapp(prefix, api)
-        self.openapi["paths"].update(api.openapi["paths"])
-        self.openapi["components"]["schemas"].update(
-            api.openapi["components"]["schemas"]
-        )
-        self.openapi["components"]["securitySchemes"].update(
-            api.openapi["components"]["securitySchemes"]
-        )
-        self.openapi["components"]["responses"].update(
-            api.openapi["components"]["responses"]
-        )
-
     def static(self):
         """Static folder creation and serving"""
         try:
@@ -252,14 +242,16 @@ class Api(Application):
         except OSError:
             pass
         self.router.add_static("/", "static")
+
         @self.get("/")
         def index():
             return Response(
-                    text=open("static/index.html", "r").read(),
-                    content_type="text/html",
-                )
+                text=open("static/index.html", "r").read(),
+                content_type="text/html",
+            )
+
         return self
-    
+
     def middleware(self, func: Middleware) -> Middleware:
         @wraps(func)
         @middleware
@@ -268,6 +260,6 @@ class Api(Application):
             if isinstance(response, Response):
                 return response
             return do_response(response)
-        
+
         self.middlewares.append(wrapper)
         return wrapper
