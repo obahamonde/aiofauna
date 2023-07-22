@@ -1,42 +1,30 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 import os
 from collections import defaultdict
+from datetime import datetime
 from typing import Any, List, Optional, Type, TypeVar
-
-from pydantic.main import ModelMetaclass
-
-try:
-    import query as q
-
-except ImportError:
-    from . import query as q
 
 from dotenv import load_dotenv
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
+from pydantic.main import ModelMetaclass
 
 from .client import FaunaClient
-from .errors import FaunaException
+from .faunadb import query as q
+from .faunadb.errors import FaunaException
 from .json import JSONModel
+from .logging import setup_logging
 
 load_dotenv()
 
 T = TypeVar("T", bound="FaunaModel")
 
-ModelType = Type[T]
-
-MaybeModel = Optional[ModelType]
-
-ModelTypeList = List[ModelType]
-
-ModelList = List[T]
 
 
 class FaunaModelMetaclass(ModelMetaclass):
-    def __new__(cls, name, bases, namespace, **kwargs):
-        new_cls = super().__new__(cls, name, bases, namespace, **kwargs)
+    def __new__(cls, name, bases, attrs):
+        new_cls = super().__new__(cls, name, bases, attrs)
         cls.Metadata.__subclasses__.append(new_cls)
         return new_cls
 
@@ -64,15 +52,19 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                 continue
 
     @classmethod
+    @property
+    def logger(cls):
+        return setup_logging(cls.__name__)
+
+    @classmethod
     async def create_all(cls):
         await asyncio.gather(
             *[model.provision() for model in cls.Metadata.__subclasses__]
         )
 
     @classmethod
-    def client(cls) -> FaunaClient:
-        fauna_secret = os.getenv("FAUNA_SECRET")
-        return FaunaClient(secret=fauna_secret)
+    def client(cls):
+        return FaunaClient()
 
     @classmethod
     def q(cls):
@@ -86,7 +78,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             if not await _q(q.exists(q.collection(cls.__name__.lower()))):
                 await _q(q.create_collection({"name": cls.__name__.lower()}))
 
-                logging.info("Created collection %s", cls.__name__.lower())
+                cls.logger.info("Created collection %s", cls.__name__.lower())
 
             if not await _q(q.exists(q.index(cls.__name__.lower()))):
                 await _q(
@@ -98,7 +90,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                     )
                 )
 
-                logging.info("Created index %s", cls.__name__.lower())
+                cls.logger.info("Created index %s", cls.__name__.lower())
 
             for field in cls.__fields__.values():
                 if field.field_info.extra.get("unique"):
@@ -116,7 +108,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                             )
                         )
 
-                        logging.info(
+                        cls.logger.info(
                             "Created unique index %s_%s",
                             cls.__name__.lower(),
                             field.name,
@@ -137,7 +129,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                             )
                         )
 
-                        logging.info(
+                        cls.logger.info(
                             "Created index %s_%s", cls.__name__.lower(), field.name
                         )
                         continue
@@ -145,7 +137,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return True
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
 
             return False
 
@@ -164,7 +156,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             )
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
             return None
 
     @classmethod
@@ -172,15 +164,13 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
         try:
             _q = cls.q()
 
-            refs = (
-                await _q(
-                    q.paginate(
-                        q.match(q.index(f"{cls.__name__.lower()}_{field}"), value)
-                    )
-                )
-            )[
-                "data"
-            ]  # type: ignore
+            refs = await _q(
+                q.paginate(q.match(q.index(f"{cls.__name__.lower()}_{field}"), value))
+            )
+
+            assert isinstance(refs, dict)
+
+            refs = refs["data"]
 
             collection_refs_map = defaultdict(list)
 
@@ -210,7 +200,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             ]
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
 
             return []
 
@@ -227,7 +217,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             )
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
             return None
 
     @classmethod
@@ -258,7 +248,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             ]
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
 
             return []
 
@@ -276,7 +266,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return True
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
 
             return False
 
@@ -288,7 +278,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return True
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
 
             return False
 
@@ -318,7 +308,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return self
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            self.logger.error(exc)
             return None
 
     @classmethod
@@ -345,7 +335,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                 raise ValueError(f"Field {ref} not found")
 
         except (FaunaException, KeyError, TypeError) as exc:
-            logging.error(exc)
+            cls.logger.error(exc)
 
             raise ValueError(f"Field {ref} not found")  # pylint: disable=all
 
@@ -354,3 +344,7 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             return await self.update(self.ref, kwargs=self.dict())
 
         return await self.create()
+
+    @classmethod
+    async def cleanup(cls):
+        await cls.client().cleanup()

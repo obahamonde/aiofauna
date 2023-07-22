@@ -12,8 +12,8 @@ from iso8601 import parse_date
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing_extensions import override
 
-from .objects import FaunaTime, Native, Query, Ref, SetRef
-from .query import Expr
+from .faunadb.objects import FaunaTime, Native, Query, Ref, SetRef
+from .faunadb.query import Expr
 
 T = TypeVar("T")
 

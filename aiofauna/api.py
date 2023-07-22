@@ -1,36 +1,36 @@
 """REST API Module with automatic OpenAPI generation."""
 import asyncio
 import os
+import threading
+import time
 from functools import wraps
 from inspect import signature
 from typing import Awaitable, Callable
 
 from aiohttp.typedefs import Handler
-from aiohttp.web import (
-    Application,
-    Request,
-    Response,
-    StreamResponse,
-    json_response,
-    run_app,
-)
+from aiohttp.web import (Application, AppRunner, FileResponse, Request,
+                         Response, StreamResponse, TCPSite, json_response,
+                         run_app)
 from aiohttp.web_exceptions import HTTPException
 from aiohttp.web_middlewares import middleware
 from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse, sse_response
 
+from .client import ApiClient, FaunaClient
 from .docs import extract, html, load, transform
 from .helpers import do_response
 from .json import jsonable_encoder
+from .logging import setup_logging
+from .odm import FaunaModel
 
 Middleware = Callable[[Request, Handler], Awaitable[StreamResponse]]
 
 
-class Api(Application):
+class AioFauna(Application):
     """Aiohttp Application with automatic OpenAPI generation."""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, logger=setup_logging(self.__class__.__name__), **kwargs)
         self.openapi = {
             "openapi": "3.0.0",
             "info": {"title": "AioFauna", "version": "1.0.0"},
@@ -42,15 +42,21 @@ class Api(Application):
 
         @self.get("/openapi.json")
         async def openapi():
-            print(self.openapi)
             response = jsonable_encoder(self.openapi)
-            print(response)
             return response
 
         @self.get("/docs")
         async def docs():
             return Response(text=html, content_type="text/html")
-
+        
+        @self.on_event("startup")
+        async def startup(_):
+            await FaunaModel.create_all()
+            
+        @self.on_event("shutdown")
+        async def shutdown(_):
+            await ApiClient.cleanup()
+            await FaunaModel.cleanup()
     def document(self, path: str, method: str):
         """
 
@@ -237,18 +243,11 @@ class Api(Application):
             os.makedirs("static", exist_ok=True)
         except OSError:
             pass
-        try:
-            os.makedirs("static/docs", exist_ok=True)
-        except OSError:
-            pass
         self.router.add_static("/", "static")
 
         @self.get("/")
         def index():
-            return Response(
-                text=open("static/index.html", "r").read(),
-                content_type="text/html",
-            )
+            return FileResponse("static/index.html")
 
         return self
 
@@ -263,3 +262,75 @@ class Api(Application):
 
         self.middlewares.append(wrapper)
         return wrapper
+
+
+
+    def run(self, host:str="0.0.0.0", port:int=8080):
+        """Run the server"""
+        self.should_restart = False
+        self.logger.info("Starting server at http://%s:%s", host, port) 
+        self.logger.info("Press Ctrl+C to stop the server")
+        self.runner = AppRunner(self)
+
+        # Monitor for file changes in a separate thread
+        self.file_change_monitor_thread = threading.Thread(target=self.monitor_files, daemon=True)
+        self.file_change_monitor_thread.start()
+
+        while True:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.runner.setup())        
+            site = TCPSite(self.runner, host, port)     
+            loop.run_until_complete(site.start())
+            self.logger.info("Server started")
+            self.logger.info("Swagger UI available at http://%s:%s/docs", host, port)
+            self.logger.info("OpenAPI JSON available at http://%s:%s/openapi.json", host, port)
+            
+            try:
+                loop.run_forever()
+            except KeyboardInterrupt:
+                self.logger.info("Stopping server")
+                loop.run_until_complete(self.runner.cleanup())
+                loop.run_until_complete(self.shutdown())
+                loop.run_until_complete(self.cleanup())
+                loop.close()
+                self.logger.info("Server stopped")
+                break
+            finally:
+                if self.should_restart:
+                    self.logger.info("File change detected. Restarting server...")
+                    loop.run_until_complete(self.runner.cleanup())
+                    loop.run_until_complete(self.shutdown())
+                    loop.run_until_complete(self.cleanup())
+                    loop.close()
+                    self.should_restart = False
+
+    def monitor_files(self):
+        """Monitor for changes in Python files and restart the server if a change is detected"""
+        paths_to_track = [os.getcwd()]
+        file_modification_times = self.track_files(os.getcwd())
+        while True:
+            for path in paths_to_track:
+                for file_path, last_modified in self.track_files(path).items():
+                    if file_path not in file_modification_times:
+                        file_modification_times[file_path] = last_modified
+                    elif file_modification_times[file_path] != last_modified:
+                        self.should_restart = True
+                        return
+            
+    @staticmethod
+    def track_files(path):
+        """Get the modification times for all Python files in the specified path"""
+        file_modification_times = {}
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                if filename.endswith(".py"):
+                    file_path = os.path.join(dirpath, filename)
+                    file_modification_times[file_path] = os.path.getmtime(file_path)
+        return file_modification_times
+
+    def restart(self):
+        """Restart the server"""
+        self.logger.info("Restarting server")
+        loop = asyncio.get_event_loop()
+        loop.call_soon_threadsafe(loop.stop)

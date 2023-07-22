@@ -6,7 +6,7 @@ from datetime import datetime
 
 from iso8601 import parse_date
 
-from aiofauna.query import Expr
+from .query import Expr
 
 
 class Ref(Expr):

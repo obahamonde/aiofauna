@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Iterable, TypeVar, cast
+from typing import Generic, Iterable, TypeVar, Union, cast
 
 T = TypeVar("T")
 
-
 class LazyProxy(Generic[T], ABC):
     def __init__(self) -> None:
-        self.__proxied: T | None = None
+        self.__proxied: Union[T, None] = None
 
     def __getattr__(self, attr: str) -> object:
         return getattr(self.__get_proxied__(), attr)

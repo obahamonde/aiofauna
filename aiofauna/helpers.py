@@ -4,17 +4,25 @@ Flaskaesque helper functions for aiohttp.
 import asyncio
 import functools
 import json
+import logging
+import os
+import pathlib
 import types
 import typing
 from concurrent.futures import ThreadPoolExecutor
-from functools import singledispatch
+from datetime import datetime
+from functools import singledispatch, wraps
+from threading import Lock
 from typing import Any, List, Union
 
-from aiohttp import web
 from aiohttp.web import Response
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.traceback import install
 
 from .odm import BaseModel, FaunaModel
 
+T = typing.TypeVar("T")
 
 def asyncify(
     func: typing.Callable[..., typing.Any],
@@ -50,34 +58,6 @@ def aio(max_workers: int = 5) -> typing.Callable[[typing.Type], typing.Type]:
 
     return decorator
 
-
-def redirect(url):
-    """
-    Create an HTTP redirect response.
-
-    Args:
-        url (str): The URL to redirect to.
-
-    Returns:
-        web.HTTPFound: An HTTP redirect response with the specified URL.
-    """
-
-    return web.HTTPFound(url)
-
-
-def make_response(data, headers=None, status=200):
-    """
-    Create an HTTP response with the given data, headers, and status code.
-
-    Args:
-        data (str): The response body data.
-        headers (dict, optional): A dictionary of headers to include in the response. Defaults to None.
-        status (int, optional): The HTTP status code for the response. Defaults to 200.
-
-    Returns:
-        web.Response: An HTTP response with the specified data, headers, and status code.
-    """
-    return web.Response(body=data, headers=headers, status=status)
 
 
 @singledispatch

@@ -8,7 +8,6 @@ from multidict import CIMultiDict
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 from .json import parse_json
-from .odm import FaunaModel
 
 
 def extract(params: dict, path: str):
@@ -52,7 +51,7 @@ def extract(params: dict, path: str):
                 },
             }
 
-        elif issubclass(type_, (BaseModel, FaunaModel)):
+        elif issubclass(type_, (BaseModel)):
             open_api_params[name] = {
                 "in": "body",
                 "name": name,
@@ -125,7 +124,7 @@ def transform(
             },
             "responses": {"200": {"description": "OK"}},
         }
-        open_api["components"]["schemas"].update(param["schema"])  # type: ignore
+    
     else:
         open_api["paths"].setdefault(path, {})[method.lower()] = {
             "summary": func.__name__,
@@ -157,7 +156,7 @@ async def load(request: Request, params: dict):
         elif annotation in [FileField]:
             headers = dict(request.headers)
             new_headers = CIMultiDict(
-                **headers, **{"content-type": "multipart/form-data"}
+                **headers, **{"content-type": "multipart/form-data"} # type: ignore
             )
             new_request = request.clone(headers=new_headers)
             args_to_apply[name] = new_request
