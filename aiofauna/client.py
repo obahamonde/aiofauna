@@ -200,7 +200,7 @@ class ApiClient(LazyProxy[ClientSession]):
     Generic HTTP Client
     """
     config: APIConfig
-    subclasses: Optional[List[Type[ApiClient]]]
+    subclasses: Optional[List[Type[ApiClient]]] = field(default=None)
     
     @classmethod    
     def __init_subclass__(cls, **kwargs):

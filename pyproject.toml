@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.1.37"
+version = "0.1.38"
 description = ""
 authors = ["Oscar Bahamonde <oscar.bahamonde@pucp.pe>"]
 repository = "https://github.com/obahamonde/aiofauna"
@@ -14,7 +14,6 @@ iso8601 = "^1.1.0"
 aiohttp-sse = "^2.1.0"
 pydantic = {extras = ["dotenv"], version = "^1.10.7"}
 rich = "^13.4.2"
-watchdog = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.3.1"

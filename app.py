@@ -1,11 +1,26 @@
 import math
-import typing
+import os
 from functools import wraps
 from json import dumps, loads
 from pathlib import Path
-from threading import Lock
+from typing import *
 
-T = typing.TypeVar("T")  
+import openai
+from dotenv import load_dotenv
+from langchain.agents import AgentExecutor, AgentType, Tool, initialize_agent
+from langchain.chat_models import ChatOpenAI
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.prompts import (AIMessagePromptTemplate,
+                               HumanMessagePromptTemplate,
+                               SystemMessagePromptTemplate)
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
+
+load_dotenv()
+
+T = TypeVar("T")  
+
+Role = Literal["user","assistant","system"]
+
 
 def tree_to_json(path:str=".")->dict:
     path_ = Path(path)
@@ -47,23 +62,44 @@ def token_estimate(text:str):
 def divide_in_chunks_for_openai_api(text:str, max_tokens:int=1024):
     tokens = token_estimate(text)
     if tokens <= max_tokens:
-        return [text]
+        yield text
     else:
-        return [text[i:i+max_tokens] for i in range(0, len(text), max_tokens)]
-    
-  
+        for i in range(math.ceil(tokens / max_tokens)):
+            yield text[i*max_tokens:(i+1)*max_tokens]
+            
 
-def singleton(cls: typing.Type[T]) -> typing.Callable[..., T]:
-    instance = None
-    lock = Lock()
-    
-    @wraps(cls)
-    def wrapper(*args, **kwargs):
-        nonlocal instance
-        if instance is None:
-            with lock:
-                if instance is None:
-                    instance = cls(*args, **kwargs)
-        return instance
-    return wrapper
 
+PINECONE_API_KEY=os.environ["PINECONE_API_KEY"]
+PINECONE_INDEX=os.environ["PINECONE_INDEX"]
+PINECONE_ENVIRONMENT=os.environ["PINECONE_ENVIRONMENT"]
+
+import pinecone as pc
+from langchain.vectorstores import Pinecone
+
+pc.init(api_key=PINECONE_API_KEY, environment=PINECONE_ENVIRONMENT)                                         
+
+pinecone = Pinecone.from_texts(texts = [], embedding=OpenAIEmbeddings(), index_name=PINECONE_INDEX) # type: ignore
+
+llm = ChatOpenAI() # type: ignore
+
+
+test_code_prompt_template = SystemMessagePromptTemplate.from_template(
+    """
+    You are a QA Tester. You are testing a new program, and you are tasked with writing a test case for the following code:
+    """
+)
+
+run_code_prompt_template = SystemMessagePromptTemplate.from_template(
+    """
+    You are a QA Tester. You are testing a new program, and you are tasked with running the following code and reporting any bugs:
+    """
+)
+
+from langchain.tools import PythonAstREPLTool, PythonREPLTool, ShellTool
+
+tools = [PythonREPLTool, PythonAstREPLTool, ShellTool]
+
+agent = initialize_agent(tools=tools,llm=llm,agent=AgentType.SELF_ASK_WITH_SEARCH, verbose=True)
+
+for chunk in get_tree():
+    agent.run(chunk)
