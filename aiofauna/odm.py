@@ -4,11 +4,12 @@ import asyncio
 import os
 from collections import defaultdict
 from datetime import datetime
-from typing import Any, List, Optional, Type, TypeVar
+from typing import Any, Dict, List, Optional, Type, TypeVar
 
 from dotenv import load_dotenv
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from pydantic.main import ModelMetaclass
+from typing_extensions import ParamSpec
 
 from .client import FaunaClient
 from .faunadb import query as q
@@ -19,7 +20,6 @@ from .logging import setup_logging
 load_dotenv()
 
 T = TypeVar("T", bound="FaunaModel")
-
 
 
 class FaunaModelMetaclass(ModelMetaclass):
@@ -33,23 +33,9 @@ class FaunaModelMetaclass(ModelMetaclass):
 
 
 class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
-    ref: Optional[str] = None
+    ref: Optional[str] = None # type: ignore
 
-    ts: Optional[str] = None
-
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-
-        for field in self.__fields__.values():
-            try:
-                one_of = field.field_info.extra.get("oneOf")
-
-                if isinstance(one_of, list):
-                    if data.get(field.name) not in one_of:
-                        raise ValueError(f"{field.name} must be one of {one_of}")
-
-            except Exception:
-                continue
+    ts: Optional[str] = None # type: ignore
 
     @classmethod
     @property
@@ -136,76 +122,60 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
 
             return True
 
-        except (FaunaException, KeyError, TypeError) as exc:
+        except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+            cls.logger.error(exc.__class__.__name__)
             cls.logger.error(exc)
 
             return False
 
     @classmethod
-    async def find_unique(cls: Type[T], field: str, value: Any) -> Optional[T]:
-        try:
-            data = await cls.q()(
-                q.get(q.match(q.index(f"{cls.__name__.lower()}_{field}_unique"), value))
-            )
-            return cls(
-                **{
-                    **data["data"],  # type: ignore
-                    "ref": data["ref"]["@ref"]["id"],  # type: ignore
-                    "ts": data["ts"] / 1000,  # type: ignore
-                }
-            )
-
-        except (FaunaException, KeyError, TypeError) as exc:
-            cls.logger.error(exc)
-            return None
-
-    @classmethod
-    async def find_many(cls: Type[T], field: str, value: Any) -> List[T]:
-        try:
-            _q = cls.q()
-
-            refs = await _q(
-                q.paginate(q.match(q.index(f"{cls.__name__.lower()}_{field}"), value))
-            )
-
-            assert isinstance(refs, dict)
-
-            refs = refs["data"]
-
-            collection_refs_map = defaultdict(list)
-
-            for ref in refs:
-                collection = q.collection(cls.__name__.lower())
-
-                collection_refs_map[collection].append(
-                    q.ref(collection, ref["@ref"]["id"])  # type: ignore
+    async def find_unique(cls: Type[T], **kwargs: Any) -> T:
+        for field, value in kwargs.items():
+            try:
+                data = await cls.q()(
+                    q.get(
+                        q.match(
+                            q.index(f"{cls.__name__.lower()}_{field}_unique"), value
+                        )
+                    )
+                )
+                return cls(
+                    **{
+                        **data["data"],  # type: ignore
+                        "ref": data["ref"]["@ref"]["id"],  # type: ignore
+                        "ts": data["ts"] / 1000,  # type: ignore
+                    }
                 )
 
-            data = await asyncio.gather(
-                *[
-                    _q(q.get(q.paginate(collection_refs)))
-                    for _, collection_refs in collection_refs_map.items()
-                ]
-            )
-
-            flattened_data = [
-                item for collection_data in data for item in collection_data["data"]
-            ]
-
-            return [
-                cls(
-                    **{**d["data"], "ref": d["ref"]["@ref"]["id"], "ts": d["ts"] / 1000}
-                )
-                for d in flattened_data
-            ]
-
-        except (FaunaException, KeyError, TypeError) as exc:
-            cls.logger.error(exc)
-
-            return []
+            except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+                cls.logger.error(exc.__class__.__name__)
+                cls.logger.error(exc)
+                continue
+        return None # type: ignore
 
     @classmethod
-    async def get(cls: Type[T], ref: str) -> Optional[T]:
+    async def find_many(cls: Type[T], **kwargs: Any) -> List[T]:
+        for field, value in kwargs.items():
+            try:
+                _q = cls.q()
+
+                refs = await _q(
+                    q.paginate(
+                        q.match(q.index(f"{cls.__name__.lower()}_{field}"), value)
+                    )
+                )
+                return await asyncio.gather(
+                    *[cls.get(item["@ref"]["id"]) for item in refs["data"]]
+                )
+
+            except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+                cls.logger.error(exc.__class__.__name__)
+                cls.logger.error(exc)
+                continue
+        return []
+
+    @classmethod
+    async def get(cls: Type[T], ref: str) -> T:
         try:
             data = await cls.q()(q.get(q.ref(q.collection(cls.__name__.lower()), ref)))
             return cls(
@@ -216,59 +186,50 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
                 }
             )
 
-        except (FaunaException, KeyError, TypeError) as exc:
+        except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+            cls.logger.error(exc.__class__.__name__)
             cls.logger.error(exc)
-            return None
+            raise exc
 
     @classmethod
-    async def all(cls: Type[T]) -> List[T]:
+    async def all(cls: Type[T], limit: int = 100, offset: int = 0) -> List[T]:
         try:
             _q = cls.q()
 
             query = q.paginate(q.match(q.index(f"{cls.__name__.lower()}")))
 
-            refs = (await _q(query))["data"]  # type: ignore
+            refs = (await _q(query))["data"][offset:limit]
 
-            data = await asyncio.gather(
-                *[
-                    _q(
-                        q.get(
-                            q.ref(q.collection(cls.__name__.lower()), ref["@ref"]["id"])
-                        )
-                    )
-                    for ref in refs
-                ]
-            )
+            return await asyncio.gather(*[cls.get(item["@ref"]["id"]) for item in refs])
 
-            return [
-                cls(
-                    **{**d["data"], "ref": d["ref"]["@ref"]["id"], "ts": d["ts"] / 1000}
-                )
-                for d in data
-            ]
-
-        except (FaunaException, KeyError, TypeError) as exc:
+        except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+            cls.logger.error(exc.__class__.__name__)
             cls.logger.error(exc)
-
-            return []
+            raise exc
 
     @classmethod
-    async def delete_one(cls, field: str, value: Any) -> bool:
-        try:
-            _q = cls.q()
+    async def delete_one(cls: Type[T], **kwargs: Any) -> bool:
+        for field, value in kwargs.items():
+            try:
+                _q = cls.q()
 
-            ref = await _q(
-                q.get(q.match(q.index(f"{cls.__name__.lower()}_{field}_unique"), value))
-            )
+                ref = await _q(
+                    q.get(
+                        q.match(
+                            q.index(f"{cls.__name__.lower()}_{field}_unique"), value
+                        )
+                    )
+                )
 
-            await _q(q.delete(ref))
+                await _q(q.delete(ref))
 
-            return True
+                return True
 
-        except (FaunaException, KeyError, TypeError) as exc:
-            cls.logger.error(exc)
-
-            return False
+            except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+                cls.logger.error(exc.__class__.__name__)
+                cls.logger.error(exc)
+                continue
+        return False
 
     @classmethod
     async def delete(cls, ref: str) -> bool:
@@ -277,17 +238,17 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
 
             return True
 
-        except (FaunaException, KeyError, TypeError) as exc:
+        except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+            cls.logger.error(exc.__class__.__name__)
             cls.logger.error(exc)
-
             return False
 
-    async def create(self: T) -> Optional[T]:
+    async def create(self: T) -> T:
         try:
             for field in self.__fields__.values():
                 if field.field_info.extra.get("unique"):
                     instance = await self.find_unique(
-                        field.name, self.__dict__[field.name]
+                        **{field.name: self.__dict__[field.name]}
                     )
 
                     if instance is None:
@@ -307,33 +268,28 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
             self.ts = data["ts"] / 1000  # type: ignore
             return self
 
-        except (FaunaException, KeyError, TypeError) as exc:
+        except (FaunaException, KeyError, TypeError, ValueError, Exception) as exc:
+            self.logger.error(exc.__class__.__name__)
             self.logger.error(exc)
-            return None
+            raise exc
 
     @classmethod
-    async def update(cls: Type[T], ref: str, **kwargs) -> T:
+    async def update(cls: Type[T], ref: str, **kwargs:Any) -> T:
         try:
-            instance = await cls.get(ref)
 
-            if isinstance(instance, cls):
-                instance_updated = await cls.q()(
-                    q.update(
-                        q.ref(q.collection(cls.__name__.lower()), ref),
-                        {"data": kwargs.get("kwargs", kwargs)},
-                    )
+            instance = await cls.q()(
+                q.update(
+                    q.ref(q.collection(cls.__name__.lower()), ref),
+                    {"data": kwargs.get("kwargs", kwargs)},
                 )
-                return cls(
+            )
+            return cls(
                     **{
-                        **instance_updated["data"],  # type: ignore
-                        "ref": instance_updated["ref"]["@ref"]["id"],  # type: ignore
-                        "ts": instance_updated["ts"] / 1000,  # type: ignore
+                        **instance["data"],  # type: ignore
+                        "ref": instance["ref"]["@ref"]["id"],  # type: ignore
+                        "ts": instance["ts"] / 1000,  # type: ignore
                     }
                 )
-
-            else:
-                raise ValueError(f"Field {ref} not found")
-
         except (FaunaException, KeyError, TypeError) as exc:
             cls.logger.error(exc)
 
@@ -342,7 +298,6 @@ class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
     async def save(self: T) -> Optional[T]:
         if isinstance(self.ref, str) and len(self.ref) == 18:
             return await self.update(self.ref, kwargs=self.dict())
-
         return await self.create()
 
     @classmethod

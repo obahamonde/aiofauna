@@ -124,7 +124,7 @@ def transform(
             },
             "responses": {"200": {"description": "OK"}},
         }
-    
+
     else:
         open_api["paths"].setdefault(path, {})[method.lower()] = {
             "summary": func.__name__,
@@ -156,7 +156,7 @@ async def load(request: Request, params: dict):
         elif annotation in [FileField]:
             headers = dict(request.headers)
             new_headers = CIMultiDict(
-                **headers, **{"content-type": "multipart/form-data"} # type: ignore
+                **headers, **{"content-type": "multipart/form-data"}  # type: ignore
             )
             new_request = request.clone(headers=new_headers)
             args_to_apply[name] = new_request

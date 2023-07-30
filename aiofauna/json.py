@@ -68,6 +68,7 @@ def to_json(dct, pretty=True, sort_keys=True):
         separators=(",", ":"),
         allow_nan=False,
         ensure_ascii=True,
+        exclude_none=True,
     )
 
 
@@ -104,7 +105,7 @@ class JSONModel(BaseModel):
         return parse_json(self.to_json(**kwargs))
 
     def to_json(self, **kwargs) -> str:
-        return to_json(super().dict(**kwargs))
+        return to_json(super().dict(exclude_none=True, **kwargs))
 
     @override
     def dict(self, **kwargs):
@@ -112,7 +113,7 @@ class JSONModel(BaseModel):
 
     @override
     def json(self, **kwargs) -> str:
-        return self.to_json(**kwargs)
+        return self.to_json(exclude_none=True, **kwargs)
 
 
 def jsonable_encoder(

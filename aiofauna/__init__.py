@@ -2,7 +2,9 @@
 
 
 
+
 AioFauna
+
 
 
 
@@ -22,7 +24,9 @@ __doc__ = """
 
 
 
+
 ---
+
 
 
 
@@ -30,7 +34,9 @@ title: AioFauna
 
 
 
+
 ---
+
 
 
 
@@ -39,17 +45,21 @@ title: AioFauna
 
 
 
-🚀 Introducing aiofauna: A full-stack framework built on top of Aiohttp, Pydantic and Fauna
+
+🚀 Introducing aiofauna: A full-stack framework built on top of Aiohttp, Pydantic and Faun
 
 
 
 
-🔥 Inspired by FastAPI focuses on Developer Experience, Productivity and Versatili
+
+🔥 Inspired by FastAPI focuses on Developer Experience, Productivity and Versatil
 
 
 
 
-🌟 Featur
+
+🌟 Featu
+
 
 
 
@@ -59,7 +69,9 @@ title: AioFauna
 
 
 
+
 ✅ Performant and scalable: Built on top of Aiohttp a powerful http server and client and FaunaDB an scalable serverless database for modern applications.
+
 
 
 
@@ -69,7 +81,9 @@ title: AioFauna
 
 
 
+
 ✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your API.
+
 
 
 
@@ -79,7 +93,9 @@ title: AioFauna
 
 
 
+
 ✅ Robust data validation: Built-in support for Pydantic models for robust data validation and serialization.
+
 
 
 
@@ -89,7 +105,9 @@ title: AioFauna
 
 
 
+
 ✅ Full JSON communication: Custom encoder to ensure seamless data exchange between your application and FaunaDB backend.
+
 
 
 
@@ -99,17 +117,21 @@ title: AioFauna
 
 
 
+
 ✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes and more.
 
 
 
 
-💡 With aiofauna, you can build fast, scalable, and reliable modern applications, while building seamless integrations thanks to the fastest http client aiohttp and the most versatile database FaunaDB, you will enjoy integrating with third party services such as APIs, Data Sources and Cloud Servic
+
+💡 With aiofauna, you can build fast, scalable, and reliable modern applications, while building seamless integrations thanks to the fastest http client aiohttp and the most versatile database FaunaDB, you will enjoy integrating with third party services such as APIs, Data Sources and Cloud Servi
 
 
 
 
-📚 Check out the aiofauna library, and start building your next-gen applications toda
+
+📚 Check out the aiofauna library, and start building your next-gen applications tod
+
 
 
 
@@ -119,30 +141,37 @@ title: AioFauna
 
 
 
+
 ⚙️ If you are using a synchronous framework check out [Faudantic](https://github.com/obahamonde/faudantic) for a similar experience with FaunaDB and Pydantic.
 
 
 
 
-📚 [Documentation](https://obahamonde-aiofauna-docs.smartpro.solutions) (Built with aiofau
+
+📚 [Documentation](https://obahamonde-aiofauna-docs.smartpro.solutions) (Built with aiofa
 
 
 
 
-📦 [PyPi](https://pypi.org/project/aiofaun
+
+📦 [PyPi](https://pypi.org/project/aiofau
 
 
 
 
-📦 [GitHub](https://github.com/obahamonde/aiofau
+
+📦 [GitHub](https://github.com/obahamonde/aiofa
 
 
 
 
-📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Real time Latency Monitoring between FaunaDB and Google Cloud R
+
+📦 [Demo](https://aiofaunastreams-fwuw7gz7oq-uc.a.run.app/) (Real time Latency Monitoring between FaunaDB and Google Cloud 
+
 
 
 )
+
 
 
 """
@@ -156,8 +185,7 @@ from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-from .api import AioFauna, HTTPException
-from .client import ApiClient, FaunaClient
+from .client import APIClient, APIConfig, FaunaClient, make_client
 from .faunadb import query as q
 from .fields import Field
 from .helpers import aio, asyncify
@@ -166,4 +194,12 @@ from .json import _parse_json_hook as default
 from .json import parse_json as loads
 from .json import to_json as dumps
 from .odm import FaunaModel
+from .responses import (
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+    render_template,
+    render_template_string,
+)
+from .server import APIServer, HTTPException
 from .typedefs import LazyProxy

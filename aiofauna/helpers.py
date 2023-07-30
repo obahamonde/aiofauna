@@ -4,25 +4,21 @@ Flaskaesque helper functions for aiohttp.
 import asyncio
 import functools
 import json
-import logging
-import os
-import pathlib
 import types
 import typing
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
-from functools import singledispatch, wraps
-from threading import Lock
+from functools import singledispatch
 from typing import Any, List, Union
 
-from aiohttp.web import Response
-from rich.console import Console
-from rich.logging import RichHandler
-from rich.traceback import install
+from aiohttp.web import HTTPException, Request, Response, json_response
 
+from aiofauna.json import FaunaJSONEncoder
+
+from .json import parse_json, to_json
 from .odm import BaseModel, FaunaModel
 
 T = typing.TypeVar("T")
+
 
 def asyncify(
     func: typing.Callable[..., typing.Any],
@@ -59,7 +55,6 @@ def aio(max_workers: int = 5) -> typing.Callable[[typing.Type], typing.Type]:
     return decorator
 
 
-
 @singledispatch
 def do_response(response: Any) -> Response:
     """
@@ -70,35 +65,23 @@ def do_response(response: Any) -> Response:
 
 @do_response.register(BaseModel)
 def _(response: BaseModel) -> Response:
-    return Response(
-        status=200,
-        body=response.json(exclude_none=True),
-        content_type="application/json",
-    )
-
+    return json_response(response.dict(exclude_none=True), dumps=to_json)
 
 @do_response.register(FaunaModel)
 def _(response: FaunaModel) -> Response:
-    return Response(
-        status=200,
-        text=response.json(exclude_none=True),
-        content_type="application/json",
-    )
+    return json_response(response.dict(), dumps=to_json)
 
 
 @do_response.register(dict)
 def _(response: dict) -> Response:
-    return Response(
-        status=200, body=json.dumps(response), content_type="application/json"
-    )
+    return json_response(response, dumps=to_json)
 
 
 @do_response.register(str)
 def _(response: str) -> Response:
-    if "<html>" in response:
+    if response.startswith("<") and response.endswith(">"):
         return Response(status=200, text=response, content_type="text/html")
     return Response(status=200, text=response, content_type="text/plain")
-
 
 @do_response.register(bytes)
 def _(response: bytes) -> Response:
@@ -122,19 +105,7 @@ def _(response: bool) -> Response:
 
 @do_response.register(list)
 def _(response: List[Union[FaunaModel, BaseModel, dict, str, int, float]]) -> Response:
-    processed_response = []
-
-    for item in response:
-        if isinstance(item, (FaunaModel, BaseModel)):
-            processed_response.append(item.json(exclude_none=True))
-        elif isinstance(item, dict):
-            processed_response.append(item)
-        elif isinstance(item, str):
-            processed_response.append(item)
-        elif isinstance(item, (int, float, bool)):
-            processed_response.append(str(item))
-        else:
-            raise TypeError(f"Cannot serialize type {type(item)}")
-    return Response(
-        status=200, body=json.dumps(processed_response), content_type="application/json"
+    return json_response(
+        [x for x in response], dumps=to_json
     )
+    

@@ -1,11 +1,15 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.1.38"
+version = "0.1.52"
 description = ""
 authors = ["Oscar Bahamonde <oscar.bahamonde@pucp.pe>"]
 repository = "https://github.com/obahamonde/aiofauna"
 readme = "README.md"
 license = "MIT"
+
+git config --global user.name "@obahamonde"
+git config --global user.email "oscar.bahamonde.muno"
+
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -22,3 +26,7 @@ aiohttp-devtools = "^1.0.post0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.extras]
+ai = ["openai", "numpy"]
+fs = ["jinja2, markdown"]
