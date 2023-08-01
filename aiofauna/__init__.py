@@ -185,7 +185,7 @@ from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-from .client import APIClient, APIConfig, FaunaClient, make_client
+from .client import APIClient, APIConfig, FaunaClient
 from .faunadb import query as q
 from .fields import Field
 from .helpers import aio, asyncify
@@ -194,12 +194,6 @@ from .json import _parse_json_hook as default
 from .json import parse_json as loads
 from .json import to_json as dumps
 from .odm import FaunaModel
-from .responses import (
-    HTMLResponse,
-    JSONResponse,
-    PlainTextResponse,
-    render_template,
-    render_template_string,
-)
-from .server import APIServer, HTTPException
+from .server import APIServer
 from .typedefs import LazyProxy
+from .utils import setup_logging

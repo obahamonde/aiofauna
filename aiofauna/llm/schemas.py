@@ -46,5 +46,5 @@ class ChatCompletionResponse(NamedTuple):
     created: int
     model: Model
     choices: List[ChatCompletionChoice]
-    usage: ChatCompletionUssage 
+    usage: ChatCompletionUssage
     stream: bool

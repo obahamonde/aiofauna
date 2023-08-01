@@ -1,4 +1,3 @@
-import asyncio
 import base64
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 from datetime import date, datetime

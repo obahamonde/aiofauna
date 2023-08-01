@@ -1,6 +1,6 @@
 """Logging and error handling utilities for the OpenAI Function Python package."""
 import logging
-from typing import Any, Callable, Coroutine, TypeVar
+from typing import Any, Callable, Coroutine, TypeVar, cast
 
 from aiohttp.web_exceptions import HTTPException
 from rich.console import Console
@@ -8,7 +8,6 @@ from rich.logging import RichHandler
 from rich.pretty import install
 from rich.traceback import install as ins
 
-# Typing the return type of the wrapped function.
 T = TypeVar("T")
 
 
@@ -88,8 +87,9 @@ def handle_errors(
     return wrapper
 
 
-def log(cls):
-    """Adds a logger to a class."""
-    if not hasattr(cls, "logger"):
-        cls.logger = setup_logging(cls.__name__)
-    return cls
+def chunker(seq, size):
+    return (seq[pos : pos + size] for pos in range(0, len(seq), size))
+
+
+def gen_emptystr() -> str:
+    return cast(str, None)

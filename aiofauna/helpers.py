@@ -11,11 +11,12 @@ from functools import singledispatch
 from typing import Any, List, Union
 
 from aiohttp.web import HTTPException, Request, Response, json_response
+from pydantic import BaseModel
 
 from aiofauna.json import FaunaJSONEncoder
 
 from .json import parse_json, to_json
-from .odm import BaseModel, FaunaModel
+from .odm import FaunaModel
 
 T = typing.TypeVar("T")
 
@@ -67,6 +68,7 @@ def do_response(response: Any) -> Response:
 def _(response: BaseModel) -> Response:
     return json_response(response.dict(exclude_none=True), dumps=to_json)
 
+
 @do_response.register(FaunaModel)
 def _(response: FaunaModel) -> Response:
     return json_response(response.dict(), dumps=to_json)
@@ -82,6 +84,7 @@ def _(response: str) -> Response:
     if response.startswith("<") and response.endswith(">"):
         return Response(status=200, text=response, content_type="text/html")
     return Response(status=200, text=response, content_type="text/plain")
+
 
 @do_response.register(bytes)
 def _(response: bytes) -> Response:
@@ -105,7 +108,4 @@ def _(response: bool) -> Response:
 
 @do_response.register(list)
 def _(response: List[Union[FaunaModel, BaseModel, dict, str, int, float]]) -> Response:
-    return json_response(
-        [x for x in response], dumps=to_json
-    )
-    
+    return json_response([x for x in response], dumps=to_json)

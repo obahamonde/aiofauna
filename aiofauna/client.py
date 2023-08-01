@@ -9,8 +9,8 @@ from dataclasses import dataclass, field
 from functools import wraps
 from re import T
 from threading import Lock
-from typing import (Any, AsyncGenerator, Dict, List, Literal, NamedTuple,
-                    Optional, Type, Union)
+from typing import (Any, AsyncGenerator, Dict, List, Literal, Optional, Type,
+                    Union)
 
 from aiohttp import (ClientConnectionError, ClientConnectorSSLError,
                      ClientResponse, ClientSession, ClientTimeout,
@@ -20,11 +20,13 @@ from dotenv import load_dotenv
 from multidict import CIMultiDict
 from pydantic import BaseModel
 
+from aiofauna.faunadb.query import sin
+
 from .faunadb.errors import FaunaException
 from .faunadb.objects import Expr
-from .json import FaunaJSONEncoder, to_json
-from .logging import setup_logging
+from .json import to_json
 from .typedefs import LazyProxy
+from .utils import setup_logging
 
 load_dotenv()
 
@@ -52,11 +54,35 @@ HEADERS = {
     "Authorization": f"Bearer {FAUNA_SECRET}",
     "Content-type": "application/json",
     "Accept": "application/json",
+    "User-Agent": "aiofauna-framework",
 }
 
 T = typing.TypeVar("T")
 
 logger = setup_logging(__name__)
+
+FAUNA_EXCEPTIONS = (
+    HTTPException,
+    FaunaException,
+    ValueError,
+    KeyError,
+    TypeError,
+    Exception,
+    UnicodeError,
+    json.JSONDecodeError,
+    RuntimeError,
+    ClientConnectionError,
+    ClientConnectorSSLError,
+)
+
+HTTP_EXCEPTIONS = (
+    HTTPException,
+    FaunaException,
+    ValueError,
+    KeyError,
+    TypeError,
+    Exception,
+)
 
 
 def singleton(cls: typing.Type[T]) -> typing.Callable[..., T]:  # type: ignore
@@ -107,7 +133,6 @@ class APIConfig:
     trust_env: bool = field(default=True)
 
 
-@singleton
 @dataclass(init=True, repr=True, unsafe_hash=False, frozen=False)
 class FaunaClient(LazyProxy[ClientSession]):
     """
@@ -161,18 +186,7 @@ class FaunaClient(LazyProxy[ClientSession]):
                     return data["error"]
                 return data
 
-            except (
-                FaunaException,
-                ValueError,
-                KeyError,
-                TypeError,
-                Exception,
-                UnicodeError,
-                json.JSONDecodeError,
-                RuntimeError,
-                ClientConnectionError,
-                ClientConnectorSSLError,
-            ) as exc:  # pylint:disable=all
+            except FAUNA_EXCEPTIONS as exc:  # pylint:disable=all
                 self.config.logger.error(exc)
                 raise self.config.exception_class from exc
 
@@ -196,19 +210,7 @@ class FaunaClient(LazyProxy[ClientSession]):
             async for chunk in response.content.iter_any():
                 try:
                     yield chunk.decode()
-                except (
-                    HTTPException,
-                    FaunaException,
-                    ValueError,
-                    KeyError,
-                    TypeError,
-                    Exception,
-                    UnicodeError,
-                    json.JSONDecodeError,
-                    RuntimeError,
-                    ClientConnectionError,
-                    ClientConnectorSSLError,
-                ) as exc:
+                except FAUNA_EXCEPTIONS as exc:
                     self.config.logger.error(exc)
                     yield str(exc)
 
@@ -216,14 +218,17 @@ class FaunaClient(LazyProxy[ClientSession]):
         if self.config.session is not None:
             await self.config.session.close()
 
-    def __del__(self):
-        asyncio.run(self.cleanup())
-
+    
 
 @dataclass(init=True, repr=True, unsafe_hash=False, frozen=False)
 class APIClient(LazyProxy[ClientSession]):
     """
-    Generic HTTP Client
+    HTTP Client:
+    Base class to create HTTP clients that wrap `aiohttp.ClientSession`.
+    Provides Lazy Loading through proxy objects and session reuse using the singleton pattern.
+    Constructor Signature:
+    `base_url` (str): Base URL of the API. For example: `https://api.openai.com`. Must the an absolute URL.
+    `headers` (dict): Headers that will proxide the authentication credentials, content_type, etc.
     """
 
     base_url: str = field(init=True, repr=True)
@@ -247,20 +252,24 @@ class APIClient(LazyProxy[ClientSession]):
                 if subclass._session is not None:
                     tasks.append(subclass._session.close())
             await asyncio.gather(*tasks)
+            cls._subclasses = None
 
     async def __load__(self) -> ClientSession:
-        logger.info("Loading session for %s", self.base_url)
         async with self._session_creation_lock:
             if self._session is None:
                 self._session = ClientSession(
-                    self.base_url,
+                    base_url=self.base_url,
                     headers=CIMultiDict(self.headers),
                     response_class=ClientResponse,
                     connector=TCPConnector(
-                        keepalive_timeout=30,
+                        keepalive_timeout=60,
                         ssl=False,
-                        limit=10000,
+                        limit=1000,
                     ),
+                    timeout=ClientTimeout(total=60),
+                    connector_owner=False,
+                    trust_env=False,
+                    read_bufsize=2**18,
                 )
         return self._session
 
@@ -277,16 +286,10 @@ class APIClient(LazyProxy[ClientSession]):
         async with session.request(
             method, url, headers=self.headers, json=json
         ) as response:
-            logger.info("Fetching JSON from %s with method %s", url, method)
             try:
                 return await response.json()
             except (
-                HTTPException,
-                FaunaException,
-                ValueError,
-                KeyError,
-                TypeError,
-                Exception,
+                HTTP_EXCEPTIONS
             ) as exc:  # pylint:disable=broad-exception-caught, unused-variable
                 logger.error(exc)
                 raise APIException(str(exc)) from exc
@@ -296,16 +299,10 @@ class APIClient(LazyProxy[ClientSession]):
         async with session.request(
             method, url, headers=self.headers, json=json
         ) as response:
-            logger.info("Fetching Text from %s with method %s", url, method)
             try:
                 return await response.text()
             except (
-                HTTPException,
-                FaunaException,
-                ValueError,
-                KeyError,
-                TypeError,
-                Exception,
+                HTTP_EXCEPTIONS
             ) as exc:  # pylint:disable=broad-exception-caught, unused-variable
                 logger.error(exc)
                 raise APIException(str(exc)) from exc
@@ -320,18 +317,10 @@ class APIClient(LazyProxy[ClientSession]):
         async with session.request(
             method, url, headers=self.headers, json=json
         ) as response:
-            logger.info("Streaming from %s with method %s", url, method)
             async for chunk in response.content.iter_any():
                 try:
                     yield chunk.decode()
-                except (
-                    HTTPException,
-                    FaunaException,
-                    ValueError,
-                    KeyError,
-                    TypeError,
-                    Exception,
-                ) as exc:
+                except HTTP_EXCEPTIONS as exc:
                     logger.error(exc)
                     yield str(exc)
                     raise APIException(str(exc)) from exc
@@ -359,27 +348,4 @@ class APIClient(LazyProxy[ClientSession]):
             self: Allows method chaining.
         """
         self.headers.update(headers)
-        logger.info("Updated headers %s", self.headers)
         return self
-
-
-def make_client(name: str, base_url: str, headers: Dict[str, str]) -> Type[APIClient]:
-    """
-    Create a new API client class.
-
-    Args:
-        name: The name of the client.
-        base_url: The base URL for the client.
-        headers: The headers to use for the client.
-
-    Returns:
-        A new API client class.
-    """
-    return type(
-        name,
-        (APIClient,),
-        {
-            "base_url": base_url,
-            "headers": headers,
-        },
-    )

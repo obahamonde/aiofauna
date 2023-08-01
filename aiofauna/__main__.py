@@ -27,5 +27,3 @@ def print_tree(dirname, pref=""):
 @main.command()
 def tree():
     print_tree(os.getcwd())
-    
-                                                            

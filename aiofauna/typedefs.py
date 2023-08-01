@@ -1,22 +1,7 @@
-import json
 from abc import ABC, abstractmethod
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    Iterable,
-    List,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Any, Dict, Generic, Iterable, List, Type, TypeVar, Union, cast
 
-from pydantic import BaseModel, Field  # pylint: disable=no-name-in-module
-
-from .api.openai import Message, Model
-from .logging import log
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 Vector = List[float]
 MetaData = Dict[str, str]
@@ -57,23 +42,6 @@ class LazyProxy(Generic[T], ABC):
         ...
 
 
-class FunctionRequest(BaseModel):
-    """
-    Defines a function request.
-    """
-
-    model: Model = Field(
-        default="gpt-4-0613", description="The model used for the chat completion."
-    )
-    messages: List[Message] = Field(
-        ..., description="The list of messages in the conversation."
-    )
-    functions: Optional[List[Dict[str, Any]]] = Field(
-        None, description="Optional list of functions to be used."
-    )
-
-
-@log
 class FunctionType(BaseModel, ABC):
     _subclasses: List[Type["FunctionType"]] = []
 
@@ -94,13 +62,7 @@ class FunctionType(BaseModel, ABC):
                 "required": _schema["required"],
             },
         }
-        cls.logger.info(f"\tRegistered function {cls.__name__}")  # type: ignore # pylint: disable=no-member
         cls._subclasses.append(cls)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.logger.info(f"Function {self.__class__.__name__} called with {kwargs}")  # type: ignore # pylint: disable=no-member
-        self.logger.info(f"Function {self.__class__.__name__} initialized")  # type: ignore # pylint: disable=no-member
 
     @abstractmethod
     async def run(self) -> Any:

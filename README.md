@@ -14,13 +14,13 @@ title: AioFauna
 
 ✅ Powerful and Scalable: Being built on top of Aiohttp an asyncio based http server/client and FaunaDB an scalable serverless database for modern applications allows for powerful and seamless integrations.
 
-✅ Performant: As a framework built on top of Aiohttp it leverages the power of asyncio and the fastest python `HTTPClient` aiohttp plus the ubiquiness of FaunaDB to achieve high performance.
+✅ Performant: As a framework built on top of Aiohttp it leverages the power of asyncio and the fastest python `APIClient` built on top of aiohttp with Lazy Loading and session sharing, plus the ubiquiness of FaunaDB to achieve high performance.
 
-✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your `Api`.
+✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your `Api`, exposed at the `/docs` path.
 
-✅ SSE (Server Sent Events): Built-in support for SSE (Server Sent Events) for real-time streaming of data from FaunaDB to your application.
+✅ SSE (Server Sent Events): Built-in support for SSE (Server Sent Events) for real-time streaming of data from FaunaDB to your application, syntactic sugar through the `@sse` decorator.
 
-✅ Websockets: Built-in support for Websockets for real-time bidirectional communication between your application and the resources served by AioFauna `Api`.
+✅ Websockets: Built-in support for Websockets for real-time bidirectional communication between your application and the resources served by AioFauna `Api`, syntactic sugar through the `@websocket` decorator.
 
 ✅ Robust data validation: Utilizes the rich features of Pydantic for data validation and serialization.
 
@@ -28,7 +28,7 @@ title: AioFauna
 
 ✅ Full JSON communication: Focus on your data, don't worry about the communication protocol. Your `Api` will receive and return JSON.
 
-✅ Markdown and Html support with live reload: experiment an smooth frontend devserver experience without leaving your backend code with familiar syntax, `render_template` and `markdown_it` functions enable you to render static markdown files and html jinja templates with live reload.
+✅ Markdown and Html support.
 
 ✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes, `/docs` automatic interactive API documentation, and decorated view functions and automatic serialization and deserialization of your data.
 
@@ -40,12 +40,8 @@ title: AioFauna
 
 ⚙️ If you are using a synchronous framework check out [Faudantic](https://github.com/obahamonde/faudantic) for a similar experience with FaunaDB and Pydantic.
 
-📚 [Documentation](https://obahamonde-aiofauna-docs.smartpro.solutions) (Built with aiofauna)
-
 📦 [PyPi](https://pypi.org/project/aiofauna/)
 
-📦 [Demo](https://aiofauna-fwuw7gz7oq-uc.a.run.app/) (Whatsapp clone built with aiofauna)
-
-📦 [Swagger UI](https://aiofauna-fwuw7gz7oq-uc.a.run.app/docs) (Whatsapp clone built with aiofauna)
+📦 [Demo](https://natal-ia.netlify.app) (LLM smart agent)
 
 📦 [GitHub](https://github.com/obahamonde/aiofauna)

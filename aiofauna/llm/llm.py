@@ -1,63 +1,36 @@
 import json
 import os
-from typing import Any, AsyncGenerator, List, NamedTuple, Type
+from dataclasses import dataclass
+from typing import Any, AsyncGenerator, List, NamedTuple, Optional, Type
 from uuid import uuid4
 
 import openai
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from pydantic import Field  # pylint: disable=no-name-in-module
 from tqdm import tqdm
 
-from ..client import APIClient, APIException
-from ..logging import handle_errors, log, setup_logging
-from ..typedefs import (F, FunctionRequest, FunctionType, Message, MetaData,
-                        Model, Optional, Vector)
-from .openai import List, Literal
+from ..client import APIClient, APIException, singleton
+from ..typedefs import F, FunctionType, MetaData, Vector
+from ..utils import chunker, handle_errors, setup_logging
+from .schemas import List, Literal, Model
 
 logger = setup_logging(__name__)
 
 
-class Math(FunctionType):
-    """Math operation between two numbers."""
-
-    a: float = Field(..., description="First number.")
-    b: float = Field(..., description="Second number.")
-    operation: Literal[
-        "add", "subtract", "multiply", "divide", "power", "root"
-    ] = Field(..., description="Operation to perform.")
-    result: Optional[float] = Field(
-        default=None, description="Result of the operation."
-    )
+class Greet(FunctionType):
+    """Placeholder function for greeting the user."""
+    prompt:str = Field(default="Hello, I am a chatbot. How are you?")
 
     async def run(self):
-        """Run the function."""
-        if self.operation == "add":
-            self.result = self.a + self.b
-        elif self.operation == "subtract":
-            self.result = self.a - self.b
-        elif self.operation == "multiply":
-            self.result = self.a * self.b
-        elif self.operation == "divide":
-            self.result = self.a / self.b
-        elif self.operation == "power":
-            self.result = self.a**self.b
-        elif self.operation == "root":
-            self.result = self.a ** (1 / self.b)
-        else:
-            raise ValueError(f"Invalid operation: {self.operation}")
-        return self.result
-
+        return "Hello, I am a chatbot. How are you?"
 
 class UpsertVector(NamedTuple):
     id: str = Field(default_factory=lambda: str(uuid4()))
     values: Vector = Field(...)
     metadata: MetaData = Field(...)
 
-
 class UpsertRequest(NamedTuple):
     vectors: List[UpsertVector]
     namespace: str
-
 
 class UpsertResponse(NamedTuple):
     upsertedCount: int
@@ -88,10 +61,11 @@ class IngestRequest(NamedTuple):
     texts: List[str]
 
 
-
+@singleton
+@dataclass
 class LLMStack(APIClient):
-    base_url = os.environ.get("PINECONE_URL")  # type: ignore
-    headers = {"api-key": os.environ.get("PINECONE_API_KEY")}  # type: ignore
+    base_url:str = field(default_factory=lambda: os.environ.get("PINECONE_URL"))  # type: ignore
+    headers:Dict[str,str] = field(default_factory=lambda: {"api-key": os.environ.get("PINECONE_API_KEY")})  # type: ignore
 
     @handle_errors
     async def upsert_vectors(self, request: UpsertRequest) -> UpsertResponse:
@@ -102,8 +76,7 @@ class LLMStack(APIClient):
 
     @handle_errors
     async def query_vectors(self, request: QueryRequest) -> QueryResponse:
-        response = await self.fetch(
-            "/query", method="POST", json=request._asdict())
+        response = await self.fetch("/query", method="POST", json=request._asdict())
         return QueryResponse(**response)
 
     @handle_errors
@@ -144,10 +117,12 @@ class LLMStack(APIClient):
         """Chat completion with similarity search retrieval from pinecone"""
         try:
             embedding = await self.create_embeddings(text)
-            query_request = QueryRequest(vector=embedding, namespace=namespace, topK=3, includeMetadata=True)
+            query_request = QueryRequest(
+                vector=embedding, namespace=namespace, topK=3, includeMetadata=True
+            )
             query_response = await self.query_vectors(query_request)
             similar_text_chunks = [
-                i.get("metadata", {}).get("text", "") for i in query_response.matches
+                i.get("metadata", {}).get("text", "") for i in query_response.matches  # type: ignore
             ]
             similar_text = "Previous Similar results:" + "\n".join(similar_text_chunks)
             messages = [
@@ -160,7 +135,7 @@ class LLMStack(APIClient):
                 model="gpt-4-0613",
                 messages=messages,
             )
-            return response["choices"][0]["message"]["content"]
+            return response["choices"][0]["message"]["content"]  # type: ignore
         except Exception as exc:
             logger.exception(exc)
             raise APIException(message=str(exc)) from exc
@@ -182,7 +157,7 @@ class LLMStack(APIClient):
             model="text-embedding-ada-002",
             input=text,
         )
-        return response["data"][0]["embedding"]
+        return response["data"][0]["embedding"]  # type: ignore
 
     async def chat_stream(self, text: str) -> AsyncGenerator[str, None]:
         """Chat completion stream with no functions."""
@@ -191,7 +166,7 @@ class LLMStack(APIClient):
             messages=[{"role": "user", "content": text}],
             stream=True,
         )
-        async for i in response:
+        async for i in response:  # type: ignore
             assert isinstance(i, dict)
             delta = i["choices"][0]["delta"]
             if "content" in delta:
@@ -203,9 +178,11 @@ class LLMStack(APIClient):
         """Chat completion stream with similarity search retrieval from pinecone"""
         try:
             embedding = await self.create_embeddings(text)
-            query_request = QueryRequest(vector=embedding, namespace=namespace, topK=3, includeMetadata=True)
-            query_response: QueryResponse = await self.query_vectors(query_request)
-            logger.info("# of matches: %s", len(query_response.matches))  # type: ignore
+            query_response: QueryResponse = await self.query_vectors(
+                QueryRequest(
+                    vector=embedding, namespace=namespace, topK=3, includeMetadata=True
+                )
+            )
             similar_text_chunks = [
                 i.metadata.get("text", "") for i in query_response.matches
             ]
@@ -225,6 +202,7 @@ class LLMStack(APIClient):
                 if "content" in delta:
                     yield delta["content"]
         except Exception as exc:
+            logger.exception(exc.__class__.__name__)
             logger.exception(exc)
             raise APIException(message=str(exc)) from exc
 
@@ -263,10 +241,6 @@ class LLMStack(APIClient):
             )
 
 
-def chunker(seq, size):
-    return (seq[pos : pos + size] for pos in range(0, len(seq), size))
-
-
 async def parse_openai_response(  # pylint: disable=dangerous-default-value
     response: dict,
     functions: List[
@@ -288,7 +262,7 @@ async def parse_openai_response(  # pylint: disable=dangerous-default-value
         return result
     return choice["content"]
 
-
+@handle_errors
 async def function_call(  # pylint: disable=dangerous-default-value
     text: str,
     context: Optional[str] = None,
@@ -306,16 +280,14 @@ async def function_call(  # pylint: disable=dangerous-default-value
     model -- Model to be used. Defaults to "gpt-4-0613"
     functions -- List of function types. Defaults to all subclasses of FunctionType.
     """
-    if context is None:
-        messages = [Message(role="user", content=text)]
-    else:
+    if context is not None:
         messages = [
-            Message(role="system", content=context),
-            Message(role="user", content=text),
+            {"role": "user", "content": text},
+            {"role": "system", "content": context},
         ]
-    data = FunctionRequest(
+    else:
+        messages = [{"role": "user", "content": text}]
+    response = await openai.ChatCompletion.acreate(
         model=model, messages=messages, functions=[i.openaischema for i in functions]
-    ).dict()
-    response = await openai.ChatCompletion.acreate(**data)
-    assert isinstance(response, dict)
-    return await parse_openai_response(response, functions=functions)
+    )
+    return await parse_openai_response(response, functions=functions)  # type: ignore
