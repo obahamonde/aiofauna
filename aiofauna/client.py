@@ -9,12 +9,16 @@ from dataclasses import dataclass, field
 from functools import wraps
 from re import T
 from threading import Lock
-from typing import (Any, AsyncGenerator, Dict, List, Literal, Optional, Type,
-                    Union)
+from typing import Any, AsyncGenerator, Dict, List, Literal, Optional, Type, Union
 
-from aiohttp import (ClientConnectionError, ClientConnectorSSLError,
-                     ClientResponse, ClientSession, ClientTimeout,
-                     TCPConnector)
+from aiohttp import (
+    ClientConnectionError,
+    ClientConnectorSSLError,
+    ClientResponse,
+    ClientSession,
+    ClientTimeout,
+    TCPConnector,
+)
 from aiohttp.web_exceptions import HTTPException
 from dotenv import load_dotenv
 from multidict import CIMultiDict
@@ -218,7 +222,6 @@ class FaunaClient(LazyProxy[ClientSession]):
         if self.config.session is not None:
             await self.config.session.close()
 
-    
 
 @dataclass(init=True, repr=True, unsafe_hash=False, frozen=False)
 class APIClient(LazyProxy[ClientSession]):

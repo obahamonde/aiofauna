@@ -1,36 +1,40 @@
 import json
 import os
-from dataclasses import dataclass
-from typing import Any, AsyncGenerator, List, NamedTuple, Optional, Type
+from dataclasses import dataclass, field
+from typing import Any, AsyncGenerator, Dict, List, NamedTuple, Optional, Type
 from uuid import uuid4
 
 import openai
 from pydantic import Field  # pylint: disable=no-name-in-module
 from tqdm import tqdm
 
-from ..client import APIClient, APIException, singleton
+from ..client import APIClient, APIException
 from ..typedefs import F, FunctionType, MetaData, Vector
 from ..utils import chunker, handle_errors, setup_logging
-from .schemas import List, Literal, Model
+from .schemas import List, Model
 
 logger = setup_logging(__name__)
 
 
 class Greet(FunctionType):
     """Placeholder function for greeting the user."""
-    prompt:str = Field(default="Hello, I am a chatbot. How are you?")
+
+    prompt: str = Field(..., description="The prompt to use for the completion.")
 
     async def run(self):
         return "Hello, I am a chatbot. How are you?"
+
 
 class UpsertVector(NamedTuple):
     id: str = Field(default_factory=lambda: str(uuid4()))
     values: Vector = Field(...)
     metadata: MetaData = Field(...)
 
+
 class UpsertRequest(NamedTuple):
     vectors: List[UpsertVector]
     namespace: str
+
 
 class UpsertResponse(NamedTuple):
     upsertedCount: int
@@ -61,11 +65,11 @@ class IngestRequest(NamedTuple):
     texts: List[str]
 
 
-@singleton
 @dataclass
 class LLMStack(APIClient):
-    base_url:str = field(default_factory=lambda: os.environ.get("PINECONE_URL"))  # type: ignore
-    headers:Dict[str,str] = field(default_factory=lambda: {"api-key": os.environ.get("PINECONE_API_KEY")})  # type: ignore
+    base_url: str = field(default_factory=lambda: os.environ.get("PINECONE_URL"))  # type: ignore
+    headers: Dict[str, str] = field(default_factory=lambda: {"api-key": os.environ.get("PINECONE_API_KEY")})  # type: ignore
+    model:Model = field(default_factory=lambda:"gpt-3.5-turbo-16k-0613")
 
     @handle_errors
     async def upsert_vectors(self, request: UpsertRequest) -> UpsertResponse:
@@ -106,7 +110,7 @@ class LLMStack(APIClient):
         ]
         logger.info("Chat messages: %s", messages)
         response = await openai.ChatCompletion.acreate(
-            model="gpt-4-0613", messages=messages
+            model=self.model, messages=messages
         )
         logger.info("Chat response: %s", response)
         assert isinstance(response, dict)
@@ -130,9 +134,8 @@ class LLMStack(APIClient):
                 {"role": "system", "content": similar_text},
                 {"role": "system", "content": context},
             ]
-            logger.info("Chat messages: %s", messages)
             response = await openai.ChatCompletion.acreate(
-                model="gpt-4-0613",
+                model=self.model,
                 messages=messages,
             )
             return response["choices"][0]["message"]["content"]  # type: ignore
@@ -162,7 +165,7 @@ class LLMStack(APIClient):
     async def chat_stream(self, text: str) -> AsyncGenerator[str, None]:
         """Chat completion stream with no functions."""
         response = openai.ChatCompletion.acreate(
-            model="gpt-4-0613",
+            model=self.model,
             messages=[{"role": "user", "content": text}],
             stream=True,
         )
@@ -188,7 +191,7 @@ class LLMStack(APIClient):
             ]
             similar_text = "Previous Similar results:" + "\n".join(similar_text_chunks)
             response = openai.ChatCompletion.acreate(
-                model="gpt-4-0613",
+                model=self.model,
                 messages=[
                     {"role": "user", "content": text},
                     {"role": "system", "content": similar_text},
@@ -262,11 +265,12 @@ async def parse_openai_response(  # pylint: disable=dangerous-default-value
         return result
     return choice["content"]
 
+
 @handle_errors
 async def function_call(  # pylint: disable=dangerous-default-value
     text: str,
     context: Optional[str] = None,
-    model: Model = "gpt-4-0613",
+    model: Model = "gpt-3.5-turbo-16k-0613",
     functions: List[
         Type[F]
     ] = FunctionType._subclasses,  # pylint: disable=protected-access
