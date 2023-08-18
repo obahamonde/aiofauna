@@ -1,4 +1,1 @@
 [pylint]
-disable = C0103, C0114, C0115, C0116, C0301, C0303, W0718
-
-[MASTER]

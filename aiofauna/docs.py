@@ -4,7 +4,6 @@ from typing import Any, Dict
 
 from aiohttp.web import Request
 from aiohttp.web_request import FileField
-from multidict import CIMultiDict
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 from .json import parse_json
@@ -153,13 +152,10 @@ async def load(request: Request, params: dict):
             args_to_apply[name] = request.match_info[name]
         elif annotation in (str, int, float, bool) and name in request.query:
             args_to_apply[name] = annotation(request.query[name])
-        elif annotation in [FileField]:
-            headers = dict(request.headers)
-            new_headers = CIMultiDict(
-                **headers, **{"content-type": "multipart/form-data"}  # type: ignore
-            )
-            new_request = request.clone(headers=new_headers)
-            args_to_apply[name] = new_request
+        elif annotation == FileField:
+            file = (await request.post()).get("file")
+            assert isinstance(file, FileField), "File not found"
+            args_to_apply[name] = file
         elif issubclass(annotation, BaseModel):
             data = await request.json(loads=JSONDecoder().decode)
             if isinstance(data, (str, bytes)):
@@ -170,7 +166,7 @@ async def load(request: Request, params: dict):
     return args_to_apply
 
 
-html = """<!DOCTYPE html>
+HTML_STRING = """<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
@@ -208,19 +204,6 @@ html = """<!DOCTYPE html>
             </head>
 
             <body>
-                <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/mini.global.js"></script>
-                <nav class="bg-gray-800 text-white w-full">
-                    <div class="container mx-auto px-6 py-3">
-                        <div class="flex flex-col md:flex-row md:justify-between md:items-center">
-                            <div class="flex justify-between items-center">
-                                My API
-                            </div>
-                            <div class="flex mt-2 md:mt-0">
-                                <a class="block md:inline-block mt-0 text-gray-200 hover:text-white mr-4" href="/docs">Documentation</a>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
                 <div id="swagger-ui"></div>
 
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-bundle.js"> </script>

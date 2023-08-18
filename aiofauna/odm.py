@@ -5,7 +5,6 @@ from typing import Any, List, Optional, Type, TypeVar
 
 from dotenv import load_dotenv
 from pydantic import Field
-from pydantic.main import ModelMetaclass
 
 from .client import FaunaClient
 from .faunadb import query as q
@@ -17,20 +16,19 @@ load_dotenv()
 
 T = TypeVar("T", bound="FaunaModel")
 
-
-class FaunaModelMetaclass(ModelMetaclass):
-    def __new__(cls, name, bases, attrs):
-        new_cls = super().__new__(cls, name, bases, attrs)
-        cls.Metadata.__subclasses__.append(new_cls)
-        return new_cls
+class FaunaModel(JSONModel):
+    ref: str = Field(default_factory=gen_emptystr)
+    ts: str = Field(default_factory=gen_emptystr)
 
     class Metadata:
         __subclasses__: List[Type[FaunaModel]] = []
 
-
-class FaunaModel(JSONModel, metaclass=FaunaModelMetaclass):
-    ref: str = Field(default_factory=gen_emptystr)
-    ts: str = Field(default_factory=gen_emptystr)
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if cls.__doc__ is None:
+            cls.__doc__ = f"```json\n{cls.schema_json(indent=2)}\n```"
+        cls.Metadata.__subclasses__.append(cls)
 
     @classmethod
     @property

@@ -6,16 +6,19 @@ from inspect import signature
 from typing import Awaitable, Callable
 
 from aiohttp.typedefs import Handler
-from aiohttp.web import Application, FileResponse, Request, Response, StreamResponse
+from aiohttp.web import (Application, FileResponse, Request, Response,
+                         StreamResponse)
 from aiohttp.web_middlewares import middleware
 from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse, sse_response
 
 from .client import APIClient
-from .docs import extract, html, load, transform
+from .docs import HTML_STRING, extract, load, transform
 from .helpers import do_response
 from .json import jsonable_encoder
 from .odm import FaunaModel
+from .router import APIRouter
+from .typedefs import Document
 from .utils import setup_logging
 
 Middleware = Callable[[Request, Handler], Awaitable[StreamResponse]]
@@ -24,14 +27,25 @@ Middleware = Callable[[Request, Handler], Awaitable[StreamResponse]]
 class APIServer(Application):
     """Aiohttp Application with automatic OpenAPI generation."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        title: str = "AioFauna",
+        description: str = "AioFauna API",
+        version: str = "0.0.1",
+        **kwargs,
+    ):
         super().__init__(*args, logger=setup_logging(self.__class__.__name__), **kwargs)
+        schemas = FaunaModel.Metadata.__subclasses__ + Document.Metadata.__subclasses__
         self.openapi = {
             "openapi": "3.0.0",
-            "info": {"title": "AioFauna", "version": "1.0.0"},
+            "info": {"title": title, "version": version},
             "paths": {},
-            "components": {"schemas": {}},
-            "description": "AioFauna API",
+            "tags": [],
+            "components": {"schemas": {
+                schema.__name__: schema.schema() for schema in schemas
+            }},
+            "description": description,
         }
         self._route_open_api_params = {}
 
@@ -42,7 +56,7 @@ class APIServer(Application):
 
         @self.get("/docs")
         async def docs():
-            return Response(text=html, content_type="text/html")
+            return Response(text=HTML_STRING, content_type="text/html")
 
         @self.on_event("startup")
         async def startup(_):
@@ -258,3 +272,23 @@ class APIServer(Application):
 
         self.middlewares.append(wrapper)
         return wrapper
+
+    def use(self, router: APIRouter, prefix: str = "") -> "APIServer":
+        """Chainable method to add a router to the server"""
+        for route in router.routes:
+            path = prefix + route.path
+            self.router.add_route(
+                route.method,
+                prefix + router.prefix + path,
+                route.handler,
+                **route.kwargs,
+            )
+
+        for path, details in router.openapi["paths"].items():
+            path = prefix + path
+            self.openapi["paths"][path] = details
+
+        self.openapi["components"]["schemas"].update(
+            router.openapi["components"]["schemas"]
+        )
+        return self

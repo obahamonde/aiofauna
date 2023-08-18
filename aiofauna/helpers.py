@@ -6,12 +6,13 @@ import functools
 import json
 import types
 import typing
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from functools import singledispatch
 from typing import Any, List, Union
 
 from aiohttp.web import HTTPException, Request, Response, json_response
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
+from typing_extensions import ParamSpec
 
 from aiofauna.json import FaunaJSONEncoder
 
@@ -19,41 +20,34 @@ from .json import parse_json, to_json
 from .odm import FaunaModel
 
 T = typing.TypeVar("T")
+P = ParamSpec("P")
 
 
-def asyncify(
-    func: typing.Callable[..., typing.Any],
-) -> typing.Callable[..., typing.Awaitable[typing.Any]]:
+def async_io(func: typing.Callable[P, T]) -> typing.Callable[P, typing.Awaitable[T]]:
+    """
+    Decorator to make a function async.
+    """
+
     @functools.wraps(func)
-    def wrapper(self, *args, **kwargs):
-        bound = functools.partial(func, self, *args, **kwargs)
-        if asyncio.get_event_loop().is_running():
-            loop = asyncio.get_event_loop()
-            return loop.run_in_executor(self.executor, bound)
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        return loop.run_in_executor(self.executor, bound)
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> typing.Any:
+        return await asyncio.to_thread(func, *args, **kwargs)
 
-    return typing.cast(typing.Callable[..., typing.Awaitable[typing.Any]], wrapper)
+    return wrapper
 
 
-def aio(max_workers: int = 5) -> typing.Callable[[typing.Type], typing.Type]:
-    """Decorator that converts all the methods of a class into async methods."""
+def async_cpu(func: typing.Callable[P, T]) -> typing.Callable[P, typing.Awaitable[T]]:
+    """
+    Decorator to make a function async.
+    """
 
-    def decorator(cls: typing.Type) -> typing.Type:
-        attrs: typing.Dict[str, typing.Any] = {}
-        attrs["executor"] = ThreadPoolExecutor(max_workers=max_workers)
-        for attr_name, attr_value in cls.__dict__.items():
-            if (
-                isinstance(attr_value, types.FunctionType)
-                and attr_name.startswith("__") is False
-            ):
-                attrs[attr_name] = asyncify(attr_value)
-            else:
-                attrs[attr_name] = attr_value
-        return type(cls.__name__, cls.__bases__, attrs)
+    @functools.wraps(func)
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> typing.Any:
+        with ProcessPoolExecutor() as pool:
+            return await asyncio.get_running_loop().run_in_executor(
+                pool, func, *args, **kwargs
+            )
 
-    return decorator
+    return wrapper
 
 
 @singledispatch

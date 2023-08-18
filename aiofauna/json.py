@@ -13,6 +13,7 @@ from typing_extensions import override
 
 from .faunadb.objects import FaunaTime, Native, Query, Ref, SetRef
 from .faunadb.query import Expr
+from .typedefs import Document
 
 T = TypeVar("T")
 

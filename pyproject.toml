@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.1.60"
+version = "0.1.78"
 description = ""
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 repository = "https://github.com/obahamonde/aiofauna"
@@ -23,10 +23,6 @@ gunicorn = "^21.2.0"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.extras]
-llm = ["openai", "numpy"]
-ssr = ["jinja2", "markdown"]
-all = ["openai", "numpy", "jinja2","pygments","gunicorn"]
 
 [tool.poetry.scripts]
 aiofauna = "aiofauna.__main__:main"
