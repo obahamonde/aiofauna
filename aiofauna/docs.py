@@ -166,7 +166,7 @@ async def load(request: Request, params: dict):
     return args_to_apply
 
 
-HTML_STRING = """<!DOCTYPE html>
+HTML_STRING = lambda x: f"""<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
@@ -176,30 +176,30 @@ HTML_STRING = """<!DOCTYPE html>
                 <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-16x16.png" sizes="16x16" />
                 <style>
                 html
-                {
+                {{
                     box-sizing: border-box;
                     overflow: -moz-scrollbars-vertical;
                     overflow-y: scroll;
-                }
+                }}
                 
                 .swagger-ui .topbar
-                {
+                {{
                     display: none;
-                }
+                }}
                     
                     
                 *,
                 *:before,
                 *:after
-                {
+                {{
                     box-sizing: inherit;
-                }
+                }}
 
                 body
-                {
+                {{
                     margin:0;
                     background: #fafafa;
-                }
+                }}
                 </style>
             </head>
 
@@ -209,9 +209,9 @@ HTML_STRING = """<!DOCTYPE html>
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-bundle.js"> </script>
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-standalone-preset.js"> </script>
                 <script>
-                window.onload = function() {
-                const ui = SwaggerUIBundle({
-                    url: "/openapi.json",
+                window.onload = function() {{
+                const ui = SwaggerUIBundle({{
+                    url: "{x}",
                     dom_id: '#swagger-ui',
                     deepLinking: true,
                     presets: [
@@ -222,9 +222,9 @@ HTML_STRING = """<!DOCTYPE html>
                     SwaggerUIBundle.plugins.DownloadUrl
                     ],
                     layout: "StandaloneLayout"
-                })
+                }})
                 window.ui = ui
-                }
+                }}
             </script>
             </body>
             </html>

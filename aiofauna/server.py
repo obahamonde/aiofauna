@@ -33,22 +33,25 @@ class APIServer(Application):
         title: str = "AioFauna",
         description: str = "AioFauna API",
         version: str = "0.0.1",
+        openapi_url: str = "/openapi.json",
+        servers: list[str] = [{"url": "http://localhost:8080", "description": "Local"}],
         **kwargs,
     ):
         super().__init__(*args, logger=setup_logging(self.__class__.__name__), **kwargs)
-        schemas = FaunaModel.Metadata.__subclasses__ + Document.Metadata.__subclasses__
+        schemas = FaunaModel.Metadata.subclasses + Document.Metadata.subclasses
         self.openapi = {
             "openapi": "3.0.0",
             "info": {"title": title, "version": version},
             "paths": {},
             "tags": [],
-            "components": {"schemas": {
-                schema.__name__: schema.schema() for schema in schemas
-            }},
+            "components": {
+                "schemas": {schema.__name__: schema.schema() for schema in schemas}
+            },
+            "servers": servers,
             "description": description,
         }
         self._route_open_api_params = {}
-
+        self.openapi_url = openapi_url
         @self.get("/openapi.json")
         async def openapi():
             response = jsonable_encoder(self.openapi)
@@ -56,7 +59,7 @@ class APIServer(Application):
 
         @self.get("/docs")
         async def docs():
-            return Response(text=HTML_STRING, content_type="text/html")
+            return Response(text=HTML_STRING(self.openapi_url), content_type="text/html")
 
         @self.on_event("startup")
         async def startup(_):

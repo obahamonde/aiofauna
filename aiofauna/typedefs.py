@@ -4,15 +4,15 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
-from typing import (Any, Dict, Generic, Iterable, List, Type, TypeVar, Union,
-                    cast)
+from typing import (Any, Callable, Dict, Generic, Iterable, List, Type,
+                    TypeVar, Union, cast)
 from uuid import UUID
 
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from pydantic import Extra  # pylint: disable=no-name-in-module
 from pydantic import Field as PydanticField
-from pydantic.main import ModelMetaclass  # pylint: disable=no-name-in-module
+from typing_extensions import ParamSpec
 
 from .utils import handle_errors, process_time, setup_logging
 
@@ -25,6 +25,7 @@ logger = setup_logging(__name__)
 
 
 T = TypeVar("T")
+P = ParamSpec("P")
 
 class Document(BaseModel):
     class Config(BaseConfig):
@@ -46,7 +47,7 @@ class Document(BaseModel):
         }
 
     class Metadata:
-        __subclasses__: List[Type[Document]] = []
+        subclasses: List[Type[Document]] = []
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -54,7 +55,7 @@ class Document(BaseModel):
         if cls.__doc__ is None:
             cls.__doc__ = f"```json\n{cls.schema_json(indent=2)}\n```"
         if cls.__name__ != "FunctionType":
-            cls.Metadata.__subclasses__.append(cls)
+            cls.Metadata.subclasses.append(cls)
 
 
 D = TypeVar("D", bound=Document)
@@ -96,62 +97,43 @@ class LazyProxy(Generic[T], ABC):
         ...
 
 
-class FunctionCall(Document):
-    name: str
-    data: Any
-
-
-class FunctionType(Document, ABC):
-    class Metadata:
-        subclasses: List[Type[FunctionType]] = []
-
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-        logger.debug("OpenAI Function %s called", self.__class__.__name__)
-
-    @classmethod
-    def __init_subclass__(cls, **kwargs: Any):
-        super().__init_subclass__(**kwargs)
-
-        _schema = cls.schema()
-        logger.debug("OpenAI Function %s", cls.__name__)
-        if cls.__doc__ is None:
-            raise ValueError(
-                f"FunctionType subclass {cls.__name__} must have a docstring"
-            )
-
-        cls.openaischema = {
-            "name": cls.__name__,
-            "description": cls.__doc__,
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    k: v for k, v in _schema["properties"].items() if k != "self"
-                },
-                "required": [k for k, v in _schema["properties"].items() if v],
-            },
-        }
-
-        cls.Metadata.subclasses.append(cls)
-
-    @process_time
-    @handle_errors
-    async def __call__(self, **kwargs: Any) -> FunctionCall:
-        response = await self.run(**kwargs)
-
-        name = self.__class__.__name__
-
-        return FunctionCall(name=name, data=response)
-
-    @abstractmethod
-    async def run(self, **kwargs: Any) -> Any:
-        ...
-
-
-F = TypeVar("F", bound=FunctionType)
-
-
-def Field(*args, index: bool = False, unique: bool = False, **kwargs):
-    """Field Factory"""
-    return PydanticField(*args, index=index, unique=unique, **kwargs)
+def Field(
+    default: Any = None,
+    *,
+    index: bool = None,
+    unique: bool = None,
+    alias: str = None,
+    title: str = None,
+    description: str = None,
+    const: bool = None,
+    gt: float = None,
+    ge: float = None,
+    lt: float = None,
+    le: float = None,
+    multiple_of: float = None,
+    min_items: int = None,
+    max_items: int = None,
+    min_length: int = None,
+    max_length: int = None,
+    regex: str = None,
+    **extra: Any,
+) -> Any:
+    return PydanticField(
+        default=default,
+        alias=alias,
+        title=title,
+        description=description,
+        const=const,
+        gt=gt,
+        ge=ge,
+        lt=lt,
+        le=le,
+        multiple_of=multiple_of,
+        min_items=min_items,
+        max_items=max_items,
+        min_length=min_length,
+        max_length=max_length,
+        regex=regex,
+        index=index,
+        unique=unique,
+    )

@@ -9,16 +9,12 @@ from dataclasses import dataclass, field
 from functools import wraps
 from re import T
 from threading import Lock
-from typing import Any, AsyncGenerator, Dict, List, Literal, Optional, Type, Union
+from typing import (Any, AsyncGenerator, Dict, List, Literal, Optional, Type,
+                    Union)
 
-from aiohttp import (
-    ClientConnectionError,
-    ClientConnectorSSLError,
-    ClientResponse,
-    ClientSession,
-    ClientTimeout,
-    TCPConnector,
-)
+from aiohttp import (ClientConnectionError, ClientConnectorSSLError,
+                     ClientResponse, ClientSession, ClientTimeout,
+                     TCPConnector)
 from aiohttp.web_exceptions import HTTPException
 from dotenv import load_dotenv
 from multidict import CIMultiDict
@@ -245,7 +241,9 @@ class APIClient(LazyProxy[ClientSession]):
         super().__init_subclass__(**kwargs)
         if cls._subclasses is None:
             cls._subclasses = []
+        cls = dataclass(cls, init=True, repr=True, unsafe_hash=False, frozen=False)
         cls._subclasses.append(cls)
+        
 
     @classmethod
     async def cleanup(cls):

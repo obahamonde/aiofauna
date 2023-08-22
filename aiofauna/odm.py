@@ -16,19 +16,20 @@ load_dotenv()
 
 T = TypeVar("T", bound="FaunaModel")
 
+
 class FaunaModel(JSONModel):
     ref: str = Field(default_factory=gen_emptystr)
     ts: str = Field(default_factory=gen_emptystr)
 
     class Metadata:
-        __subclasses__: List[Type[FaunaModel]] = []
+        subclasses: List[Type[FaunaModel]] = []
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         if cls.__doc__ is None:
             cls.__doc__ = f"```json\n{cls.schema_json(indent=2)}\n```"
-        cls.Metadata.__subclasses__.append(cls)
+        cls.Metadata.subclasses.append(cls)
 
     @classmethod
     @property
@@ -37,9 +38,7 @@ class FaunaModel(JSONModel):
 
     @classmethod
     async def create_all(cls):
-        await asyncio.gather(
-            *[model.provision() for model in cls.Metadata.__subclasses__]
-        )
+        await asyncio.gather(*[model.provision() for model in cls.Metadata.subclasses])
 
     @classmethod
     def client(cls):

@@ -5,13 +5,14 @@ from time import perf_counter
 from typing import Any, Callable, Coroutine, Generator, Sequence, TypeVar, cast
 
 from aiohttp.web_exceptions import HTTPException
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.pretty import install
 from rich.traceback import install as ins
+from typing_extensions import ParamSpec
 
 T = TypeVar("T")
+P = ParamSpec("P")
 
 
 def setup_logging(name: str) -> logging.Logger:
@@ -47,7 +48,7 @@ logger = setup_logging(__name__)
 
 
 def process_time(
-    func: Callable[..., Coroutine[Any, Any, T]]
+    func: Callable[P, Coroutine[Any, Any, T]]
 ) -> Callable[..., Coroutine[Any, Any, T]]:  # pylint: disable=line-too-long
     """
     A decorator to measure the execution time of an asynchronous function.
@@ -57,7 +58,7 @@ def process_time(
     """
 
     @functools.wraps(func)
-    async def wrapper(*args: Any, **kwargs: Any) -> T:
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         """
         Wrapper function to time the function call.
         """
@@ -71,8 +72,8 @@ def process_time(
 
 
 def handle_errors(
-    func: Callable[..., Coroutine[Any, Any, T]]
-) -> Callable[..., Coroutine[Any, Any, T]]:  # pylint: disable=line-too-long
+    func: Callable[P, Coroutine[Any, Any, T]]
+) -> Callable[P, Coroutine[Any, Any, T]]:  # pylint: disable=line-too-long
     """
     A decorator to handle errors in an asynchronous function.
 
@@ -80,7 +81,7 @@ def handle_errors(
     func -- The asynchronous function whose errors are to be handled.
     """
 
-    async def wrapper(*args: Any, **kwargs: Any) -> T:
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         """
         Wrapper function to handle errors in the function call.
         """

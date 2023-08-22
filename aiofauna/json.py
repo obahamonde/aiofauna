@@ -58,7 +58,7 @@ def to_json(dct, pretty=True, sort_keys=True):
             sort_keys=True,
             indent=4,
             separators=(", ", ": "),
-            allow_nan=False,
+            allow_nan=True,
             ensure_ascii=True,
         )
     return dumps(

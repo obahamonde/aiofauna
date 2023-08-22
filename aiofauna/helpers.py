@@ -3,14 +3,12 @@ Flaskaesque helper functions for aiohttp.
 """
 import asyncio
 import functools
-import json
-import types
 import typing
 from concurrent.futures import ProcessPoolExecutor
 from functools import singledispatch
 from typing import Any, List, Union
 
-from aiohttp.web import HTTPException, Request, Response, json_response
+from aiohttp.web import Response, json_response
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing_extensions import ParamSpec
 
@@ -23,38 +21,48 @@ T = typing.TypeVar("T")
 P = ParamSpec("P")
 
 
-def async_io(func: typing.Callable[P, T]) -> typing.Callable[P, typing.Awaitable[T]]:
+def async_io(
+    func: typing.Callable[P, T]
+) -> typing.Callable[P, typing.Coroutine[T, Any, Any]]:
     """
-    Decorator to make a function async.
+    Decorator to convert an IO bound function to a coroutine by running it in a thread pool.
     """
 
     @functools.wraps(func)
-    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> typing.Any:
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         return await asyncio.to_thread(func, *args, **kwargs)
 
     return wrapper
 
 
-def async_cpu(func: typing.Callable[P, T]) -> typing.Callable[P, typing.Awaitable[T]]:
+def async_cpu(
+    func: typing.Callable[P, T]
+) -> typing.Callable[P, typing.Coroutine[T, Any, Any]]:
     """
-    Decorator to make a function async.
+    Decorator to convert a CPU bound function to a coroutine by running it in a process pool.
     """
 
     @functools.wraps(func)
-    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> typing.Any:
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         with ProcessPoolExecutor() as pool:
-            return await asyncio.get_running_loop().run_in_executor(
-                pool, func, *args, **kwargs
-            )
+            try:
+                return await asyncio.get_running_loop().run_in_executor(
+                    pool, func, *args, **kwargs
+                )
+            except RuntimeError:
+                return await asyncio.get_event_loop().run_in_executor(
+                    pool, func, *args, **kwargs
+                )
 
     return wrapper
 
 
 @singledispatch
-def do_response(response: Any) -> Response:
+def do_response(response: T) -> Response:
     """
-    Flask-esque function to make a response from a function.
+    Process the response from a view function and return an aiohttp.web.Response object.
     """
+
     return response
 
 
@@ -102,4 +110,4 @@ def _(response: bool) -> Response:
 
 @do_response.register(list)
 def _(response: List[Union[FaunaModel, BaseModel, dict, str, int, float]]) -> Response:
-    return json_response([x for x in response], dumps=to_json)
+    return json_response(response, dumps=to_json)

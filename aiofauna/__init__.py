@@ -77,14 +77,12 @@ from typing import *  # pylint: disable=wildcard-import,unused-wildcard-import
 from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse
 
-from .client import APIClient, APIConfig, FaunaClient
+from .client import APIClient, FaunaClient
 from .docs import FileField
 from .faunadb import query as q
 from .helpers import async_cpu, async_io, asyncio
-from .json import FaunaJSONEncoder
-from .json import _parse_json_hook as default
-from .json import parse_json, to_json
+from .json import FaunaJSONEncoder, parse_json, to_json
 from .odm import FaunaModel
 from .server import APIRouter, APIServer, Request, Response
 from .typedefs import Document, Field, LazyProxy
-from .utils import handle_errors, setup_logging
+from .utils import chunker, handle_errors, setup_logging
