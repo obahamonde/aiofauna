@@ -5,3 +5,6 @@ client
 dist
 .faunarc
 logs
+app
+src
+main.py
