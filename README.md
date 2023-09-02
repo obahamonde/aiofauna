@@ -24,11 +24,11 @@ title: AioFauna
 
 ✅ Robust data validation: Utilizes the rich features of Pydantic for data validation and serialization.
 
+✅ OX: Thanks to `rich` and `aiohttp` you will get rich logging and error handling out of the box.
+
 ✅ Auto-provisioning: Automatic management of indexes, unique indexes, and collections with `FaunaModel` ODM.
 
 ✅ Full JSON communication: Focus on your data, don't worry about the communication protocol. Your `Api` will receive and return JSON.
-
-✅ Markdown and Html support.
 
 ✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes, `/docs` automatic interactive API documentation, and decorated view functions and automatic serialization and deserialization of your data.
 
@@ -42,6 +42,8 @@ title: AioFauna
 
 📦 [PyPi](https://pypi.org/project/aiofauna/)
 
-📦 [Demo](https://natal-ia.netlify.app) (LLM smart agent)
+📦 [Demo](https://www.aiofauna.com/chat)
 
 📦 [GitHub](https://github.com/obahamonde/aiofauna)
+
+📦 [Documentation](https://www.aiofauna.com/docs)

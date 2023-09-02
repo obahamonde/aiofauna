@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, List, Optional, Type, TypeVar
+from typing import Any, List, Type, TypeVar
 
 from dotenv import load_dotenv
 from pydantic import Field
@@ -271,7 +271,7 @@ class FaunaModel(JSONModel):
             cls.logger.error(exc)
             raise ValueError(f"Field {ref} not found")  # pylint: disable=all
 
-    async def save(self: T) -> Optional[T]:
+    async def save(self: T) -> T:
         if isinstance(self.ref, str) and len(self.ref) == 18:
             return await self.update(self.ref, kwargs=self.dict())
         return await self.create()

@@ -1,24 +1,19 @@
 """REST API Module with automatic OpenAPI generation."""
 import asyncio
 from inspect import signature
-from typing import Awaitable, Callable, List
+from typing import Callable, List
 
 from aiohttp.typedefs import Handler
-from aiohttp.web import Request, RouteDef, RouteTableDef, StreamResponse
-from typing_extensions import ParamSpec
+from aiohttp.web import Request, RouteDef, RouteTableDef
 
 from .docs import extract, load, transform
 from .helpers import do_response
-
-Middleware = Callable[[Request, Handler], Awaitable[StreamResponse]]
-
-P = ParamSpec("P")
 
 
 class APIRouter(RouteTableDef):
     """Aiohttp Application with automatic OpenAPI generation."""
 
-    def __init__(self, *args:P.args, prefix: str = "", tags: List[str] = [], **kwargs:P.kwargs):
+    def __init__(self, *args, prefix: str = "", tags: List[str] = [], **kwargs):
         super().__init__(*args, **kwargs)
         self.prefix = prefix
         self.tags = tags
@@ -44,7 +39,7 @@ class APIRouter(RouteTableDef):
             self._route_open_api_params[(path, method)] = open_api_params
             transform(self.openapi, path, method, func, open_api_params)
 
-            async def wrapper(*args: P.args, **kwargs: P.kwargs):
+            async def wrapper(*args, **kwargs):
                 request: Request = args[0]
                 args = args[1:]
                 args_to_apply = await load(request, params.copy())
@@ -130,6 +125,15 @@ class APIRouter(RouteTableDef):
 
         def decorator(func: Handler):
             self.route(path, "HEAD", **kwargs)(func)
+            return func
+
+        return decorator
+
+    def options(self, path: str, **kwargs) -> Callable[[Handler], Handler]:
+        """OPTIONS decorator"""
+
+        def decorator(func: Handler):
+            self.route(path, "OPTIONS", **kwargs)(func)
             return func
 
         return decorator

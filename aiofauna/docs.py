@@ -166,7 +166,8 @@ async def load(request: Request, params: dict):
     return args_to_apply
 
 
-HTML_STRING = lambda x: f"""<!DOCTYPE html>
+HTML_STRING = (
+    lambda x: f"""<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
@@ -229,3 +230,4 @@ HTML_STRING = lambda x: f"""<!DOCTYPE html>
             </body>
             </html>
             """
+)

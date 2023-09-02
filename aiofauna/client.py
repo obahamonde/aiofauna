@@ -7,20 +7,14 @@ import os
 import typing
 from dataclasses import dataclass, field
 from functools import wraps
-from re import T
 from threading import Lock
-from typing import (Any, AsyncGenerator, Dict, List, Literal, Optional, Type,
-                    Union)
+from typing import Any, AsyncGenerator, Dict, List, Literal, Optional, Type, Union
 
-from aiohttp import (ClientConnectionError, ClientConnectorSSLError,
-                     ClientResponse, ClientSession, ClientTimeout,
-                     TCPConnector)
+from aiohttp import ClientSession, ClientTimeout, TCPConnector
+from aiohttp.client_exceptions import ClientConnectionError, ClientConnectorSSLError
 from aiohttp.web_exceptions import HTTPException
 from dotenv import load_dotenv
 from multidict import CIMultiDict
-from pydantic import BaseModel
-
-from aiofauna.faunadb.query import sin
 
 from .faunadb.errors import FaunaException
 from .faunadb.objects import Expr
@@ -85,7 +79,7 @@ HTTP_EXCEPTIONS = (
 )
 
 
-def singleton(cls: typing.Type[T]) -> typing.Callable[..., T]:  # type: ignore
+def singleton(cls: typing.Type[T]) -> typing.Type[T]:
     instance = None
     lock = Lock()
 
@@ -113,11 +107,11 @@ class APIException(HTTPException):
         )
 
 
-@dataclass(frozen=True)
+@dataclass(init=True, repr=True, unsafe_hash=False, frozen=False)
 class ConnectorConfig:
     ssl: bool = field(default=False)
-    limit: int = field(default=1000)
-    keepalive_timeout: int = field(default=10)
+    limit: int = field(default=2048)
+    keepalive_timeout: int = field(default=60)
 
 
 @dataclass(init=True, repr=True, unsafe_hash=False, frozen=False)
@@ -199,7 +193,7 @@ class FaunaClient(LazyProxy[ClientSession]):
                 "Authorization": f"Bearer {self.secret}",
                 "Content-type": "application/json",
                 "Accept": "text/event-stream",
-                "Keep-Alive": "timeout=5, max=900",
+                "Keep-Alive": "timeout=60, max=900",
                 "Connection": "keep-alive",
                 "Cache-Control": "no-cache",
                 "X-Last-Seen-Txn": "0",
@@ -210,9 +204,10 @@ class FaunaClient(LazyProxy[ClientSession]):
             async for chunk in response.content.iter_any():
                 try:
                     yield chunk.decode()
-                except FAUNA_EXCEPTIONS as exc:
+                except HTTP_EXCEPTIONS as exc:
                     self.config.logger.error(exc)
                     yield str(exc)
+                    raise self.config.exception_class from exc
 
     async def cleanup(self):
         if self.config.session is not None:
@@ -243,17 +238,15 @@ class APIClient(LazyProxy[ClientSession]):
             cls._subclasses = []
         cls = dataclass(cls, init=True, repr=True, unsafe_hash=False, frozen=False)
         cls._subclasses.append(cls)
-        
 
     @classmethod
     async def cleanup(cls):
-        if hasattr(cls, "_subclasses") and cls._subclasses is not None:
+        if cls._subclasses is not None:
             tasks = []
             for subclass in cls._subclasses:
                 if subclass._session is not None:
                     tasks.append(subclass._session.close())
             await asyncio.gather(*tasks)
-            cls._subclasses = None
 
     async def __load__(self) -> ClientSession:
         async with self._session_creation_lock:
@@ -265,7 +258,7 @@ class APIClient(LazyProxy[ClientSession]):
                     connector=TCPConnector(
                         keepalive_timeout=60,
                         ssl=False,
-                        limit=1000,
+                        limit=2048,
                     ),
                     timeout=ClientTimeout(total=60),
                     connector_owner=False,

@@ -1,5 +1,5 @@
 """
-Flaskaesque helper functions for aiohttp.
+Helper functions for aiofauna.
 """
 import asyncio
 import functools
@@ -12,9 +12,7 @@ from aiohttp.web import Response, json_response
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing_extensions import ParamSpec
 
-from aiofauna.json import FaunaJSONEncoder
-
-from .json import parse_json, to_json
+from .json import to_json
 from .odm import FaunaModel
 
 T = typing.TypeVar("T")
@@ -90,7 +88,9 @@ def _(response: str) -> Response:
 
 @do_response.register(bytes)
 def _(response: bytes) -> Response:
-    return Response(status=200, body=response, content_type="application/octet-stream")
+    return Response(
+        status=200, body=response, content_type="application/octet-sse_stream"
+    )
 
 
 @do_response.register(int)
@@ -111,3 +111,25 @@ def _(response: bool) -> Response:
 @do_response.register(list)
 def _(response: List[Union[FaunaModel, BaseModel, dict, str, int, float]]) -> Response:
     return json_response(response, dumps=to_json)
+
+
+@do_response.register(tuple)
+def _(response: tuple) -> Response:
+    return do_response(list(response))
+
+@do_response.register(set)
+def _(response: set) -> Response:
+    return do_response(list(response))
+
+@do_response.register(frozenset)
+def _(response: frozenset) -> Response:
+    return do_response(list(response))
+
+@do_response.register(type(None))
+def _(response: None) -> Response:
+    return Response(status=200, text="", content_type="text/plain")
+
+@do_response.register(Response)
+def _(response: Response) -> Response:
+    return response
+

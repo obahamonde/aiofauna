@@ -31,10 +31,10 @@ class APIServer(Application):
         self,
         *args,
         title: str = "AioFauna",
+        servers: list[str] = None,
         description: str = "AioFauna API",
         version: str = "0.0.1",
         openapi_url: str = "/openapi.json",
-        servers: list[str] = [{"url": "http://localhost:8080", "description": "Local"}],
         **kwargs,
     ):
         super().__init__(*args, logger=setup_logging(self.__class__.__name__), **kwargs)
@@ -44,14 +44,15 @@ class APIServer(Application):
             "info": {"title": title, "version": version},
             "paths": {},
             "tags": [],
+            "servers": [{"url": url} for url in servers or []],
             "components": {
                 "schemas": {schema.__name__: schema.schema() for schema in schemas}
             },
-            "servers": servers,
             "description": description,
         }
         self._route_open_api_params = {}
         self.openapi_url = openapi_url
+
         @self.get("/openapi.json")
         async def openapi():
             response = jsonable_encoder(self.openapi)
@@ -59,7 +60,9 @@ class APIServer(Application):
 
         @self.get("/docs")
         async def docs():
-            return Response(text=HTML_STRING(self.openapi_url), content_type="text/html")
+            return Response(
+                text=HTML_STRING(self.openapi_url), content_type="text/html"
+            )
 
         @self.on_event("startup")
         async def startup(_):
