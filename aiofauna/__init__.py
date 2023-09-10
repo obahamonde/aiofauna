@@ -39,19 +39,19 @@ title: AioFauna
 
 ✅ Performant: As a framework built on top of Aiohttp it leverages the power of asyncio and the fastest python `APIClient` built on top of aiohttp with Lazy Loading and session sharing, plus the ubiquiness of FaunaDB to achieve high performance.
 
-✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your `Api`, exposed at the `/docs` path.
+✅ Automatic Swagger UI generation: Automatic generation of interactive Swagger UI documentation for instant testing of your `APIServer`, exposed at the `/docs` path.
 
 ✅ SSE (Server Sent Events): Built-in support for SSE (Server Sent Events) for real-time streaming of data from FaunaDB to your application, syntactic sugar through the `@sse` decorator.
 
-✅ Websockets: Built-in support for Websockets for real-time bidirectional communication between your application and the resources served by AioFauna `Api`, syntactic sugar through the `@websocket` decorator.
+✅ Websockets: Built-in support for Websockets for real-time bidirectional communication between your application and the resources served by AioFauna `APIServer`, syntactic sugar through the `@websocket` decorator.
 
 ✅ Robust data validation: Utilizes the rich features of Pydantic for data validation and serialization.
 
 ✅ Auto-provisioning: Automatic management of indexes, unique indexes, and collections with `FaunaModel` ODM.
 
-✅ Full JSON communication: Focus on your data, don't worry about the communication protocol. Your `Api` will receive and return JSON.
+✅ Full JSON communication: Focus on your data, don't worry about the communication protocol. Your `APIServer` will receive and return JSON.
 
-✅ APIRouter: AioFauna comes with a powerful APIRouter class that allows you to organize your `Api` endpoints with path operations, path parameters, query parameters, request body, status codes, and decorated view functions.
+✅ APIRouter: AioFauna comes with a powerful APIRouter class that allows you to organize your `APIServer` endpoints with path operations, path parameters, query parameters, request body, status codes, and decorated view functions.
 
 ✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes, `/docs` automatic interactive API documentation, and decorated view functions and automatic serialization and deserialization of your data.
 
@@ -81,9 +81,10 @@ from typing_extensions import ParamSpec
 from .client import APIClient, FaunaClient
 from .docs import FileField
 from .faunadb import query as q
-from .helpers import async_cpu, async_io, asyncio
+from .helpers import async_cpu, async_io, asyncio, template, component
 from .json import FaunaJSONEncoder, parse_json, to_json
 from .odm import FaunaModel
 from .server import APIRouter, APIServer, Request, Response
-from .typedefs import Document, Field, LazyProxy
+from .typedefs import Document, Field, LazyProxy, Component
 from .utils import chunker, handle_errors, process_time, setup_logging
+from .markdown import md_component

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiofauna"
-version = "0.1.93"
+version = "0.1.94"
 description = "FaunaDB Http Framework"
 authors = ["Oscar Bahamonde <oscar.bahamonde.dev@gmail.com>"]
 repository = "https://github.com/obahamonde/aiofauna"
@@ -16,8 +16,11 @@ iso8601 = "^1.1.0"
 aiohttp-sse = "^2.1.0"
 pydantic = {extras = ["dotenv"], version = "^1.10.7"}
 rich = "^13.4.2"
+
 click = "^8.1.6"
 gunicorn = "^21.2.0"
+jinja2 = "^3.1.2"
+pygments = {extras = ["linkify"], version = "^2.16.1"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

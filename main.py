@@ -1,40 +1,110 @@
 from aiofauna import *
-from src import *
+from uuid import uuid4
+
+class Tiptap(Document):
+		id:str = Field(default_factory=lambda: str(uuid4()))
+		content:str = Field(default="Hello World")
+
+class Id(Document):
+		id:str = Field(default_factory=lambda: str(uuid4()))
+
+app = APIServer()
+
+@app.get("/")
+@template()
+async def index():
+	"""
+	<h1 text-red-500 >Editor</h1>
+	<div id="{{ id }}"></div>
+	<button hx-get="/editor"
+		hx-target="#{{ id }}" hx-trigger="click" hx-swap="beforeend">
+		Edit
+	</button>
+	<div id="{{ id }}"></div>
+	"""
+	return Id()
 
 
-class Catalog(FaunaModel):
-    name:str
-    data:str
+async def index_endpoint():
+	return await index()
 
-app = APIServer(servers=["http://localhost:8080"])
+@app.get("/editor")
+@component
+async def tiptap():
+	"""
+		<div id="{{ id }}"
+		hx-get="/documents"
+		></div>
+	<script type="module">
+		import { Editor } from 'https://esm.sh/@tiptap/core'
+		import StarterKit from 'https://esm.sh/@tiptap/starter-kit'
+		import Image from 'https://esm.sh/@tiptap/extension-image'
+		import Link from 'https://esm.sh/@tiptap/extension-link'
+		import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder'
+		import Underline from 'https://esm.sh/@tiptap/extension-underline'
+		import Highlight from 'https://esm.sh/@tiptap/extension-highlight'
+		import CodeBlock from 'https://esm.sh/@tiptap/extension-code-block'
+
+		const editor = new Editor({
+			element: document.getElementById('{{ id }}'),
+			extensions: [
+				StarterKit,
+				Image,
+				Link,
+				Placeholder,
+				Underline,
+				Highlight,
+				CodeBlock,
+			],
+			content: `{{ content }}`,
+		})
+	</script>
+
+	"""
+	return Tiptap()
 
 
+@app.get("/documents")
+@md_component()
+async def documents_endpoint():
+	"""
+	# DATEOAS: Documentation as The Engine of Application State
+	
+	## Example Application
 
-@app.get("/api/")
-async def catalog():
-    return [s.openaischema for s in OpenAIFunction.Metadata.subclasses]
+	### Editor
 
+	We define a TipTap block editor as component docstring.
 
-@app.get("/api")
-async def chat(text: str):
-    return await function_call(text=text)
+	```html
 
-@app.post("/api/{text}")
-async def momo(text: str):
-    return await Catalog(name=text, data=text).save()
+	<div id="{{ id }}"></div>
+	<script type="module">
+		import { Editor } from 'https://esm.sh/@tiptap/core'
+		import StarterKit from 'https://esm.sh/@tiptap/starter-kit'
+		import Image from 'https://esm.sh/@tiptap/extension-image'
+		import Link from 'https://esm.sh/@tiptap/extension-link'
+		import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder'
+		import Underline from 'https://esm.sh/@tiptap/extension-underline'
+		import Highlight from 'https://esm.sh/@tiptap/extension-highlight'
+		import CodeBlock from 'https://esm.sh/@tiptap/extension-code-block'
 
-@app.get("/api/catalog")
-async def catalog_all():
-    return await Catalog.all()
+		const editor = new Editor({
+			element: document.getElementById('{{ id }}'),
+			extensions: [
+				StarterKit,
+				Image,
+				Link,
+				Placeholder,
+				Underline,
+				Highlight,
+				CodeBlock,
+			],
+			content: `{{ content }}`,
+		})
+	</script>
+	
+		```
 
-@app.get("/api/catalog/{id}")
-async def catalog_get(id: str):
-    return await Catalog.get(id)
-
-@app.delete("/api/catalog/{id}")
-async def catalog_del(id: str):
-    return await Catalog.delete(id)
-
-@app.put("/api/catalog/{id}")
-async def catalog_put(id: str, data: str):
-    return await Catalog.update(id,data=data)
+	"""
+	return {"id": str(uuid4()), "content": "Hello World"}

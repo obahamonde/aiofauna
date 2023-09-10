@@ -6,8 +6,7 @@ from inspect import signature
 from typing import Awaitable, Callable
 
 from aiohttp.typedefs import Handler
-from aiohttp.web import (Application, FileResponse, Request, Response,
-                         StreamResponse)
+from aiohttp.web import Application, FileResponse, Request, Response, StreamResponse
 from aiohttp.web_middlewares import middleware
 from aiohttp.web_ws import WebSocketResponse
 from aiohttp_sse import EventSourceResponse, sse_response
@@ -20,12 +19,15 @@ from .odm import FaunaModel
 from .router import APIRouter
 from .typedefs import Document
 from .utils import setup_logging
+from typing_extensions import ParamSpec
+
+P = ParamSpec("P")
 
 Middleware = Callable[[Request, Handler], Awaitable[StreamResponse]]
 
 
 class APIServer(Application):
-    """Aiohttp Application with automatic OpenAPI generation."""
+    """AioFauna APIServer"""
 
     def __init__(
         self,
@@ -73,21 +75,27 @@ class APIServer(Application):
             await APIClient.cleanup()
             await FaunaModel.cleanup()
 
-    def document(self, path: str, method: str):
+    def document(
+        self, path: str, method: str
+    ) -> Callable[
+        [Callable[P, Awaitable[StreamResponse]]], Callable[P, Awaitable[StreamResponse]]
+    ]:
         """
 
-        Decorator to document a function.
+        SWAGGER DOCUMENTATION
 
         """
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             sig = signature(func)
             params = sig.parameters
             open_api_params = extract(params.copy(), path)
             self._route_open_api_params[(path, method)] = open_api_params
             transform(self.openapi, path, method, func, open_api_params)
 
-            async def wrapper(*args, **kwargs):
+            async def wrapper(*args: P.args, **kwargs: P.kwargs) -> StreamResponse:
                 request: Request = args[0]
                 args = args[1:]
                 args_to_apply = await load(request, params.copy())
@@ -107,61 +115,96 @@ class APIServer(Application):
                     response = func(*args, **kwargs, **definitive_args)
                 return do_response(response)
 
-            func.injectable = True
             wrapper._handler = func
             return wrapper
 
         return decorator
 
-    def get(self, path: str, **kwargs):
+    def get(
+        self, path: str, **kwargs
+    ) -> Callable[
+        [Callable[P, Awaitable[StreamResponse]]], Callable[P, Awaitable[StreamResponse]]
+    ]:
         """GET decorator"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             self.router.add_get(path, self.document(path, "GET")(func), **kwargs)
             return func
 
         return decorator
 
-    def post(self, path: str, **kwargs):
+    def post(
+        self, path: str, **kwargs
+    ) -> Callable[
+        [Callable[P, Awaitable[StreamResponse]]], Callable[P, Awaitable[StreamResponse]]
+    ]:
         """POST decorator"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             self.router.add_post(path, self.document(path, "POST")(func), **kwargs)
             return func
 
         return decorator
 
-    def put(self, path: str, **kwargs):
+    def put(
+        self, path: str, **kwargs
+    ) -> Callable[
+        [Callable[P, Awaitable[StreamResponse]]], Callable[P, Awaitable[StreamResponse]]
+    ]:
         """PUT decorator"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             self.router.add_put(path, self.document(path, "PUT")(func), **kwargs)
             return func
 
         return decorator
 
-    def delete(self, path: str, **kwargs):
+    def delete(
+        self, path: str, **kwargs
+    ) -> Callable[
+        [Callable[P, Awaitable[StreamResponse]]], Callable[P, Awaitable[StreamResponse]]
+    ]:
         """DELETE decorator"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             self.router.add_delete(path, self.document(path, "DELETE")(func), **kwargs)
             return func
 
         return decorator
 
-    def patch(self, path: str, **kwargs):
+    def patch(
+        self, path: str, **kwargs
+    ) -> Callable[
+        [Callable[P, Awaitable[StreamResponse]]], Callable[P, Awaitable[StreamResponse]]
+    ]:
         """PATCH decorator"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             self.router.add_patch(path, self.document(path, "PATCH")(func), **kwargs)
             return func
 
         return decorator
 
-    def head(self, path: str, **kwargs):
+    def head(
+        self, path: str, **kwargs
+    ) -> Callable[
+        [Callable[P, Awaitable[StreamResponse]]], Callable[P, Awaitable[StreamResponse]]
+    ]:
         """HEAD decorator"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             self.router.add_head(path, self.document(path, "HEAD")(func), **kwargs)
             return func
 
@@ -170,7 +213,9 @@ class APIServer(Application):
     def options(self, path: str, **kwargs):
         """OPTIONS decorator"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[P, Awaitable[StreamResponse]]
+        ) -> Callable[P, Awaitable[StreamResponse]]:
             self.router.add_options(
                 path, self.document(path, "OPTIONS")(func), **kwargs
             )
@@ -178,10 +223,17 @@ class APIServer(Application):
 
         return decorator
 
-    def on_event(self, event: str):
+    def on_event(
+        self, event: str
+    ) -> Callable[
+        [Callable[[Application], Awaitable[None]]],
+        Callable[[Application], Awaitable[None]],
+    ]:
         """On event handler"""
 
-        def decorator(func):
+        def decorator(
+            func: Callable[[Application], Awaitable[None]]
+        ) -> Callable[[Application], Awaitable[None]]:
             if event not in ("startup", "shutdown"):
                 raise ValueError("Event must be startup or shutdown")
             elif event == "startup":
@@ -192,10 +244,17 @@ class APIServer(Application):
 
         return decorator
 
-    def sse(self, path: str) -> Callable:  # pylint: disable=invalid-name
-        """Server-Sent Events decorator"""
+    def sse(
+        self, path: str
+    ) -> Callable[
+        [Callable[P, Awaitable[EventSourceResponse]]],
+        Callable[P, Awaitable[EventSourceResponse]],
+    ]:
+        """Server Sent Events decorator"""
 
-        def decorator(func: Callable) -> Callable:
+        def decorator(
+            func: Callable[P, Awaitable[EventSourceResponse]]
+        ) -> Callable[P, Awaitable[EventSourceResponse]]:
             @wraps(func)
             async def wrapper(request: Request) -> EventSourceResponse:
                 async with sse_response(request) as resp:
@@ -223,10 +282,17 @@ class APIServer(Application):
 
         return decorator
 
-    def websocket(self, path: str) -> Callable:  # pylint: disable=invalid-name
+    def websocket(
+        self, path: str
+    ) -> Callable[
+        [Callable[P, Awaitable[WebSocketResponse]]],
+        Callable[P, Awaitable[WebSocketResponse]],
+    ]:
         """Websocket decorator"""
 
-        def decorator(func: Callable) -> Callable:
+        def decorator(
+            func: Callable[P, Awaitable[WebSocketResponse]]
+        ) -> Callable[P, Awaitable[WebSocketResponse]]:
             @wraps(func)
             async def wrapper(request: Request):
                 args_to_apply = await load(request, signature(func).parameters.copy())
@@ -253,17 +319,18 @@ class APIServer(Application):
 
         return decorator
 
-    def static(self):
+    def static(self) -> "APIServer":
         """Static folder creation and serving"""
+
+        @self.get("/")
+        def index():
+            return FileResponse("static/index.html")
+
         try:
             os.makedirs("static", exist_ok=True)
         except OSError:
             pass
         self.router.add_static("/", "static")
-
-        @self.get("/")
-        def index():
-            return FileResponse("static/index.html")
 
         return self
 

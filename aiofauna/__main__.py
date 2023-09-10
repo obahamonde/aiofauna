@@ -1,13 +1,45 @@
 import os
 import subprocess
-
+import logging
 import click
+import shutil
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.pretty import install
+from rich.traceback import install as ins
 
-from .utils import setup_logging
+
+def setup_logging(name: str) -> logging.Logger:
+    """
+    Set's up logging using the Rich library for pretty and informative terminal logs.
+
+    Arguments:
+    name -- Name for the logger instance. It's best practice to use the name of the module where logger is defined.
+    """
+    install()
+    ins()
+    console = Console(record=True, force_terminal=True)
+    console_handler = RichHandler(
+        console=console,
+        show_time=True,
+        show_path=True,
+        markup=True,
+        rich_tracebacks=True,
+        tracebacks_show_locals=True,
+        tracebacks_extra_lines=2,
+        tracebacks_theme="monokai",
+        show_level=False,
+    )
+    console_handler.setFormatter(logging.Formatter("%(message)s"))
+    console_handler.setLevel(logging.INFO)
+    logging.basicConfig(level=logging.INFO, handlers=[console_handler])
+    logger_ = logging.getLogger(name)
+    logger_.setLevel(logging.INFO)
+    return logger_
+
 
 logger = setup_logging(__name__)
-
-print = logger.debug
+print = logger.info
 
 
 @click.group()
@@ -19,17 +51,30 @@ def print_tree(dirname, pref=""):
     for item in os.listdir(dirname):
         if item.startswith("."):
             continue
-        print(pref + item)
-        if os.path.isdir(os.path.join(dirname, item)):
-            logger.info(
-                os.path.join(dirname, item), " " * len(pref) + "|" + ("_" * 5) + " "
-            )
+        if item == os.listdir(dirname)[-1]:
+            print(f"{pref}└── {item}")
+            if os.path.isdir(os.path.join(dirname, item)):
+                print_tree(os.path.join(dirname, item), pref + "    ")
+        else:
+            print(f"{pref}├── {item}")
+            if os.path.isdir(os.path.join(dirname, item)):
+                print_tree(os.path.join(dirname, item), pref + "│   ")
 
 
 @main.command()
 def tree():
     """Prints the directory tree of the current working directory."""
     print_tree(os.getcwd())
+
+
+@main.command()
+def rmcache():
+    """Removes all __pycache__ directories in the current working directory and its subdirectories."""
+    for root, dirs, files in os.walk(os.getcwd()):
+        if "__pycache__" in dirs:
+            pycache_path = os.path.join(root, "__pycache__")
+            print(f"Removing {pycache_path}")
+            shutil.rmtree(pycache_path)
 
 
 @main.command()
@@ -93,3 +138,7 @@ def run(name, port, host, reload, worker, threads):
         ],
         check=True,
     )
+
+
+if __name__ == "__main__":
+    main()
