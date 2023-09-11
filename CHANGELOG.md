@@ -16,3 +16,5 @@
 ## [0.1.33] - Added CLI
 
 - Added CLI to run dev server with live reload.
+
+## [0.1.95] - Several Fixes

@@ -7,7 +7,6 @@
 	<title>Docs</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
 </head>
 <style type="text/css">
@@ -28,10 +27,14 @@
 
 
 <body>
-	<div class="github-markdown" id="markdown-body">
+	<div class="markdown-body">
 		{% block content %}{% endblock %}
 	</div>
-	<script src="https://cdn.jsdelivr.net/npm/highlight.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/mini.global.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.5/htmx.min.js"
+		integrity="sha512-2NwoAICmYEIEuayBZdfd/cEvYGevbb1jezvQli/Iw052KfAA3NGrXAH2AY02cjt3gMdui5Q8nKauPYgVOE+pmg=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script>
 		hljs.highlightAll();
 	</script>
