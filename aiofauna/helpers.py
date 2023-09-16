@@ -6,64 +6,17 @@ import functools
 import typing
 from concurrent.futures import ProcessPoolExecutor
 from functools import singledispatch
-from typing import Any, List, Union, Callable, Awaitable, TypeVar, Generic
+from typing import Any, List, Union
 
 from aiohttp.web import Response, json_response
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing_extensions import ParamSpec
-from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
-from .typedefs import Component
 from .json import to_json
 from .odm import FaunaModel
 
 
 T = typing.TypeVar("T")
 P = ParamSpec("P")
-R = TypeVar("R")
-
-
-def template(
-    dir: str = "templates", template: str = "base.j2"
-) -> Callable[[Callable[P, Awaitable[Response]]], Component]:
-    def decorator(func: Callable[P, Awaitable[Response]]):
-        env = Environment(
-            loader=FileSystemLoader(dir),
-            autoescape=select_autoescape(["html", "xml"]),
-            enable_async=True,
-        )
-        doc_template = (
-            '{% extends "'
-            + template
-            + '" %}{% block content %}'
-            + func.__doc__
-            + "{% endblock %}"
-        )
-
-        @functools.wraps(func)
-        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Response:
-            template = env.from_string(doc_template)
-            rendered_template = await template.render_async(await func(*args, **kwargs))
-            return Response(text=rendered_template, content_type="text/html")
-
-        return wrapper
-
-    return decorator
-
-
-def component(func: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[Response]]:
-    """
-    Decorator to convert a function to a component.
-    """
-
-    @functools.wraps(func)
-    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Response:
-        context = await func(*args, **kwargs)
-        template = Template(func.__doc__)
-        html = template.render(context)
-        return Response(text=html, content_type="text/html")
-
-    return wrapper
-
 
 def async_io(
     func: typing.Callable[P, T]

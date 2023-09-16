@@ -6,6 +6,7 @@ import logging
 import os
 import typing
 from dataclasses import dataclass, field
+from aiohttp import ClientResponse
 from functools import wraps
 from threading import Lock
 from typing import Any, AsyncGenerator, Dict, List, Literal, Optional, Type, Union

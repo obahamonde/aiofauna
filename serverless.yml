@@ -1,0 +1,16 @@
+service: plugin
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.10
+
+functions:
+  plugin:
+    handler: main.handler
+    url: true
+
+plugins:
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
+

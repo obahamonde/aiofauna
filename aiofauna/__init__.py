@@ -74,14 +74,14 @@ title: AioFauna
 
 from typing import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
-from aiohttp.web_ws import WebSocketResponse
+from aiohttp.web import WebSocketResponse
 from aiohttp_sse import EventSourceResponse
 from typing_extensions import ParamSpec
 
 from .client import APIClient, FaunaClient
 from .docs import FileField
 from .faunadb import query as q
-from .helpers import async_cpu, async_io, asyncio, template, component
+from .helpers import async_cpu, async_io, asyncio
 from .json import FaunaJSONEncoder, parse_json, to_json
 from .odm import FaunaModel
 from .server import APIRouter, APIServer, Request, Response
@@ -89,3 +89,4 @@ from .typedefs import Document, Field, LazyProxy, Component
 from .utils import chunker, handle_errors, process_time, setup_logging
 from .markdown import md_component
 from .asgi import ASGIServer
+from .templates import component, docstring, page

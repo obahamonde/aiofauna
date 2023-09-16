@@ -1,14 +1,14 @@
 import asyncio
-import io
-from asyncio import BaseTransport
-from typing import Any, Awaitable, Callable, MutableMapping, Tuple
+from typing import Any, Awaitable, Callable, Literal, MutableMapping, Tuple
 
-from .server import APIServer
 from aiohttp import web
 from aiohttp.http_parser import RawRequestMessage
+from aiohttp.streams import StreamReader
 from aiohttp.payload import StringPayload
 from multidict import CIMultiDict, CIMultiDictProxy
 from yarl import URL
+
+from .server import APIServer
 
 Scope = MutableMapping[str, Any]
 Message = MutableMapping[str, Any]
@@ -17,102 +17,84 @@ Send = Callable[[Message], Awaitable[None]]
 
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 
-class ASGITransport(BaseTransport):
-	"""ASGI Lambda Transport."""
-	scheme: str
 
-	@classmethod
-	def from_scope(cls, scope: Scope):
-		"""Create a transport from a scope."""
-		cls.scheme = scope["scheme"]
-		return cls
-		
-	def get_extra_info(self, name: str, default: Any = None) -> Any:
-		"""Get extra information."""
-		return None
-
-class ASGIProtocol(web.RequestHandler):
-	"""ASGI Lambda Protocol."""
-	http_version: str
-
-	@classmethod
-	def from_scope(cls, scope: Scope):
-		"""Create a protocol from a scope."""
-		cls.http_version = scope["http_version"]
-		cls.transport = ASGITransport.from_scope(scope)() # type: ignore
-		return cls
-
-		
 class ASGIServer(APIServer):
-	"""
-	An ASGI-compatible API.
+    """
+    An ASGI-compatible API.
 
-	Currently only supports HTTP and is compatible with ASGI 2.0.
+    Currently only supports HTTP and is compatible with ASGI 2.0.
 
-	Tested with:
-	`uvicorn`
-	`daphne`[TODO]
+    Tested with:
+    `uvicorn`
+    `mangum`
+    """
 
-	"""
+    async def asgi(self, scope: Scope, _, send: Send) -> None:
+        """ASGI Wrapper."""
 
-	async def asgi(self, scope: Scope, _:Receive, send: Send) -> None:
-		"""ASGI Wrapper."""
+        if scope["type"] != "http":
+            raise RuntimeError("Only HTTP is supported")
 
-		if scope["type"] != "http":
-			raise RuntimeError("Only HTTP is supported")
+        raw_headers: Tuple[Tuple[bytes, bytes], ...] = scope["headers"]
+        headers = CIMultiDict()
+        for k, v in raw_headers:
+            headers[k.decode().lower()] = v.decode()
 
-		raw_headers: Tuple[Tuple[bytes, bytes], ...] = scope["headers"]
-		headers:CIMultiDict[str] = CIMultiDict()
-		for k, v in raw_headers:
-			headers[k.decode().lower()] = v.decode()
+        message = RawRequestMessage(
+            method=scope["method"],
+            path=scope["path"],
+            version=scope["http_version"],
+            headers=CIMultiDictProxy(headers),
+            raw_headers=raw_headers,
+            should_close=True,
+            compression=None,
+            upgrade=False,
+            chunked=True,
+            url=URL(scope["path"]),
+        )
 
-		message = RawRequestMessage(
-			method=scope["method"],
-			path=scope["path"],
-			version=scope["http_version"],
-			headers=CIMultiDictProxy(headers),
-			raw_headers=raw_headers,
-			should_close=True,
-			compression=None,
-			upgrade=False,
-			chunked=True,
-			url=URL(scope["path"]),
-		)
+        class _tranport:
+            scheme = scope["scheme"]
 
-		
+            def get_extra_info(
+                self, info: Literal["sslcontext"]
+            ):  # pylint: disable=unused-argument
+                """Mock method to match `aiohttp.web.BaseRequestTransport` contract."""
+                return None
 
-		
-		request = web.Request(
-			message=message,
-			payload=io.BytesIO(),
-			protocol=ASGIProtocol.from_scope(scope),
-			payload_writer=None,
-			task=None,
-			loop=asyncio.get_running_loop(),
-		)
+        class _proto(web.RequestHandler):
+            http_version = scope["http_version"]
+            transport = _tranport()
 
-		response = await self._handle(request)
+        request = web.Request(
+            message=message,
+            payload=StreamReader(protocol=_proto,limit=2**20),
+            protocol=_proto,
+            payload_writer=None,
+            task=None,
+            loop=asyncio.get_running_loop(),
+        )
 
-		body = response._body
-		if isinstance(body, StringPayload):
-			body = body._value
-		if isinstance(body, str):
-			body = body.encode()
+        response = await self._handle(request)
 
-		await send(
-			{
-				"type": "http.response.start",
-				"status": response.status,
-				"headers": [
-					(k.encode(), v.encode()) for k, v in response.headers.items()
-				],
-			}
-		)
+        body = response._body
+        if isinstance(body, StringPayload):
+            body = body._value
+        if isinstance(body, str):
+            body = body.encode()
 
-		await send({"type": "http.response.body", "body": body, "more_body": False})
+        await send(
+            {
+                "type": "http.response.start",
+                "status": response.status,
+                "headers": [
+                    (k.encode(), v.encode()) for k, v in response.headers.items()
+                ],
+            }
+        )
 
-	async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-		"""ASGI callable."""
-		return await self.asgi(scope, receive, send)
-	
-	
+        await send({"type": "http.response.body", "body": body, "more_body": False})
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """ASGI callable."""
+        return await self.asgi(scope, receive, send)
