@@ -5,6 +5,7 @@ client
 dist
 .faunarc
 logs
-app
-src
+./docs
+./pages
+./components
 main.py

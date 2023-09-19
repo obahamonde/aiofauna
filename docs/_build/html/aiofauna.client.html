@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aiofauna.client module &mdash; aiofauna 0.1.99 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ad8de784"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="aiofauna.docs module" href="aiofauna.docs.html" />
+    <link rel="prev" title="aiofauna.asgi module" href="aiofauna.asgi.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            aiofauna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.html">aiofauna package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.asgi.html">aiofauna.asgi module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">aiofauna.client module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aiofauna.client.APIClient"><code class="docutils literal notranslate"><span class="pre">APIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.base_url"><code class="docutils literal notranslate"><span class="pre">APIClient.base_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.cleanup"><code class="docutils literal notranslate"><span class="pre">APIClient.cleanup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.delete"><code class="docutils literal notranslate"><span class="pre">APIClient.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.fetch"><code class="docutils literal notranslate"><span class="pre">APIClient.fetch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.get"><code class="docutils literal notranslate"><span class="pre">APIClient.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.headers"><code class="docutils literal notranslate"><span class="pre">APIClient.headers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.patch"><code class="docutils literal notranslate"><span class="pre">APIClient.patch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.post"><code class="docutils literal notranslate"><span class="pre">APIClient.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.put"><code class="docutils literal notranslate"><span class="pre">APIClient.put()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.stream"><code class="docutils literal notranslate"><span class="pre">APIClient.stream()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.text"><code class="docutils literal notranslate"><span class="pre">APIClient.text()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIClient.update_headers"><code class="docutils literal notranslate"><span class="pre">APIClient.update_headers()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aiofauna.client.APIConfig"><code class="docutils literal notranslate"><span class="pre">APIConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.base_url"><code class="docutils literal notranslate"><span class="pre">APIConfig.base_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.connector_config"><code class="docutils literal notranslate"><span class="pre">APIConfig.connector_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.connector_owner"><code class="docutils literal notranslate"><span class="pre">APIConfig.connector_owner</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.exception_class"><code class="docutils literal notranslate"><span class="pre">APIConfig.exception_class</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.headers"><code class="docutils literal notranslate"><span class="pre">APIConfig.headers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.logger"><code class="docutils literal notranslate"><span class="pre">APIConfig.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.read_bufsize"><code class="docutils literal notranslate"><span class="pre">APIConfig.read_bufsize</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.session"><code class="docutils literal notranslate"><span class="pre">APIConfig.session</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.APIConfig.trust_env"><code class="docutils literal notranslate"><span class="pre">APIConfig.trust_env</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aiofauna.client.APIException"><code class="docutils literal notranslate"><span class="pre">APIException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aiofauna.client.ConnectorConfig"><code class="docutils literal notranslate"><span class="pre">ConnectorConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.ConnectorConfig.keepalive_timeout"><code class="docutils literal notranslate"><span class="pre">ConnectorConfig.keepalive_timeout</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.ConnectorConfig.limit"><code class="docutils literal notranslate"><span class="pre">ConnectorConfig.limit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.ConnectorConfig.ssl"><code class="docutils literal notranslate"><span class="pre">ConnectorConfig.ssl</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aiofauna.client.FaunaClient"><code class="docutils literal notranslate"><span class="pre">FaunaClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.FaunaClient.cleanup"><code class="docutils literal notranslate"><span class="pre">FaunaClient.cleanup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.FaunaClient.config"><code class="docutils literal notranslate"><span class="pre">FaunaClient.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.FaunaClient.query"><code class="docutils literal notranslate"><span class="pre">FaunaClient.query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.FaunaClient.session_creation_lock"><code class="docutils literal notranslate"><span class="pre">FaunaClient.session_creation_lock</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.client.FaunaClient.stream"><code class="docutils literal notranslate"><span class="pre">FaunaClient.stream()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aiofauna.client.MissingEnvironmentVariable"><code class="docutils literal notranslate"><span class="pre">MissingEnvironmentVariable</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aiofauna.client.singleton"><code class="docutils literal notranslate"><span class="pre">singleton()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.docs.html">aiofauna.docs module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.exceptions.html">aiofauna.exceptions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.helpers.html">aiofauna.helpers module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.json.html">aiofauna.json module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.markdown.html">aiofauna.markdown module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.odm.html">aiofauna.odm module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.router.html">aiofauna.router module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.server.html">aiofauna.server module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.templates.html">aiofauna.templates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.typedefs.html">aiofauna.typedefs module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.utils.html">aiofauna.utils module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">aiofauna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="aiofauna.html">aiofauna package</a></li>
+      <li class="breadcrumb-item active">aiofauna.client module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/aiofauna.client.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-aiofauna.client">
+<span id="aiofauna-client-module"></span><h1>aiofauna.client module<a class="headerlink" href="#module-aiofauna.client" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.client.</span></span><span class="sig-name descname"><span class="pre">APIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_subclasses:</span> <span class="pre">~typing.List[~typing.Type[~aiofauna.client.APIClient]]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_session:</span> <span class="pre">~aiohttp.client.ClientSession</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="aiofauna.typedefs.html#aiofauna.typedefs.LazyProxy" title="aiofauna.typedefs.LazyProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">LazyProxy</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code>]</p>
+<p>HTTP Client:
+Base class to create HTTP clients that wrap <cite>aiohttp.ClientSession</cite>.
+Provides Lazy Loading through proxy objects and session reuse using the singleton pattern.
+Constructor Signature:
+<cite>base_url</cite> (str): Base URL of the API. For example: <cite>https://api.openai.com</cite>. Must the an absolute URL.
+<cite>headers</cite> (dict): Headers that will proxide the authentication credentials, content_type, etc.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.base_url">
+<span class="sig-name descname"><span class="pre">base_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#aiofauna.client.APIClient.base_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.cleanup">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.cleanup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.delete" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.fetch">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'GET'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'POST'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PATCH'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DELETE'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'GET'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.fetch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#aiofauna.client.APIClient.headers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.patch">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.patch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.post">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.put">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.put" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.stream">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'GET'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'POST'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PATCH'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DELETE'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'GET'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.stream" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.text">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'GET'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'POST'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PATCH'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DELETE'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'GET'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.APIClient.update_headers">
+<span class="sig-name descname"><span class="pre">update_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIClient.update_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIClient.update_headers" title="Link to this definition"></a></dt>
+<dd><p>Update the headers used by this API client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Allows method chaining.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.client.</span></span><span class="sig-name descname"><span class="pre">APIConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url:</span> <span class="pre">'str'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">'Headers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">'logging.Logger'</span> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">aiofauna.client</span> <span class="pre">(INFO)&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception_class:</span> <span class="pre">'Type[HTTPException]'</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'aiofauna.client.APIException'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session:</span> <span class="pre">'Optional[ClientSession]'</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connector_config:</span> <span class="pre">'ConnectorConfig'</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_bufsize:</span> <span class="pre">'int'</span> <span class="pre">=</span> <span class="pre">65536</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connector_owner:</span> <span class="pre">'bool'</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_env:</span> <span class="pre">'bool'</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.base_url">
+<span class="sig-name descname"><span class="pre">base_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#aiofauna.client.APIConfig.base_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.connector_config">
+<span class="sig-name descname"><span class="pre">connector_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#aiofauna.client.ConnectorConfig" title="aiofauna.client.ConnectorConfig"><span class="pre">ConnectorConfig</span></a></em><a class="headerlink" href="#aiofauna.client.APIConfig.connector_config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.connector_owner">
+<span class="sig-name descname"><span class="pre">connector_owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#aiofauna.client.APIConfig.connector_owner" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.exception_class">
+<span class="sig-name descname"><span class="pre">exception_class</span></span><a class="headerlink" href="#aiofauna.client.APIConfig.exception_class" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#aiofauna.client.APIException" title="aiofauna.client.APIException"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIException</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#aiofauna.client.APIConfig.headers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Logger</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">aiofauna.client</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#aiofauna.client.APIConfig.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.read_bufsize">
+<span class="sig-name descname"><span class="pre">read_bufsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65536</span></em><a class="headerlink" href="#aiofauna.client.APIConfig.read_bufsize" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.session">
+<span class="sig-name descname"><span class="pre">session</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClientSession</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#aiofauna.client.APIConfig.session" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.APIConfig.trust_env">
+<span class="sig-name descname"><span class="pre">trust_env</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#aiofauna.client.APIConfig.trust_env" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="aiofauna.client.APIException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.client.</span></span><span class="sig-name descname"><span class="pre">APIException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#APIException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.APIException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></p>
+<p>Base class for all exceptions raised by an API client.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.client.ConnectorConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.client.</span></span><span class="sig-name descname"><span class="pre">ConnectorConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepalive_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#ConnectorConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.ConnectorConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.ConnectorConfig.keepalive_timeout">
+<span class="sig-name descname"><span class="pre">keepalive_timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#aiofauna.client.ConnectorConfig.keepalive_timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.ConnectorConfig.limit">
+<span class="sig-name descname"><span class="pre">limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2048</span></em><a class="headerlink" href="#aiofauna.client.ConnectorConfig.limit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.ConnectorConfig.ssl">
+<span class="sig-name descname"><span class="pre">ssl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#aiofauna.client.ConnectorConfig.ssl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.client.FaunaClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.client.</span></span><span class="sig-name descname"><span class="pre">FaunaClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config:</span> <span class="pre">~aiofauna.client.APIConfig</span> <span class="pre">=</span> <span class="pre">APIConfig(base_url='https://db.fauna.com'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers={'Authorization':</span> <span class="pre">'Bearer</span> <span class="pre">fnAFNGGYS2ACWBZ6tdT_EJ5C-ztoCKUvXzweqTe6'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'Content-type':</span> <span class="pre">'application/json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'Accept':</span> <span class="pre">'application/json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'User-Agent':</span> <span class="pre">'aiofauna-framework'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">aiofauna.client</span> <span class="pre">(INFO)&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception_class=&lt;class</span> <span class="pre">'aiofauna.client.APIException'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connector_config=ConnectorConfig(ssl=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit=2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepalive_timeout=60)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_bufsize=65536</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connector_owner=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_env=True)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#FaunaClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.FaunaClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="aiofauna.typedefs.html#aiofauna.typedefs.LazyProxy" title="aiofauna.typedefs.LazyProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">LazyProxy</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code>]</p>
+<p>FaunaDB Client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference internal" href="#aiofauna.client.APIConfig" title="aiofauna.client.APIConfig"><em>APIConfig</em></a>) – APIConfig object</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.FaunaClient.cleanup">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/client.html#FaunaClient.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.FaunaClient.cleanup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.FaunaClient.config">
+<span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#aiofauna.client.APIConfig" title="aiofauna.client.APIConfig"><span class="pre">APIConfig</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">APIConfig(base_url='https://db.fauna.com',</span> <span class="pre">headers={'Authorization':</span> <span class="pre">'Bearer</span> <span class="pre">fnAFNGGYS2ACWBZ6tdT_EJ5C-ztoCKUvXzweqTe6',</span> <span class="pre">'Content-type':</span> <span class="pre">'application/json',</span> <span class="pre">'Accept':</span> <span class="pre">'application/json',</span> <span class="pre">'User-Agent':</span> <span class="pre">'aiofauna-framework'},</span> <span class="pre">logger=&lt;Logger</span> <span class="pre">aiofauna.client</span> <span class="pre">(INFO)&gt;,</span> <span class="pre">exception_class=&lt;class</span> <span class="pre">'aiofauna.client.APIException'&gt;,</span> <span class="pre">session=None,</span> <span class="pre">connector_config=ConnectorConfig(ssl=False,</span> <span class="pre">limit=2048,</span> <span class="pre">keepalive_timeout=60),</span> <span class="pre">read_bufsize=65536,</span> <span class="pre">connector_owner=True,</span> <span class="pre">trust_env=True)</span></em><a class="headerlink" href="#aiofauna.client.FaunaClient.config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.FaunaClient.query">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr" title="aiofauna.faunadb.query.Expr"><span class="pre">Expr</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/aiofauna/client.html#FaunaClient.query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.FaunaClient.query" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.client.FaunaClient.session_creation_lock">
+<span class="sig-name descname"><span class="pre">session_creation_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;asyncio.locks.Lock</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7f96f18e3a00</span> <span class="pre">[unlocked]&gt;</span></em><a class="headerlink" href="#aiofauna.client.FaunaClient.session_creation_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.client.FaunaClient.stream">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr" title="aiofauna.faunadb.query.Expr"><span class="pre">Expr</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncGenerator</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/client.html#FaunaClient.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.FaunaClient.stream" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="aiofauna.client.MissingEnvironmentVariable">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.client.</span></span><span class="sig-name descname"><span class="pre">MissingEnvironmentVariable</span></span><a class="reference internal" href="_modules/aiofauna/client.html#MissingEnvironmentVariable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.MissingEnvironmentVariable" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception for missing environment variable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.client.singleton">
+<span class="sig-prename descclassname"><span class="pre">aiofauna.client.</span></span><span class="sig-name descname"><span class="pre">singleton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/client.html#singleton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.client.singleton" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="aiofauna.asgi.html" class="btn btn-neutral float-left" title="aiofauna.asgi module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="aiofauna.docs.html" class="btn btn-neutral float-right" title="aiofauna.docs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Oscar Bahamonde.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

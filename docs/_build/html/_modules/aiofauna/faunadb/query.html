@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aiofauna.faunadb.query &mdash; aiofauna 0.1.99 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=ad8de784"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            aiofauna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.html">aiofauna package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.asgi.html">aiofauna.asgi module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.client.html">aiofauna.client module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.docs.html">aiofauna.docs module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.exceptions.html">aiofauna.exceptions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.helpers.html">aiofauna.helpers module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.json.html">aiofauna.json module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.markdown.html">aiofauna.markdown module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.odm.html">aiofauna.odm module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.router.html">aiofauna.router module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.server.html">aiofauna.server module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.templates.html">aiofauna.templates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.typedefs.html">aiofauna.typedefs module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.utils.html">aiofauna.utils module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">aiofauna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aiofauna.faunadb.query</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aiofauna.faunadb.query</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span>
+
+
+<div class="viewcode-block" id="abort">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.abort">[docs]</a>
+<span class="k">def</span> <span class="nf">abort</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;abort&quot;</span><span class="p">:</span> <span class="n">msg</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="ref">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.ref">[docs]</a>
+<span class="k">def</span> <span class="nf">ref</span><span class="p">(</span><span class="n">collection_ref</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;@ref&quot;</span><span class="p">:</span> <span class="n">collection_ref</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;ref&quot;</span><span class="p">:</span> <span class="n">collection_ref</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="collections">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.collections">[docs]</a>
+<span class="k">def</span> <span class="nf">collections</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;collections&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="documents">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.documents">[docs]</a>
+<span class="k">def</span> <span class="nf">documents</span><span class="p">(</span><span class="n">collections</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;documents&quot;</span><span class="p">:</span> <span class="n">collections</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="databases">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.databases">[docs]</a>
+<span class="k">def</span> <span class="nf">databases</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;databases&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="indexes">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.indexes">[docs]</a>
+<span class="k">def</span> <span class="nf">indexes</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;indexes&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="functions">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.functions">[docs]</a>
+<span class="k">def</span> <span class="nf">functions</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;functions&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="roles">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.roles">[docs]</a>
+<span class="k">def</span> <span class="nf">roles</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="access_providers">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.access_providers">[docs]</a>
+<span class="k">def</span> <span class="nf">access_providers</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;access_providers&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="keys">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.keys">[docs]</a>
+<span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="tokens">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.tokens">[docs]</a>
+<span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="credentials">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.credentials">[docs]</a>
+<span class="k">def</span> <span class="nf">credentials</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;credentials&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="at">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.at">[docs]</a>
+<span class="k">def</span> <span class="nf">at</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;at&quot;</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span> <span class="s2">&quot;expr&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="LetBindings">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.LetBindings">[docs]</a>
+<span class="k">class</span> <span class="nc">LetBindings</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bindings</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bindings</span> <span class="o">=</span> <span class="n">bindings</span>
+
+<div class="viewcode-block" id="LetBindings.in_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.LetBindings.in_">[docs]</a>
+    <span class="k">def</span> <span class="nf">in_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inExpr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;let&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bindings</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="n">inExpr</span><span class="p">})</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="let">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.let">[docs]</a>
+<span class="k">def</span> <span class="nf">let</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">LetBindings</span><span class="p">([</span><span class="n">_fn</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bindings</span> <span class="o">=</span> <span class="p">[</span><span class="n">_fn</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">inExpr</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;let&quot;</span><span class="p">:</span> <span class="n">bindings</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="n">inExpr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="var">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.var">[docs]</a>
+<span class="k">def</span> <span class="nf">var</span><span class="p">(</span><span class="n">var_name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;var&quot;</span><span class="p">:</span> <span class="n">var_name</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="if_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.if_">[docs]</a>
+<span class="k">def</span> <span class="nf">if_</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">then</span><span class="p">,</span> <span class="n">else_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;if&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span> <span class="s2">&quot;then&quot;</span><span class="p">:</span> <span class="n">then</span><span class="p">,</span> <span class="s2">&quot;else&quot;</span><span class="p">:</span> <span class="n">else_</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="do">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.do">[docs]</a>
+<span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="o">*</span><span class="n">expressions</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;do&quot;</span><span class="p">:</span> <span class="n">expressions</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="lambda_query">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.lambda_query">[docs]</a>
+<span class="k">def</span> <span class="nf">lambda_query</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="nb">vars</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span>
+    <span class="n">n_args</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_args</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Function must take at least 1 argument.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">n_args</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">lambda_</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">var</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lambda_</span><span class="p">(</span><span class="nb">vars</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">var</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">]))</span></div>
+
+
+
+<div class="viewcode-block" id="lambda_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.lambda_">[docs]</a>
+<span class="k">def</span> <span class="nf">lambda_</span><span class="p">(</span><span class="n">var_name_or_pattern</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;lambda&quot;</span><span class="p">:</span> <span class="n">var_name_or_pattern</span><span class="p">,</span> <span class="s2">&quot;expr&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="call">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.call">[docs]</a>
+<span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="o">*</span><span class="n">arguments</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;call&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">,</span> <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">arguments</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="query">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.query">[docs]</a>
+<span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="n">_lambda</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_lambda</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+        <span class="n">_lambda</span> <span class="o">=</span> <span class="n">lambda_query</span><span class="p">(</span><span class="n">_lambda</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">_lambda</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="map_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.map_">[docs]</a>
+<span class="k">def</span> <span class="nf">map_</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="foreach">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.foreach">[docs]</a>
+<span class="k">def</span> <span class="nf">foreach</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;foreach&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="filter_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.filter_">[docs]</a>
+<span class="k">def</span> <span class="nf">filter_</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;filter&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="take">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.take">[docs]</a>
+<span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;take&quot;</span><span class="p">:</span> <span class="n">number</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="drop">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.drop">[docs]</a>
+<span class="k">def</span> <span class="nf">drop</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;drop&quot;</span><span class="p">:</span> <span class="n">number</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="prepend">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.prepend">[docs]</a>
+<span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;prepend&quot;</span><span class="p">:</span> <span class="n">elements</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="append">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.append">[docs]</a>
+<span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;append&quot;</span><span class="p">:</span> <span class="n">elements</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_empty">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_empty">[docs]</a>
+<span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_empty&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_nonempty">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_nonempty">[docs]</a>
+<span class="k">def</span> <span class="nf">is_nonempty</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_nonempty&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_number">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_number">[docs]</a>
+<span class="k">def</span> <span class="nf">is_number</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_number&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_double">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_double">[docs]</a>
+<span class="k">def</span> <span class="nf">is_double</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_double&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_integer">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_integer">[docs]</a>
+<span class="k">def</span> <span class="nf">is_integer</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_integer&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_boolean">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_boolean">[docs]</a>
+<span class="k">def</span> <span class="nf">is_boolean</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_boolean&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_null">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_null">[docs]</a>
+<span class="k">def</span> <span class="nf">is_null</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_null&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_bytes">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_bytes">[docs]</a>
+<span class="k">def</span> <span class="nf">is_bytes</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_bytes&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_timestamp">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_timestamp">[docs]</a>
+<span class="k">def</span> <span class="nf">is_timestamp</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_timestamp&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_date">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_date">[docs]</a>
+<span class="k">def</span> <span class="nf">is_date</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_date&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_string">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_string">[docs]</a>
+<span class="k">def</span> <span class="nf">is_string</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_string&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_array">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_array">[docs]</a>
+<span class="k">def</span> <span class="nf">is_array</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_array&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_object">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_object">[docs]</a>
+<span class="k">def</span> <span class="nf">is_object</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_object&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_ref">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_ref">[docs]</a>
+<span class="k">def</span> <span class="nf">is_ref</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_ref&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_set">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_set">[docs]</a>
+<span class="k">def</span> <span class="nf">is_set</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_set&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_doc">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_doc">[docs]</a>
+<span class="k">def</span> <span class="nf">is_doc</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_doc&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_lambda">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_lambda">[docs]</a>
+<span class="k">def</span> <span class="nf">is_lambda</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_lambda&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_collection">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_collection">[docs]</a>
+<span class="k">def</span> <span class="nf">is_collection</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_collection&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_database">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_database">[docs]</a>
+<span class="k">def</span> <span class="nf">is_database</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_database&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_index">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_index">[docs]</a>
+<span class="k">def</span> <span class="nf">is_index</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_index&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_function">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_function">[docs]</a>
+<span class="k">def</span> <span class="nf">is_function</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_function&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_key">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_key">[docs]</a>
+<span class="k">def</span> <span class="nf">is_key</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_key&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_token">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_token">[docs]</a>
+<span class="k">def</span> <span class="nf">is_token</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_token&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_credentials">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_credentials">[docs]</a>
+<span class="k">def</span> <span class="nf">is_credentials</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_credentials&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="is_role">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.is_role">[docs]</a>
+<span class="k">def</span> <span class="nf">is_role</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;is_role&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="get">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.get">[docs]</a>
+<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="key_from_secret">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.key_from_secret">[docs]</a>
+<span class="k">def</span> <span class="nf">key_from_secret</span><span class="p">(</span><span class="n">secret</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;key_from_secret&quot;</span><span class="p">:</span> <span class="n">secret</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="paginate">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.paginate">[docs]</a>
+<span class="k">def</span> <span class="nf">paginate</span><span class="p">(</span>
+    <span class="nb">set</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">after</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">before</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+        <span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span>
+        <span class="s2">&quot;after&quot;</span><span class="p">:</span> <span class="n">after</span><span class="p">,</span>
+        <span class="s2">&quot;before&quot;</span><span class="p">:</span> <span class="n">before</span><span class="p">,</span>
+        <span class="s2">&quot;events&quot;</span><span class="p">:</span> <span class="n">events</span><span class="p">,</span>
+        <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="n">sources</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;paginate&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">},</span> <span class="n">opts</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="exists">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.exists">[docs]</a>
+<span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;exists&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create">[docs]</a>
+<span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">collection_ref</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create&quot;</span><span class="p">:</span> <span class="n">collection_ref</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="update">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.update">[docs]</a>
+<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;update&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="replace">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.replace">[docs]</a>
+<span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;replace&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="delete">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.delete">[docs]</a>
+<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">ref_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="insert">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.insert">[docs]</a>
+<span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;insert&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">,</span> <span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="remove">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.remove">[docs]</a>
+<span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;remove&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">,</span> <span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create_collection">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create_collection">[docs]</a>
+<span class="k">def</span> <span class="nf">create_collection</span><span class="p">(</span><span class="n">collection_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create_collection&quot;</span><span class="p">:</span> <span class="n">collection_params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create_database">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create_database">[docs]</a>
+<span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="n">db_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create_database&quot;</span><span class="p">:</span> <span class="n">db_params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create_index">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create_index">[docs]</a>
+<span class="k">def</span> <span class="nf">create_index</span><span class="p">(</span><span class="n">index_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create_index&quot;</span><span class="p">:</span> <span class="n">index_params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create_function">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create_function">[docs]</a>
+<span class="k">def</span> <span class="nf">create_function</span><span class="p">(</span><span class="n">func_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create_function&quot;</span><span class="p">:</span> <span class="n">func_params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create_role">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create_role">[docs]</a>
+<span class="k">def</span> <span class="nf">create_role</span><span class="p">(</span><span class="n">func_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create_role&quot;</span><span class="p">:</span> <span class="n">func_params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create_access_provider">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create_access_provider">[docs]</a>
+<span class="k">def</span> <span class="nf">create_access_provider</span><span class="p">(</span><span class="n">provider_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create_access_provider&quot;</span><span class="p">:</span> <span class="n">provider_params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="move_database">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.move_database">[docs]</a>
+<span class="k">def</span> <span class="nf">move_database</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;move_database&quot;</span><span class="p">:</span> <span class="n">from_</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">to</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="create_key">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.create_key">[docs]</a>
+<span class="k">def</span> <span class="nf">create_key</span><span class="p">(</span><span class="n">key_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;create_key&quot;</span><span class="p">:</span> <span class="n">key_params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="singleton">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.singleton">[docs]</a>
+<span class="k">def</span> <span class="nf">singleton</span><span class="p">(</span><span class="n">ref_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;singleton&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="events">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.events">[docs]</a>
+<span class="k">def</span> <span class="nf">events</span><span class="p">(</span><span class="n">ref_set</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;events&quot;</span><span class="p">:</span> <span class="n">ref_set</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="match">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.match">[docs]</a>
+<span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="o">*</span><span class="n">terms</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;match&quot;</span><span class="p">:</span> <span class="n">index</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">m</span><span class="p">[</span><span class="s2">&quot;terms&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reverse">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.reverse">[docs]</a>
+<span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="n">set_array_or_page</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;reverse&quot;</span><span class="p">:</span> <span class="n">set_array_or_page</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="merge">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.merge">[docs]</a>
+<span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">merge</span><span class="p">,</span> <span class="n">with_</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;merge&quot;</span><span class="p">:</span> <span class="n">merge</span><span class="p">,</span> <span class="s2">&quot;with&quot;</span><span class="p">:</span> <span class="n">with_</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;lambda&quot;</span><span class="p">:</span> <span class="n">lambda_</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="union">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.union">[docs]</a>
+<span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;union&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">sets</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="reduce">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.reduce">[docs]</a>
+<span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">lambda_</span><span class="p">,</span> <span class="n">initial</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;reduce&quot;</span><span class="p">:</span> <span class="n">lambda_</span><span class="p">,</span> <span class="s2">&quot;initial&quot;</span><span class="p">:</span> <span class="n">initial</span><span class="p">,</span> <span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="intersection">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.intersection">[docs]</a>
+<span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;intersection&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">sets</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="difference">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.difference">[docs]</a>
+<span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;difference&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">sets</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="distinct">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.distinct">[docs]</a>
+<span class="k">def</span> <span class="nf">distinct</span><span class="p">(</span><span class="nb">set</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;distinct&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="join">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.join">[docs]</a>
+<span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;join&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s2">&quot;with&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="range">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.range">[docs]</a>
+<span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">from_</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">to</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="login">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.login">[docs]</a>
+<span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;login&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="logout">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.logout">[docs]</a>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="n">delete_tokens</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;logout&quot;</span><span class="p">:</span> <span class="n">delete_tokens</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="identify">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.identify">[docs]</a>
+<span class="k">def</span> <span class="nf">identify</span><span class="p">(</span><span class="n">ref_</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;identify&quot;</span><span class="p">:</span> <span class="n">ref_</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="current_identity">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.current_identity">[docs]</a>
+<span class="k">def</span> <span class="nf">current_identity</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;current_identity&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="has_current_identity">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.has_current_identity">[docs]</a>
+<span class="k">def</span> <span class="nf">has_current_identity</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;has_current_identity&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="current_token">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.current_token">[docs]</a>
+<span class="k">def</span> <span class="nf">current_token</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;current_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="has_current_token">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.has_current_token">[docs]</a>
+<span class="k">def</span> <span class="nf">has_current_token</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;has_current_token&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="has_identity">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.has_identity">[docs]</a>
+<span class="k">def</span> <span class="nf">has_identity</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;has_identity&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="format">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.format">[docs]</a>
+<span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="o">*</span><span class="n">values</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">values</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="concat">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.concat">[docs]</a>
+<span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="n">strings</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;concat&quot;</span><span class="p">:</span> <span class="n">strings</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;separator&quot;</span><span class="p">:</span> <span class="n">separator</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="casefold">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.casefold">[docs]</a>
+<span class="k">def</span> <span class="nf">casefold</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">normalizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;casefold&quot;</span><span class="p">:</span> <span class="n">string</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;normalizer&quot;</span><span class="p">:</span> <span class="n">normalizer</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="starts_with">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.starts_with">[docs]</a>
+<span class="k">def</span> <span class="nf">starts_with</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;startswith&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">:</span> <span class="n">search</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="ends_with">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.ends_with">[docs]</a>
+<span class="k">def</span> <span class="nf">ends_with</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;endswith&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">:</span> <span class="n">search</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="contains_str">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.contains_str">[docs]</a>
+<span class="k">def</span> <span class="nf">contains_str</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;containsstr&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">:</span> <span class="n">search</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="contains_str_regex">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.contains_str_regex">[docs]</a>
+<span class="k">def</span> <span class="nf">contains_str_regex</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;containsstrregex&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="n">pattern</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="regex_escape">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.regex_escape">[docs]</a>
+<span class="k">def</span> <span class="nf">regex_escape</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;regexescape&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="ngram">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.ngram">[docs]</a>
+<span class="k">def</span> <span class="nf">ngram</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;ngram&quot;</span><span class="p">:</span> <span class="n">terms</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="find_str">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.find_str">[docs]</a>
+<span class="k">def</span> <span class="nf">find_str</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">find</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;findstr&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;find&quot;</span><span class="p">:</span> <span class="n">find</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="find_str_regex">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.find_str_regex">[docs]</a>
+<span class="k">def</span> <span class="nf">find_str_regex</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numResults</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;findstrregex&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="n">pattern</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;num_results&quot;</span><span class="p">:</span> <span class="n">numResults</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="replace_str">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.replace_str">[docs]</a>
+<span class="k">def</span> <span class="nf">replace_str</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">find</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;replacestr&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;find&quot;</span><span class="p">:</span> <span class="n">find</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">:</span> <span class="n">replace</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="replace_str_regex">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.replace_str_regex">[docs]</a>
+<span class="k">def</span> <span class="nf">replace_str_regex</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;replacestrregex&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="n">pattern</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">:</span> <span class="n">replace</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="n">first</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="length">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.length">[docs]</a>
+<span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="lowercase">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.lowercase">[docs]</a>
+<span class="k">def</span> <span class="nf">lowercase</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;lowercase&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="uppercase">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.uppercase">[docs]</a>
+<span class="k">def</span> <span class="nf">uppercase</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;uppercase&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="titlecase">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.titlecase">[docs]</a>
+<span class="k">def</span> <span class="nf">titlecase</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;titlecase&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="trim">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.trim">[docs]</a>
+<span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;trim&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="ltrim">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.ltrim">[docs]</a>
+<span class="k">def</span> <span class="nf">ltrim</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;ltrim&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="rtrim">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.rtrim">[docs]</a>
+<span class="k">def</span> <span class="nf">rtrim</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;rtrim&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="space">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.space">[docs]</a>
+<span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;space&quot;</span><span class="p">:</span> <span class="n">count</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="substring">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.substring">[docs]</a>
+<span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;substring&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="n">length</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="repeat">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.repeat">[docs]</a>
+<span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="n">number</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="time">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.time">[docs]</a>
+<span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">string</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="epoch">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.epoch">[docs]</a>
+<span class="k">def</span> <span class="nf">epoch</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">number</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="now">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.now">[docs]</a>
+<span class="k">def</span> <span class="nf">now</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;now&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="date">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.date">[docs]</a>
+<span class="k">def</span> <span class="nf">date</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">string</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="time_add">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.time_add">[docs]</a>
+<span class="k">def</span> <span class="nf">time_add</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;time_add&quot;</span><span class="p">:</span> <span class="n">base</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="n">offset</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="time_subtract">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.time_subtract">[docs]</a>
+<span class="k">def</span> <span class="nf">time_subtract</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;time_subtract&quot;</span><span class="p">:</span> <span class="n">base</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="n">offset</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="time_diff">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.time_diff">[docs]</a>
+<span class="k">def</span> <span class="nf">time_diff</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">finish</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;time_diff&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="n">finish</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="new_id">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.new_id">[docs]</a>
+<span class="k">def</span> <span class="nf">new_id</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;new_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="database">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.database">[docs]</a>
+<span class="k">def</span> <span class="nf">database</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="n">db_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="index">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.index">[docs]</a>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">index_name</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">index_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="collection">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.collection">[docs]</a>
+<span class="k">def</span> <span class="nf">collection</span><span class="p">(</span><span class="n">collection_name</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;collection&quot;</span><span class="p">:</span> <span class="n">collection_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="function">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.function">[docs]</a>
+<span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">fn_name</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="n">fn_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="role">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.role">[docs]</a>
+<span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="n">role_name</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">role_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="access_provider">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.access_provider">[docs]</a>
+<span class="k">def</span> <span class="nf">access_provider</span><span class="p">(</span><span class="n">access_provider_name</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;access_provider&quot;</span><span class="p">:</span> <span class="n">access_provider_name</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="equals">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.equals">[docs]</a>
+<span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;equals&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">values</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="contains_path">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.contains_path">[docs]</a>
+<span class="k">def</span> <span class="nf">contains_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">in_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;contains_path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="n">in_</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="contains_field">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.contains_field">[docs]</a>
+<span class="k">def</span> <span class="nf">contains_field</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">in_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;contains_field&quot;</span><span class="p">:</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="n">in_</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="contains_value">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.contains_value">[docs]</a>
+<span class="k">def</span> <span class="nf">contains_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">in_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;contains_value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="n">in_</span><span class="p">})</span></div>
+
+
+
+<span class="n">_NO_DEFAULT</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="select">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.select">[docs]</a>
+<span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">from_</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">_NO_DEFAULT</span><span class="p">):</span>
+    <span class="n">_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;select&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">from_</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_NO_DEFAULT</span><span class="p">:</span>
+        <span class="n">_dict</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">(</span><span class="n">_dict</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="select_all">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.select_all">[docs]</a>
+<span class="k">def</span> <span class="nf">select_all</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">from_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;select_all&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">from_</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="add">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.add">[docs]</a>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;add&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="multiply">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.multiply">[docs]</a>
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;multiply&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="subtract">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.subtract">[docs]</a>
+<span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;subtract&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="divide">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.divide">[docs]</a>
+<span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;divide&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="pow">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.pow">[docs]</a>
+<span class="k">def</span> <span class="nf">pow</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">exp</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;pow&quot;</span><span class="p">:</span> <span class="n">base</span><span class="p">,</span> <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">exp</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="max">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.max">[docs]</a>
+<span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="min">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.min">[docs]</a>
+<span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="abs">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.abs">[docs]</a>
+<span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="trunc">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.trunc">[docs]</a>
+<span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;trunc&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="n">precision</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="bitor">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.bitor">[docs]</a>
+<span class="k">def</span> <span class="nf">bitor</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;bitor&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="cosh">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.cosh">[docs]</a>
+<span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;cosh&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="hypot">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.hypot">[docs]</a>
+<span class="k">def</span> <span class="nf">hypot</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;hypot&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="atan">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.atan">[docs]</a>
+<span class="k">def</span> <span class="nf">atan</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;atan&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="log">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.log">[docs]</a>
+<span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="bitnot">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.bitnot">[docs]</a>
+<span class="k">def</span> <span class="nf">bitnot</span><span class="p">(</span><span class="o">*</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;bitnot&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">num</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="bitxor">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.bitxor">[docs]</a>
+<span class="k">def</span> <span class="nf">bitxor</span><span class="p">(</span><span class="o">*</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;bitxor&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">num</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="bitand">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.bitand">[docs]</a>
+<span class="k">def</span> <span class="nf">bitand</span><span class="p">(</span><span class="o">*</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;bitand&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">num</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="ceil">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.ceil">[docs]</a>
+<span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;ceil&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="degrees">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.degrees">[docs]</a>
+<span class="k">def</span> <span class="nf">degrees</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;degrees&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="cos">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.cos">[docs]</a>
+<span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;cos&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="acos">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.acos">[docs]</a>
+<span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;acos&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="sqrt">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.sqrt">[docs]</a>
+<span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;sqrt&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="tan">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.tan">[docs]</a>
+<span class="k">def</span> <span class="nf">tan</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;tan&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="tanh">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.tanh">[docs]</a>
+<span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;tanh&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="sin">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.sin">[docs]</a>
+<span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;sin&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="asin">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.asin">[docs]</a>
+<span class="k">def</span> <span class="nf">asin</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;asin&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="round">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.round">[docs]</a>
+<span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_params</span><span class="p">({</span><span class="s2">&quot;round&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="n">precision</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="radians">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.radians">[docs]</a>
+<span class="k">def</span> <span class="nf">radians</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;radians&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="floor">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.floor">[docs]</a>
+<span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;floor&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="sign">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.sign">[docs]</a>
+<span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;sign&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="exp">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.exp">[docs]</a>
+<span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="ln">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.ln">[docs]</a>
+<span class="k">def</span> <span class="nf">ln</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;ln&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="any">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.any">[docs]</a>
+<span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;any&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="all">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.all">[docs]</a>
+<span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="modulo">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.modulo">[docs]</a>
+<span class="k">def</span> <span class="nf">modulo</span><span class="p">(</span><span class="o">*</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;modulo&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">numbers</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="count">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.count">[docs]</a>
+<span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="sum">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.sum">[docs]</a>
+<span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="mean">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.mean">[docs]</a>
+<span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">collection</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="lt">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.lt">[docs]</a>
+<span class="k">def</span> <span class="nf">lt</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;lt&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">values</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="lte">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.lte">[docs]</a>
+<span class="k">def</span> <span class="nf">lte</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;lte&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">values</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="gt">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.gt">[docs]</a>
+<span class="k">def</span> <span class="nf">gt</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;gt&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">values</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="gte">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.gte">[docs]</a>
+<span class="k">def</span> <span class="nf">gte</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;gte&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">values</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="and_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.and_">[docs]</a>
+<span class="k">def</span> <span class="nf">and_</span><span class="p">(</span><span class="o">*</span><span class="n">booleans</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;and&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">booleans</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="or_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.or_">[docs]</a>
+<span class="k">def</span> <span class="nf">or_</span><span class="p">(</span><span class="o">*</span><span class="n">booleans</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;or&quot;</span><span class="p">:</span> <span class="n">_varargs</span><span class="p">(</span><span class="n">booleans</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="not_">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.not_">[docs]</a>
+<span class="k">def</span> <span class="nf">not_</span><span class="p">(</span><span class="n">boolean</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;not&quot;</span><span class="p">:</span> <span class="n">boolean</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_string">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_string">[docs]</a>
+<span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_string&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_array">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_array">[docs]</a>
+<span class="k">def</span> <span class="nf">to_array</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_array&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_object">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_object">[docs]</a>
+<span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_object&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_double">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_double">[docs]</a>
+<span class="k">def</span> <span class="nf">to_double</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_double&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_integer">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_integer">[docs]</a>
+<span class="k">def</span> <span class="nf">to_integer</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_integer&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_number">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_number">[docs]</a>
+<span class="k">def</span> <span class="nf">to_number</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_number&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_time">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_time">[docs]</a>
+<span class="k">def</span> <span class="nf">to_time</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_time&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_seconds">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_seconds">[docs]</a>
+<span class="k">def</span> <span class="nf">to_seconds</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_seconds&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_millis">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_millis">[docs]</a>
+<span class="k">def</span> <span class="nf">to_millis</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_millis&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_micros">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_micros">[docs]</a>
+<span class="k">def</span> <span class="nf">to_micros</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_micros&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="day_of_month">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.day_of_month">[docs]</a>
+<span class="k">def</span> <span class="nf">day_of_month</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;day_of_month&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="day_of_week">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.day_of_week">[docs]</a>
+<span class="k">def</span> <span class="nf">day_of_week</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;day_of_week&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="day_of_year">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.day_of_year">[docs]</a>
+<span class="k">def</span> <span class="nf">day_of_year</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;day_of_year&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="year">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.year">[docs]</a>
+<span class="k">def</span> <span class="nf">year</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="month">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.month">[docs]</a>
+<span class="k">def</span> <span class="nf">month</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;month&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="hour">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.hour">[docs]</a>
+<span class="k">def</span> <span class="nf">hour</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="minute">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.minute">[docs]</a>
+<span class="k">def</span> <span class="nf">minute</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;minute&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="second">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.second">[docs]</a>
+<span class="k">def</span> <span class="nf">second</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="to_date">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.to_date">[docs]</a>
+<span class="k">def</span> <span class="nf">to_date</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">({</span><span class="s2">&quot;to_date&quot;</span><span class="p">:</span> <span class="n">expr</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="Expr">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr">[docs]</a>
+<span class="k">class</span> <span class="nc">Expr</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="Expr.to_fauna_json">
+<a class="viewcode-back" href="../../../aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr.to_fauna_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_fauna_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Expr(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Expr</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_wrap</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Expr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">lambda_query</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Expr</span><span class="p">({</span><span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="n">_wrap_values</span><span class="p">(</span><span class="n">value</span><span class="p">)})</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">Expr</span><span class="p">([</span><span class="n">_wrap</span><span class="p">(</span><span class="n">sub_value</span><span class="p">)</span> <span class="k">for</span> <span class="n">sub_value</span> <span class="ow">in</span> <span class="n">value</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">_wrap_values</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">_wrap</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<span class="k">def</span> <span class="nf">_fn</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Expr</span><span class="p">(</span><span class="n">_wrap_values</span><span class="p">(</span><span class="n">dct</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_params</span><span class="p">(</span><span class="n">main_params</span><span class="p">,</span> <span class="n">optional_params</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">optional_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">main_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">return</span> <span class="n">_fn</span><span class="p">(</span><span class="n">main_params</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_varargs</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">values</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Oscar Bahamonde.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

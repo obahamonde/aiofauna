@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aiofauna.faunadb.objects module &mdash; aiofauna 0.1.99 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ad8de784"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="aiofauna.faunadb.page module" href="aiofauna.faunadb.page.html" />
+    <link rel="prev" title="aiofauna.faunadb.errors module" href="aiofauna.faunadb.errors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            aiofauna
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.html">aiofauna package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.asgi.html">aiofauna.asgi module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.client.html">aiofauna.client module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.docs.html">aiofauna.docs module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.exceptions.html">aiofauna.exceptions module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="aiofauna.faunadb.html">aiofauna.faunadb package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="aiofauna.faunadb.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="aiofauna.faunadb.errors.html">aiofauna.faunadb.errors module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">aiofauna.faunadb.objects module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.faunadb.objects.FaunaTime"><code class="docutils literal notranslate"><span class="pre">FaunaTime</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.faunadb.objects.Native"><code class="docutils literal notranslate"><span class="pre">Native</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.faunadb.objects.Query"><code class="docutils literal notranslate"><span class="pre">Query</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.faunadb.objects.Ref"><code class="docutils literal notranslate"><span class="pre">Ref</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.faunadb.objects.SetRef"><code class="docutils literal notranslate"><span class="pre">SetRef</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="aiofauna.faunadb.page.html">aiofauna.faunadb.page module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aiofauna.faunadb.query.html">aiofauna.faunadb.query module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="aiofauna.faunadb.html#module-aiofauna.faunadb">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.helpers.html">aiofauna.helpers module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.json.html">aiofauna.json module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.markdown.html">aiofauna.markdown module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.odm.html">aiofauna.odm module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.router.html">aiofauna.router module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.server.html">aiofauna.server module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.templates.html">aiofauna.templates module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.typedefs.html">aiofauna.typedefs module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.utils.html">aiofauna.utils module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">aiofauna</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="aiofauna.html">aiofauna package</a></li>
+          <li class="breadcrumb-item"><a href="aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
+      <li class="breadcrumb-item active">aiofauna.faunadb.objects module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/aiofauna.faunadb.objects.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-aiofauna.faunadb.objects">
+<span id="aiofauna-faunadb-objects-module"></span><h1>aiofauna.faunadb.objects module<a class="headerlink" href="#module-aiofauna.faunadb.objects" title="Link to this heading"></a></h1>
+<p>Types used in queries and responses.
+See the <a class="reference external" href="https://app.fauna.com/documentation/reference/queryapi#simple-type">docs</a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.FaunaTime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.faunadb.objects.</span></span><span class="sig-name descname"><span class="pre">FaunaTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#FaunaTime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.FaunaTime" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr" title="aiofauna.faunadb.query.Expr"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expr</span></code></a></p>
+<p>FaunaDB time. See the <a class="reference external" href="https://app.fauna.com/documentation/reference/queryapi#special-type">docs</a>.</p>
+<p>For dates, regular <code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.date</span></code> objects are used.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.FaunaTime.to_datetime">
+<span class="sig-name descname"><span class="pre">to_datetime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#FaunaTime.to_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.FaunaTime.to_datetime" title="Link to this definition"></a></dt>
+<dd><p>Convert to an offset-aware datetime object.
+This is lossy as datetimes have microsecond rather than nanosecond precision.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.FaunaTime.to_fauna_json">
+<span class="sig-name descname"><span class="pre">to_fauna_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#FaunaTime.to_fauna_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.FaunaTime.to_fauna_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.faunadb.objects.</span></span><span class="sig-name descname"><span class="pre">Native</span></span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Native"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Native" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.ACCESS_PROVIDERS">
+<span class="sig-name descname"><span class="pre">ACCESS_PROVIDERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=access_providers)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.ACCESS_PROVIDERS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.COLLECTIONS">
+<span class="sig-name descname"><span class="pre">COLLECTIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=collections)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.COLLECTIONS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.CREDENTIALS">
+<span class="sig-name descname"><span class="pre">CREDENTIALS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=credentials)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.CREDENTIALS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.DATABASES">
+<span class="sig-name descname"><span class="pre">DATABASES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=databases)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.DATABASES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.FUNCTIONS">
+<span class="sig-name descname"><span class="pre">FUNCTIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=functions)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.FUNCTIONS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.INDEXES">
+<span class="sig-name descname"><span class="pre">INDEXES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=indexes)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.INDEXES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.KEYS">
+<span class="sig-name descname"><span class="pre">KEYS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=keys)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.KEYS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.ROLES">
+<span class="sig-name descname"><span class="pre">ROLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=roles)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.ROLES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.TOKENS">
+<span class="sig-name descname"><span class="pre">TOKENS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ref(id=tokens)</span></em><a class="headerlink" href="#aiofauna.faunadb.objects.Native.TOKENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Native.from_name">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Native.from_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Native.from_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Query">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.faunadb.objects.</span></span><span class="sig-name descname"><span class="pre">Query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Query" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr" title="aiofauna.faunadb.query.Expr"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expr</span></code></a></p>
+<p>Represents a <cite>&#64;query</cite> type in FaunaDB.
+See the <a class="reference external" href="https://app.fauna.com/documentation/reference/queryapi#special-type">docs</a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Query.to_fauna_json">
+<span class="sig-name descname"><span class="pre">to_fauna_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Query.to_fauna_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Query.to_fauna_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Ref">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.faunadb.objects.</span></span><span class="sig-name descname"><span class="pre">Ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Ref" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr" title="aiofauna.faunadb.query.Expr"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expr</span></code></a></p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">Ref(id,</span> <span class="pre">cls=None,</span> <span class="pre">db=None)</span>
+<span class="pre">`</span></code>
+A reference to a document in a collection or index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – The document’s ID.</p></li>
+<li><p><strong>cls</strong> – The collection or index class.</p></li>
+<li><p><strong>db</strong> – The database.</p></li>
+</ul>
+</dd>
+</dl>
+<p><cite>Ref</cite></p>
+<p>Is a special type in FaunaDB. It is used to represent a document in a collection or index.</p>
+<p>It is serialized to JSON as an object with the <cite>&#64;ref</cite> key. Passing the <cite>id</cite> to the response.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Ref.collection">
+<span class="sig-name descname"><span class="pre">collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Ref.collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Ref.collection" title="Link to this definition"></a></dt>
+<dd><p>Gets the collection part out of the Ref.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Ref.database">
+<span class="sig-name descname"><span class="pre">database</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Ref.database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Ref.database" title="Link to this definition"></a></dt>
+<dd><p>Gets the database part out of the Ref.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Ref.id">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Ref.id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Ref.id" title="Link to this definition"></a></dt>
+<dd><p>Gets the id part out of the Ref.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.Ref.to_fauna_json">
+<span class="sig-name descname"><span class="pre">to_fauna_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#Ref.to_fauna_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.Ref.to_fauna_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.SetRef">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.faunadb.objects.</span></span><span class="sig-name descname"><span class="pre">SetRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">set_ref</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#SetRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.SetRef" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="aiofauna.faunadb.query.html#aiofauna.faunadb.query.Expr" title="aiofauna.faunadb.query.Expr"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expr</span></code></a></p>
+<p>FaunaDB Set.
+This represents a set returned as part of a response.
+For query sets see <span class="xref std std-doc">query</span>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.faunadb.objects.SetRef.to_fauna_json">
+<span class="sig-name descname"><span class="pre">to_fauna_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/faunadb/objects.html#SetRef.to_fauna_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.faunadb.objects.SetRef.to_fauna_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="aiofauna.faunadb.errors.html" class="btn btn-neutral float-left" title="aiofauna.faunadb.errors module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="aiofauna.faunadb.page.html" class="btn btn-neutral float-right" title="aiofauna.faunadb.page module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Oscar Bahamonde.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

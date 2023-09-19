@@ -80,9 +80,7 @@ def _(response: dict) -> Response:
 
 @do_response.register(str)
 def _(response: str) -> Response:
-    if response.startswith("<") and response.endswith(">"):
-        return Response(status=200, text=response, content_type="text/html")
-    return Response(status=200, text=response, content_type="text/plain")
+    return Response(status=200, text=response, content_type="text/html")
 
 
 @do_response.register(bytes)

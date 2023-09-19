@@ -21,11 +21,9 @@ __license__ = "MIT"
 
 
 __doc__ = """
----
-title: AioFauna
----
 
-# AioFauna
+AioFauna
+--------
 
 🚀 Introducing aiofauna: A full-stack framework built on top of Aiohttp, Pydantic and FaunaDB.
 
@@ -47,11 +45,11 @@ title: AioFauna
 
 ✅ Robust data validation: Utilizes the rich features of Pydantic for data validation and serialization.
 
+✅ OX: Thanks to `rich` and `aiohttp` you will get rich logging and error handling out of the box.
+
 ✅ Auto-provisioning: Automatic management of indexes, unique indexes, and collections with `FaunaModel` ODM.
 
 ✅ Full JSON communication: Focus on your data, don't worry about the communication protocol. Your `APIServer` will receive and return JSON.
-
-✅ APIRouter: AioFauna comes with a powerful APIRouter class that allows you to organize your `APIServer` endpoints with path operations, path parameters, query parameters, request body, status codes, and decorated view functions.
 
 ✅ Inspired by fastapi, you will work with almost the same syntax and features like path operations, path parameters, query parameters, request body, status codes, `/docs` automatic interactive API documentation, and decorated view functions and automatic serialization and deserialization of your data.
 
@@ -65,9 +63,11 @@ title: AioFauna
 
 📦 [PyPi](https://pypi.org/project/aiofauna/)
 
-📦 [Demo](https://natal-ia.netlify.app) (LLM smart agent)
+📦 [Demo](https://www.aiofauna.com)
 
 📦 [GitHub](https://github.com/obahamonde/aiofauna)
+
+📦 [Documentation](https://www.aiofauna.com)
 
 """
 
@@ -87,6 +87,6 @@ from .odm import FaunaModel
 from .server import APIRouter, APIServer, Request, Response
 from .typedefs import Document, Field, LazyProxy, Component
 from .utils import chunker, handle_errors, process_time, setup_logging
-from .markdown import md_component
+from .markdown import markdown
 from .asgi import ASGIServer
-from .templates import component, docstring, page
+from .templates import component, html, page, render

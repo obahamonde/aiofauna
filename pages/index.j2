@@ -1,0 +1,9 @@
+{% extends '_base.j2'%}
+{% block content %}
+<div>
+	<h1 class="text-blue-500">{{title}}</h1>
+	<p>{{description}}</p>
+	<button hx-get="/" hx-swap="innerHTML" hx-target="#app">Click me</button>
+	<p id="app">{{counter}}</p>
+</div>	
+{% endblock %}

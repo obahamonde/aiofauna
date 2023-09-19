@@ -1,6 +1,6 @@
 import asyncio
 import functools
-from typing import Any, Callable, Coroutine, Dict, Type, TypeVar
+from typing import Any, Callable, Coroutine, Dict, Type, TypeVar, Optional
 
 from jinja2 import Environment, FileSystemLoader, Template
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
@@ -10,16 +10,16 @@ T = TypeVar("T", bound=BaseModel)
 P = ParamSpec("P")
 
 
-def docstring(
+def html(
     cls: Type[T],
 ) -> Callable[
-    [Callable[..., Coroutine[Any, Any, Dict[str, Any]]]],
-    Callable[..., Coroutine[Any, Any, str]],
+    [Callable[P, Coroutine[Any, Any, Dict[str, Any]]]],
+    Callable[P, Coroutine[Any, Any, str]],
 ]:
     def decorator(
-        func: Callable[..., Coroutine[Any, Any, Dict[str, Any]]]
-    ) -> Callable[..., Coroutine[Any, Any, str]]:
-        async def wrapper(*args: Any, **kwargs: Any) -> str:
+        func: Callable[P, Coroutine[Any, Any, Dict[str, Any]]]
+    ) -> Callable[P, Coroutine[Any, Any, str]]:
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
             if cls.__doc__ is None:
                 raise ValueError("Component must have a docstring")
             template = Template(cls.__doc__)
@@ -32,12 +32,15 @@ def docstring(
     return decorator
 
 
+
 def page(
-    cls: Type[T], template: str, template_dir: str = "pages"
+    cls: Type[T], template: Optional[str]=None, template_dir: str = "pages"
 ) -> Callable[
     [Callable[P, Coroutine[Any, Any, Dict[str, Any]]]],
     Callable[P, Coroutine[Any, Any, str]],
 ]:
+    if template is None:
+        template = cls.__name__.lower() + ".j2"
     environment = Environment(loader=FileSystemLoader(template_dir), enable_async=True)
 
     class Decorator:
@@ -54,16 +57,17 @@ def page(
                 return template_object.render(**model_instance.dict())
 
             return wrapper
-
+        
     return Decorator()
-
 
 def component(
-    cls: Type[T], template: str, template_dir: str = "components"
+    cls: Type[T], template: Optional[str]=None, template_dir: str = "components"
 ) -> Callable[
     [Callable[P, Coroutine[Any, Any, Dict[str, Any]]]],
     Callable[P, Coroutine[Any, Any, str]],
 ]:
+    if template is None:
+        template = cls.__name__.lower() + ".j2"
     environment = Environment(loader=FileSystemLoader(template_dir), enable_async=True)
 
     class Decorator:
@@ -82,3 +86,15 @@ def component(
             return wrapper
 
     return Decorator()
+
+def render(
+    func: Callable[P, Coroutine[Any, Any,T]]
+) -> Callable[P, Coroutine[Any, Any, T]]:
+    @functools.wraps(func)
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        if func.__doc__ is None:
+            raise ValueError("Component must have a docstring")
+        context = await func(*args, **kwargs)
+        return Template(func.__doc__).render(**context)
+
+    return wrapper
