@@ -1,11 +1,9 @@
+dist
+logs
+docs
+pages
+components
+main.py
 .env
 .pytest_cache
 .venv
-client
-dist
-.faunarc
-logs
-./docs
-./pages
-./components
-main.py
