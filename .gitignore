@@ -3,6 +3,8 @@ logs
 docs
 pages
 components
+static
+tests
 main.py
 .env
 .pytest_cache

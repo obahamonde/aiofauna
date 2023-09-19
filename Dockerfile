@@ -11,5 +11,5 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["aiofauna","run"]
+CMD ["aiofauna","run","--port","8035"]
 

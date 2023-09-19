@@ -74,7 +74,7 @@ AioFauna
 
 from typing import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
-from aiohttp.web import WebSocketResponse
+from aiohttp.web import WebSocketResponse, HTTPFound
 from aiohttp_sse import EventSourceResponse
 from typing_extensions import ParamSpec
 
