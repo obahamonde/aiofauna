@@ -4,7 +4,7 @@ import asyncio
 from typing import Any, List, Type, TypeVar
 
 from dotenv import load_dotenv
-from pydantic import Field
+from pydantic import BaseConfig, Extra, Field
 
 from .client import FaunaClient
 from .faunadb import query as q
@@ -18,6 +18,13 @@ T = TypeVar("T", bound="FaunaModel")
 
 
 class FaunaModel(JSONModel):
+
+    class Config (BaseConfig):
+        extra = Extra.allow
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+
+
     ref: str = Field(default_factory=gen_emptystr)
     ts: str = Field(default_factory=gen_emptystr)
 
@@ -25,7 +32,7 @@ class FaunaModel(JSONModel):
         subclasses: List[Type[FaunaModel]] = []
 
     @classmethod
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs:Any):
         super().__init_subclass__(**kwargs)
         if cls.__doc__ is None:
             cls.__doc__ = f"```json\n{cls.schema_json(indent=2)}\n```"
@@ -275,7 +282,3 @@ class FaunaModel(JSONModel):
         if isinstance(self.ref, str) and len(self.ref) == 18:
             return await self.update(self.ref, kwargs=self.dict())
         return await self.create()
-
-    @classmethod
-    async def cleanup(cls):
-        await cls.client().cleanup()

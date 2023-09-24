@@ -6,6 +6,7 @@ from aiohttp.web import Request
 from aiohttp.web_request import FileField
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
+from .api import Client
 from .json import parse_json
 
 
@@ -51,6 +52,14 @@ def extract(params: dict, path: str):
             }
 
         elif issubclass(type_, (BaseModel)):
+            open_api_params[name] = {
+                "in": "body",
+                "name": name,
+                "required": True,
+                "schema": type_.schema(),
+            }
+
+        elif issubclass(type_, Client):
             open_api_params[name] = {
                 "in": "body",
                 "name": name,

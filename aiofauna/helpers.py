@@ -11,12 +11,13 @@ from typing import Any, List, Union
 from aiohttp.web import Response, json_response
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing_extensions import ParamSpec
+
 from .json import to_json
 from .odm import FaunaModel
 
-
 T = typing.TypeVar("T")
 P = ParamSpec("P")
+
 
 def async_io(
     func: typing.Callable[P, T]

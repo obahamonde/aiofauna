@@ -68,7 +68,7 @@ class ASGIServer(APIServer):
 
         request = web.Request(
             message=message,
-            payload=StreamReader(protocol=_proto,limit=2**20),
+            payload=StreamReader(protocol=_proto, limit=2**20),
             protocol=_proto,
             payload_writer=None,
             task=None,

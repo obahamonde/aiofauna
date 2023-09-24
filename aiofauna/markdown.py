@@ -10,7 +10,7 @@ from .utils import render_markdown
 T = typing.TypeVar("T")
 P = typing_extensions.ParamSpec("P")
 
-MD_TOP="""
+MD_TOP = """
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,7 +43,7 @@ MD_TOP="""
 	<div class="markdown-body">
 """
 
-MD_BOTTOM="""
+MD_BOTTOM = """
 </div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/mini.global.js"></script>
@@ -58,6 +58,7 @@ MD_BOTTOM="""
 </html>
 """
 
+
 def markdown(
     func: Callable[P, Coroutine[Any, Any, T]]
 ) -> Callable[P, Coroutine[Any, Any, T]]:
@@ -67,9 +68,7 @@ def markdown(
             md = render_markdown(await func(*args, **kwargs))
         else:
             md = render_markdown(func(*args, **kwargs))
-        template_str =jinja2.Template(
-            MD_TOP + md + MD_BOTTOM
-    )
+        template_str = jinja2.Template(MD_TOP + md + MD_BOTTOM)
         return template_str.render()
 
     return wrapper

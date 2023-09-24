@@ -31,7 +31,8 @@ extensions = [
 	'sphinx.ext.inheritance_diagram',
 	'sphinx.ext.graphviz',
 	'sphinx.ext.extlinks',
-	'sphinx.ext.ifconfig'
+	'sphinx.ext.ifconfig',
+	'sphinx_sitemap',
 ]
 
 templates_path = ['_templates']
@@ -41,6 +42,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
+site_url = 'https://docs.aiofauna.com'
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']

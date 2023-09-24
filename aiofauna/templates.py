@@ -32,9 +32,8 @@ def html(
     return decorator
 
 
-
 def page(
-    cls: Type[T], template: Optional[str]=None, template_dir: str = "pages"
+    cls: Type[T], template: Optional[str] = None, template_dir: str = "pages"
 ) -> Callable[
     [Callable[P, Coroutine[Any, Any, Dict[str, Any]]]],
     Callable[P, Coroutine[Any, Any, str]],
@@ -57,11 +56,12 @@ def page(
                 return template_object.render(**model_instance.dict())
 
             return wrapper
-        
+
     return Decorator()
+
 
 def component(
-    cls: Type[T], template: Optional[str]=None, template_dir: str = "components"
+    cls: Type[T], template: Optional[str] = None, template_dir: str = "components"
 ) -> Callable[
     [Callable[P, Coroutine[Any, Any, Dict[str, Any]]]],
     Callable[P, Coroutine[Any, Any, str]],
@@ -87,8 +87,9 @@ def component(
 
     return Decorator()
 
+
 def render(
-    func: Callable[P, Coroutine[Any, Any,T]]
+    func: Callable[P, Coroutine[Any, Any, T]]
 ) -> Callable[P, Coroutine[Any, Any, T]]:
     @functools.wraps(func)
     async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:

@@ -4,27 +4,19 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    Iterable,
-    List,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import (Any, Callable, Dict, Generic, Iterable, List, Type,
+                    TypeVar, Union, cast)
 from uuid import UUID
+
 from aiohttp.web import Response
+from jinja2 import Environment, FileSystemLoader, Template
 from pydantic import BaseConfig  # pylint: disable=no-name-in-module
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from pydantic import Extra  # pylint: disable=no-name-in-module
 from pydantic import Field
 from typing_extensions import ParamSpec
+
 from .faunadb.objects import FaunaTime, Ref
-from jinja2 import Template, Environment, FileSystemLoader
 
 Vector = List[float]
 
