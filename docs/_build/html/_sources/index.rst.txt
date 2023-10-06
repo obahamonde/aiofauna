@@ -10,20 +10,12 @@ Welcome to aiofauna's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   aiofauna
-   aiofauna.asgi
+   aiofauna 
+   aiofauna.data
    aiofauna.client
-   aiofauna.docs
-   aiofauna.exceptions
    aiofauna.faunadb
-   aiofauna.helpers
-   aiofauna.json
-   aiofauna.markdown
-   aiofauna.odm
-   aiofauna.router
    aiofauna.server
-   aiofauna.templates
-   aiofauna.typedefs
+   aiofauna.helpers
    aiofauna.utils
 
 Indices and tables

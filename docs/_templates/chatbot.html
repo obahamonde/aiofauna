@@ -1,0 +1,105 @@
+<head>
+	<link rel="stylesheet" href="https://pub-0ce226cdf149453dbcefcf4aa544e42f.r2.dev/main.css" />
+
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<div id="vue-app">
+	<div id="chat-app" class="chat-app" :class="isActive ? 'is-active' : ''">
+		<div class="chat-app_toggle toggle">
+			<div class="icon send">
+				<i class="mdi mdi-send" @click="sendMessage(message)"></i>
+			</div>
+			<div class="icon open">
+				<i class="mdi mdi-chat" @click="isActive = !isActive"></i>
+			</div>
+		</div>
+		<div class="chat-app_box">
+			<div class="chat-app_header">
+				<div class="close" @click="isActive = !isActive">
+				</div>
+				<div class="branding">
+					<div class="avatar is-online">
+						<img src="https://www.aiofauna.com/chatbot.svg" alt="" />
+					</div>
+
+					<div class="content">
+						<p class="title">Docsy</p>
+						<p class="subtitle">You can ask me anything about this website!</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_content">
+				<div class="messages">
+					<div class="message" v-for="message in messages" :class="message.role=='assistant' ? 'reply' : ''">
+						<p class="text">[[ message.content ]]</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_footer">
+				<div class="tools">
+					<a class="button-icon">
+						<i class="mdi mdi-circle"></i>
+					</a>
+					<a class="button-icon">
+						<i class="mdi mdi-clock"></i>
+					</a>
+					<a class="copyright"> [[ now ]] </a>
+				</div>
+				<input class="chat-input" type="text" placeholder="Ask me anything..."
+					@keyup.enter="sendMessage(message)" v-model="message" @keyup.escape="handleEscape()" />
+			</div>
+		</div>
+	</div>
+	<script>
+		const { createApp, ref, onMounted, computed, watchEffect } = Vue;
+
+		const app = createApp({
+			delimiters: ["[[", "]]"],
+			setup() {
+				const isActive = ref(false);
+				const messages = ref([]);
+				const now = ref(new Date().toLocaleTimeString());
+				watchEffect(() => {
+					setInterval(() => {
+						now.value = new Date().toLocaleTimeString();
+					}, 1000);
+				});
+				const handleEscape = (evt) => {
+					if (evt.key === "Escape" || evt.key === "Esc" || evt.keyCode === 27) {
+						isActive.value = false;
+					}
+				};
+
+				const message = ref("");
+
+				const sendMessage = async (content) => {
+					if (content === "") return;
+					message.value = "";
+					messages.value.push({ role: "user", content });
+					const response = await fetch("/api/chatbot/" + content);
+					const data = await response.json();
+					messages.value.push({ role: "assistant", content: data.message });
+				};
+
+				onMounted(() => {
+					setTimeout(() => {
+						isActive.value = true;
+					}, 1000);
+				});
+
+				return {
+					isActive,
+					messages,
+					now,
+					sendMessage,
+					message,
+					handleEscape,
+				};
+			},
+		});
+
+		app.mount("#vue-app");
+	</script>
+</div>

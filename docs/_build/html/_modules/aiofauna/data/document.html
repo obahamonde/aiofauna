@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>aiofauna.data.document &mdash; aiofauna 0.1.99 documentation</title>
+	<link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+	<!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+	
+		<script src="../../../_static/jquery.js?v=5d32c60e"></script>
+		<script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+		<script src="../../../_static/documentation_options.js?v=ad8de784"></script>
+		<script src="../../../_static/doctools.js?v=888ff710"></script>
+		<script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+		<script src="../../../_static/js/theme.js"></script>
+		<link rel="index" title="Index" href="../../../genindex.html" />
+		<link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+	<div class="wy-grid-for-nav">
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+			<div class="wy-side-scroll">
+				<div class="wy-side-nav-search" >
+
+					
+					
+					<a href="../../../index.html"  class="icon icon-home" >
+						aiofauna
+					</a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+				</div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation"
+					aria-label="Navigation menu">
+					<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.html">aiofauna package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.data.html">aiofauna.data package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.client.html">aiofauna.client package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.server.html">aiofauna.server package</a></li>
+</ul>
+
+				</div>
+			</div>
+		</nav>
+
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+				<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+				<a href="../../../index.html">aiofauna</a>
+			</nav>
+
+			<div class="wy-nav-content">
+					<div class="rst-content">
+						<div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aiofauna.data.document</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+						<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+							<div itemprop="articleBody">
+								
+  <h1>Source code for aiofauna.data.document</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseConfig</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Extra</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
+
+<span class="kn">from</span> <span class="nn">..faunadb.objects</span> <span class="kn">import</span> <span class="n">FaunaTime</span><span class="p">,</span> <span class="n">Ref</span>
+
+
+<div class="viewcode-block" id="Document">
+<a class="viewcode-back" href="../../../aiofauna.data.html#aiofauna.data.document.Document">[docs]</a>
+<span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Document</span>
+<span class="sd">    Base document for all FaunaDB documents</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Document.Config">
+<a class="viewcode-back" href="../../../aiofauna.data.html#aiofauna.data.document.Document.Config">[docs]</a>
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Configuration defaults for all documents&quot;&quot;&quot;</span>
+
+        <span class="n">extra</span> <span class="o">=</span> <span class="n">Extra</span><span class="o">.</span><span class="n">allow</span>
+        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">json_encoders</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">datetime</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="n">date</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="n">time</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="n">timedelta</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span>
+            <span class="n">UUID</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+            <span class="n">Decimal</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+            <span class="n">Ref</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">id</span><span class="p">(),</span>
+            <span class="n">FaunaTime</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">Enum</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Document.Metadata">
+<a class="viewcode-back" href="../../../aiofauna.data.html#aiofauna.data.document.Document.Metadata">[docs]</a>
+    <span class="k">class</span> <span class="nc">Metadata</span><span class="p">:</span>
+        <span class="n">subclasses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Document</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;```json</span><span class="se">\n</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">schema_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">```&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">subclasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span></div>
+
+
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Document</span><span class="p">)</span>
+</pre></div>
+
+							</div>
+						</div>
+						<footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Oscar Bahamonde.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+					</div>
+				</div>
+		</section>
+	</div>
+	<script>
+		jQuery(function () {
+			SphinxRtdTheme.Navigation.enable(true);
+      });
+	</script>
+	<head>
+	<link rel="stylesheet" href="https://pub-0ce226cdf149453dbcefcf4aa544e42f.r2.dev/main.css" />
+
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<div id="vue-app">
+	<div id="chat-app" class="chat-app" :class="isActive ? 'is-active' : ''">
+		<div class="chat-app_toggle toggle">
+			<div class="icon send">
+				<i class="mdi mdi-send" @click="sendMessage(message)"></i>
+			</div>
+			<div class="icon open">
+				<i class="mdi mdi-chat" @click="isActive = !isActive"></i>
+			</div>
+		</div>
+		<div class="chat-app_box">
+			<div class="chat-app_header">
+				<div class="close" @click="isActive = !isActive">
+				</div>
+				<div class="branding">
+					<div class="avatar is-online">
+						<img src="https://www.aiofauna.com/chatbot.svg" alt="" />
+					</div>
+
+					<div class="content">
+						<p class="title">Docsy</p>
+						<p class="subtitle">You can ask me anything about this website!</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_content">
+				<div class="messages">
+					<div class="message" v-for="message in messages" :class="message.role=='assistant' ? 'reply' : ''">
+						<p class="text">[[ message.content ]]</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_footer">
+				<div class="tools">
+					<a class="button-icon">
+						<i class="mdi mdi-circle"></i>
+					</a>
+					<a class="button-icon">
+						<i class="mdi mdi-clock"></i>
+					</a>
+					<a class="copyright"> [[ now ]] </a>
+				</div>
+				<input class="chat-input" type="text" placeholder="Ask me anything..."
+					@keyup.enter="sendMessage(message)" v-model="message" @keyup.escape="handleEscape()" />
+			</div>
+		</div>
+	</div>
+	<script>
+		const { createApp, ref, onMounted, computed, watchEffect } = Vue;
+
+		const app = createApp({
+			delimiters: ["[[", "]]"],
+			setup() {
+				const isActive = ref(false);
+				const messages = ref([]);
+				const now = ref(new Date().toLocaleTimeString());
+				watchEffect(() => {
+					setInterval(() => {
+						now.value = new Date().toLocaleTimeString();
+					}, 1000);
+				});
+				const handleEscape = (evt) => {
+					if (evt.key === "Escape" || evt.key === "Esc" || evt.keyCode === 27) {
+						isActive.value = false;
+					}
+				};
+
+				const message = ref("");
+
+				const sendMessage = async (content) => {
+					if (content === "") return;
+					message.value = "";
+					messages.value.push({ role: "user", content });
+					const response = await fetch("/api/chatbot/" + content);
+					const data = await response.json();
+					messages.value.push({ role: "assistant", content: data.message });
+				};
+
+				onMounted(() => {
+					setTimeout(() => {
+						isActive.value = true;
+					}, 1000);
+				});
+
+				return {
+					isActive,
+					messages,
+					now,
+					sendMessage,
+					message,
+					handleEscape,
+				};
+			},
+		});
+
+		app.mount("#vue-app");
+	</script>
+</div>
+	
+
+</body>
+
+</html>

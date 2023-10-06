@@ -78,16 +78,14 @@ from aiohttp.web import HTTPFound, WebSocketResponse
 from aiohttp_sse import EventSourceResponse
 from typing_extensions import ParamSpec
 
-from .api import Client
-from .asgi import ASGIServer
-from .client import FaunaClient
-from .docs import FileField
+from .server.asgi import ASGIServer
+from .client.api_client import Client
+from .client.fauna_client import FaunaClient
+from .server.docs import FileField
+from .data.document import Document
 from .faunadb import query as q
 from .helpers import async_cpu, async_io, asyncio
-from .json import FaunaJSONEncoder, parse_json, to_json
-from .markdown import markdown
-from .odm import FaunaModel
-from .server import APIRouter, APIServer, Request, Response
-from .templates import component, html, page, render
-from .typedefs import Component, Document, Field, LazyProxy
+from .data.json import FaunaJSONEncoder, parse_json, to_json
+from .data.odm import FaunaModel
+from .server.server import APIRouter, APIServer, Request, Response
 from .utils import chunker, handle_errors, process_time, setup_logging

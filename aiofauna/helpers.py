@@ -12,8 +12,8 @@ from aiohttp.web import Response, json_response
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing_extensions import ParamSpec
 
-from .json import to_json
-from .odm import FaunaModel
+from .data.json import to_json
+from .data.odm import FaunaModel
 
 T = typing.TypeVar("T")
 P = ParamSpec("P")
@@ -56,7 +56,7 @@ def async_cpu(
 
 
 @singledispatch
-def do_response(response: T) -> Response:
+def do_response(response: Any) -> Response:
     """
     Process the response from a view function and return an aiohttp.web.Response object.
     """

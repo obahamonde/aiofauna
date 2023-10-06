@@ -7,27 +7,29 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   aiofauna.client
+   aiofauna.data
    aiofauna.faunadb
+   aiofauna.server
 
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 4
+aiofauna.helpers module
+-----------------------
 
-   aiofauna.asgi
-   aiofauna.client
-   aiofauna.docs
-   aiofauna.exceptions
-   aiofauna.helpers
-   aiofauna.json
-   aiofauna.markdown
-   aiofauna.odm
-   aiofauna.router
-   aiofauna.server
-   aiofauna.templates
-   aiofauna.typedefs
-   aiofauna.utils
+.. automodule:: aiofauna.helpers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+aiofauna.utils module
+---------------------
+
+.. automodule:: aiofauna.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

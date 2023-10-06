@@ -4,13 +4,37 @@ aiofauna.faunadb package
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 4
+aiofauna.faunadb.errors module
+------------------------------
 
-   aiofauna.faunadb.errors
-   aiofauna.faunadb.objects
-   aiofauna.faunadb.page
-   aiofauna.faunadb.query
+.. automodule:: aiofauna.faunadb.errors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+aiofauna.faunadb.objects module
+-------------------------------
+
+.. automodule:: aiofauna.faunadb.objects
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+aiofauna.faunadb.page module
+----------------------------
+
+.. automodule:: aiofauna.faunadb.page
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+aiofauna.faunadb.query module
+-----------------------------
+
+.. automodule:: aiofauna.faunadb.query
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

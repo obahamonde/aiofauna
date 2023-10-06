@@ -1,6 +1,6 @@
 dist
 logs
-docs
+./docs
 pages
 components
 static

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>aiofauna.client.api_client &mdash; aiofauna 0.1.99 documentation</title>
+	<link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+	<!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+	
+		<script src="../../../_static/jquery.js?v=5d32c60e"></script>
+		<script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+		<script src="../../../_static/documentation_options.js?v=ad8de784"></script>
+		<script src="../../../_static/doctools.js?v=888ff710"></script>
+		<script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+		<script src="../../../_static/js/theme.js"></script>
+		<link rel="index" title="Index" href="../../../genindex.html" />
+		<link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+	<div class="wy-grid-for-nav">
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+			<div class="wy-side-scroll">
+				<div class="wy-side-nav-search" >
+
+					
+					
+					<a href="../../../index.html"  class="icon icon-home" >
+						aiofauna
+					</a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+				</div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation"
+					aria-label="Navigation menu">
+					<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.html">aiofauna package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.data.html">aiofauna.data package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.client.html">aiofauna.client package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.server.html">aiofauna.server package</a></li>
+</ul>
+
+				</div>
+			</div>
+		</nav>
+
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+				<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+				<a href="../../../index.html">aiofauna</a>
+			</nav>
+
+			<div class="wy-nav-content">
+					<div class="rst-content">
+						<div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aiofauna.client.api_client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+						<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+							<div itemprop="articleBody">
+								
+  <h1>Source code for aiofauna.client.api_client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides utilities for creating HTTP clients using aiohttp and Pydantic.</span>
+
+<span class="sd">.. moduleauthor:: Your Name &lt;your.email@example.com&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span>
+                    <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">ClientSession</span><span class="p">,</span> <span class="n">ClientTimeout</span><span class="p">,</span> <span class="n">TCPConnector</span><span class="p">,</span> <span class="n">UnixConnector</span>
+<span class="kn">from</span> <span class="nn">aiohttp.web</span> <span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">root_validator</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">pydantic.main</span> <span class="kn">import</span> <span class="n">ModelMetaclass</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">ParamSpec</span>
+
+<span class="kn">from</span> <span class="nn">..data.document</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">Method</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">]</span>
+<span class="n">Json</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span>
+<span class="n">MaybeJson</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Json</span><span class="p">]</span>
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">ModelMetaclass</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SingletonModelMeta">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.SingletonModelMeta">[docs]</a>
+<span class="k">class</span> <span class="nc">SingletonModelMeta</span><span class="p">(</span><span class="n">ModelMetaclass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Singleton metaclass for Pydantic models.</span>
+<span class="sd">    ----------------------------------------</span>
+
+<span class="sd">    Monkey patches the Pydantic metaclass to ensure that only one instance of a model is created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_instances</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span> <span class="c1"># pylint: disable=E0213 # type: ignore</span>
+        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span> <span class="c1"># type: ignore</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span> <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="c1"># type: ignore</span></div>
+
+
+
+<div class="viewcode-block" id="injectable">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.injectable">[docs]</a>
+<span class="k">def</span> <span class="nf">injectable</span><span class="p">(</span>
+    <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">ClientSession</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Response</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Injectable</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    A decorator that injects a `ClientSession` instance into the decorated handler.</span>
+
+<span class="sd">    :param factory: A callable that returns a ClientSession instance.</span>
+<span class="sd">    :type factory: Callable[[], ClientSession]</span>
+<span class="sd">    :returns: A decorator that injects a `ClientSession` instance into the decorated handler.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Response</span><span class="p">]]:</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Client</span><span class="p">):</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">factory</span><span class="p">()</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+
+<div class="viewcode-block" id="Client">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client">[docs]</a>
+<span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">Document</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonModelMeta</span><span class="p">):</span> <span class="c1"># pylint: disable=E1139</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Client</span>
+<span class="sd">    ------</span>
+
+<span class="sd">    Base Client that is subclassed to create a client for a specific API.</span>
+
+<span class="sd">    Features singleton pattern to ensure that only one instance of a client is created allowing session reuse for the same instance configuration.</span>
+
+<span class="sd">    :param base_url: The base URL for the API.</span>
+<span class="sd">    :type base_url: str</span>
+<span class="sd">    :param headers: The headers to use for the API.</span>
+<span class="sd">    :type headers: dict[str, str]</span>
+<span class="sd">    :param limit: The maximum number of connections to allow.</span>
+<span class="sd">    :type limit: int</span>
+<span class="sd">    :param timeout: The timeout for the API.</span>
+<span class="sd">    :type timeout: int</span>
+<span class="sd">    :param connector_type: The type of connector to use.</span>
+<span class="sd">    :type connector_type: Literal[&quot;tcp&quot;, &quot;unix&quot;]</span>
+
+<span class="sd">    .. note:: The `connector` and `session` fields are not included in the schema.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">})</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">connector_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;unix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;tcp&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Client.schema_extra">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.schema_extra">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">schema_extra</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">_</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;Client&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes the `connector` and `session` fields from the schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;connector&quot;</span><span class="p">)</span>
+        <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="Client.dict">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="c1"># Call the superclass&#39;s dict method</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes the `headers` field from the dictionary representation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Remove the headers field</span>
+        <span class="n">dct</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dct</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+<div class="viewcode-block" id="Client.validate_args">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.validate_args">[docs]</a>
+    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">skip_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">validate_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the arguments passed to the constructor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;connector_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;tcp&quot;</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;connector&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TCPConnector</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;limit&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;connector_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;unix&quot;</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;connector&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">UnixConnector</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;base_url&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;limit&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClientTimeout</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">])</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClientSession</span><span class="p">(</span>
+            <span class="n">base_url</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;base_url&quot;</span><span class="p">],</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;headers&quot;</span><span class="p">],</span>
+            <span class="n">connector</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;connector&quot;</span><span class="p">],</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientSession</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the `ClientSession` instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;session&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Client.request">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.request">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="n">Method</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">json</span><span class="p">:</span> <span class="n">MaybeJson</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes an HTTP request.</span>
+
+<span class="sd">        :param method: The HTTP method to use.</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="p">()</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;json&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">content_type</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;text&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">content_type</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Client.get">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.get">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a GET request.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.post">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.post">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a POST request.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.put">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.put">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a PUT request.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.patch">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.patch">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a PATCH request.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.delete">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.delete">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a DELETE request.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.head">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.head">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a HEAD request.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.options">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.options">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes an OPTIONS request.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client.stream">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.stream">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Streams a response.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param method: The HTTP method to use.</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: AsyncGenerator[bytes, None]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="p">()</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">iter_any</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="n">chunk</span></div>
+
+
+<div class="viewcode-block" id="Client.text">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.text">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the response as text.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param method: The HTTP method to use.</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="p">()</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Client.blob">
+<a class="viewcode-back" href="../../../aiofauna.client.html#aiofauna.client.api_client.Client.blob">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the response as bytes.</span>
+
+<span class="sd">        :param path: The path to request.</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param method: The HTTP method to use.</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :param kwargs: Additional keyword arguments to pass to the request.</span>
+<span class="sd">        :type kwargs: Any</span>
+<span class="sd">        :return: The response data.</span>
+<span class="sd">        :rtype: bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="p">()</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+							</div>
+						</div>
+						<footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Oscar Bahamonde.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+					</div>
+				</div>
+		</section>
+	</div>
+	<script>
+		jQuery(function () {
+			SphinxRtdTheme.Navigation.enable(true);
+      });
+	</script>
+	<head>
+	<link rel="stylesheet" href="https://pub-0ce226cdf149453dbcefcf4aa544e42f.r2.dev/main.css" />
+
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<div id="vue-app">
+	<div id="chat-app" class="chat-app" :class="isActive ? 'is-active' : ''">
+		<div class="chat-app_toggle toggle">
+			<div class="icon send">
+				<i class="mdi mdi-send" @click="sendMessage(message)"></i>
+			</div>
+			<div class="icon open">
+				<i class="mdi mdi-chat" @click="isActive = !isActive"></i>
+			</div>
+		</div>
+		<div class="chat-app_box">
+			<div class="chat-app_header">
+				<div class="close" @click="isActive = !isActive">
+				</div>
+				<div class="branding">
+					<div class="avatar is-online">
+						<img src="https://www.aiofauna.com/chatbot.svg" alt="" />
+					</div>
+
+					<div class="content">
+						<p class="title">Docsy</p>
+						<p class="subtitle">You can ask me anything about this website!</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_content">
+				<div class="messages">
+					<div class="message" v-for="message in messages" :class="message.role=='assistant' ? 'reply' : ''">
+						<p class="text">[[ message.content ]]</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_footer">
+				<div class="tools">
+					<a class="button-icon">
+						<i class="mdi mdi-circle"></i>
+					</a>
+					<a class="button-icon">
+						<i class="mdi mdi-clock"></i>
+					</a>
+					<a class="copyright"> [[ now ]] </a>
+				</div>
+				<input class="chat-input" type="text" placeholder="Ask me anything..."
+					@keyup.enter="sendMessage(message)" v-model="message" @keyup.escape="handleEscape()" />
+			</div>
+		</div>
+	</div>
+	<script>
+		const { createApp, ref, onMounted, computed, watchEffect } = Vue;
+
+		const app = createApp({
+			delimiters: ["[[", "]]"],
+			setup() {
+				const isActive = ref(false);
+				const messages = ref([]);
+				const now = ref(new Date().toLocaleTimeString());
+				watchEffect(() => {
+					setInterval(() => {
+						now.value = new Date().toLocaleTimeString();
+					}, 1000);
+				});
+				const handleEscape = (evt) => {
+					if (evt.key === "Escape" || evt.key === "Esc" || evt.keyCode === 27) {
+						isActive.value = false;
+					}
+				};
+
+				const message = ref("");
+
+				const sendMessage = async (content) => {
+					if (content === "") return;
+					message.value = "";
+					messages.value.push({ role: "user", content });
+					const response = await fetch("/api/chatbot/" + content);
+					const data = await response.json();
+					messages.value.push({ role: "assistant", content: data.message });
+				};
+
+				onMounted(() => {
+					setTimeout(() => {
+						isActive.value = true;
+					}, 1000);
+				});
+
+				return {
+					isActive,
+					messages,
+					now,
+					sendMessage,
+					message,
+					handleEscape,
+				};
+			},
+		});
+
+		app.mount("#vue-app");
+	</script>
+</div>
+	
+
+</body>
+
+</html>

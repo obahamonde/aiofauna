@@ -1,40 +1,40 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<html class="writer-html5" lang="en">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>aiofauna.server module &mdash; aiofauna 0.1.99 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
+<head>
+	<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>aiofauna.server package &mdash; aiofauna 0.1.99 documentation</title>
+	<link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+	<link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+	<!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=ad8de784"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="aiofauna.templates module" href="aiofauna.templates.html" />
-    <link rel="prev" title="aiofauna.router module" href="aiofauna.router.html" /> 
+	
+		<script src="_static/jquery.js?v=5d32c60e"></script>
+		<script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+		<script src="_static/documentation_options.js?v=ad8de784"></script>
+		<script src="_static/doctools.js?v=888ff710"></script>
+		<script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+		<script src="_static/js/theme.js"></script>
+		<link rel="index" title="Index" href="genindex.html" />
+		<link rel="search" title="Search" href="search.html" />
+		<link rel="prev" title="aiofauna.faunadb package" href="aiofauna.faunadb.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+	<div class="wy-grid-for-nav">
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+			<div class="wy-side-scroll">
+				<div class="wy-side-nav-search" >
 
-          
-          
-          <a href="index.html" class="icon icon-home">
-            aiofauna
-          </a>
+					
+					
+					<a href="index.html"  class="icon icon-home" >
+						aiofauna
+					</a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -42,76 +42,257 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+				</div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation"
+					aria-label="Navigation menu">
+					<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="aiofauna.html">aiofauna package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.asgi.html">aiofauna.asgi module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.client.html">aiofauna.client module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.docs.html">aiofauna.docs module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.exceptions.html">aiofauna.exceptions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.data.html">aiofauna.data package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.client.html">aiofauna.client package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.helpers.html">aiofauna.helpers module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.json.html">aiofauna.json module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.markdown.html">aiofauna.markdown module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.odm.html">aiofauna.odm module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.router.html">aiofauna.router module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">aiofauna.server module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#aiofauna.server.APIServer"><code class="docutils literal notranslate"><span class="pre">APIServer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.delete"><code class="docutils literal notranslate"><span class="pre">APIServer.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.document"><code class="docutils literal notranslate"><span class="pre">APIServer.document()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.get"><code class="docutils literal notranslate"><span class="pre">APIServer.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.head"><code class="docutils literal notranslate"><span class="pre">APIServer.head()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.middleware"><code class="docutils literal notranslate"><span class="pre">APIServer.middleware()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.on_event"><code class="docutils literal notranslate"><span class="pre">APIServer.on_event()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.options"><code class="docutils literal notranslate"><span class="pre">APIServer.options()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.patch"><code class="docutils literal notranslate"><span class="pre">APIServer.patch()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.post"><code class="docutils literal notranslate"><span class="pre">APIServer.post()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.put"><code class="docutils literal notranslate"><span class="pre">APIServer.put()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.sse"><code class="docutils literal notranslate"><span class="pre">APIServer.sse()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.static"><code class="docutils literal notranslate"><span class="pre">APIServer.static()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.use"><code class="docutils literal notranslate"><span class="pre">APIServer.use()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.APIServer.websocket"><code class="docutils literal notranslate"><span class="pre">APIServer.websocket()</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">aiofauna.server package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.server.asgi">aiofauna.server.asgi module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.asgi.ASGIServer"><code class="docutils literal notranslate"><span class="pre">ASGIServer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.asgi.ASGIServer.asgi"><code class="docutils literal notranslate"><span class="pre">ASGIServer.asgi()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.templates.html">aiofauna.templates module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.typedefs.html">aiofauna.typedefs module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="aiofauna.utils.html">aiofauna.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.server.docs">aiofauna.server.docs module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.docs.HTML_STRING"><code class="docutils literal notranslate"><span class="pre">HTML_STRING()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.docs.extract"><code class="docutils literal notranslate"><span class="pre">extract()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.docs.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.docs.transform"><code class="docutils literal notranslate"><span class="pre">transform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.server.router">aiofauna.server.router module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.router.APIRouter"><code class="docutils literal notranslate"><span class="pre">APIRouter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.delete"><code class="docutils literal notranslate"><span class="pre">APIRouter.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.document"><code class="docutils literal notranslate"><span class="pre">APIRouter.document()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.get"><code class="docutils literal notranslate"><span class="pre">APIRouter.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.head"><code class="docutils literal notranslate"><span class="pre">APIRouter.head()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.options"><code class="docutils literal notranslate"><span class="pre">APIRouter.options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.patch"><code class="docutils literal notranslate"><span class="pre">APIRouter.patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.post"><code class="docutils literal notranslate"><span class="pre">APIRouter.post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.put"><code class="docutils literal notranslate"><span class="pre">APIRouter.put()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.router.APIRouter.route"><code class="docutils literal notranslate"><span class="pre">APIRouter.route()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.server.server">aiofauna.server.server module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.server.server.APIServer"><code class="docutils literal notranslate"><span class="pre">APIServer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.delete"><code class="docutils literal notranslate"><span class="pre">APIServer.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.document"><code class="docutils literal notranslate"><span class="pre">APIServer.document()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.get"><code class="docutils literal notranslate"><span class="pre">APIServer.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.head"><code class="docutils literal notranslate"><span class="pre">APIServer.head()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.middleware"><code class="docutils literal notranslate"><span class="pre">APIServer.middleware()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.on_event"><code class="docutils literal notranslate"><span class="pre">APIServer.on_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.options"><code class="docutils literal notranslate"><span class="pre">APIServer.options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.patch"><code class="docutils literal notranslate"><span class="pre">APIServer.patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.post"><code class="docutils literal notranslate"><span class="pre">APIServer.post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.put"><code class="docutils literal notranslate"><span class="pre">APIServer.put()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.sse"><code class="docutils literal notranslate"><span class="pre">APIServer.sse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.static"><code class="docutils literal notranslate"><span class="pre">APIServer.static()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.use"><code class="docutils literal notranslate"><span class="pre">APIServer.use()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.server.server.APIServer.websocket"><code class="docutils literal notranslate"><span class="pre">APIServer.websocket()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.server">Module contents</a></li>
+</ul>
+</li>
 </ul>
 
-        </div>
-      </div>
-    </nav>
+				</div>
+			</div>
+		</nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">aiofauna</a>
-      </nav>
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+				<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+				<a href="index.html">aiofauna</a>
+			</nav>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+			<div class="wy-nav-content">
+					<div class="rst-content">
+						<div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="aiofauna.html">aiofauna package</a></li>
-      <li class="breadcrumb-item active">aiofauna.server module</li>
+      <li class="breadcrumb-item active">aiofauna.server package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/aiofauna.server.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="module-aiofauna.server">
-<span id="aiofauna-server-module"></span><h1>aiofauna.server module<a class="headerlink" href="#module-aiofauna.server" title="Link to this heading"></a></h1>
+						<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+							<div itemprop="articleBody">
+								
+  <section id="aiofauna-server-package">
+<h1>aiofauna.server package<a class="headerlink" href="#aiofauna-server-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-aiofauna.server.asgi">
+<span id="aiofauna-server-asgi-module"></span><h2>aiofauna.server.asgi module<a class="headerlink" href="#module-aiofauna.server.asgi" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.server.asgi.ASGIServer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.server.asgi.</span></span><span class="sig-name descname"><span class="pre">ASGIServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AioFauna'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">servers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AioFauna</span> <span class="pre">API'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openapi_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/openapi.json'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/asgi.html#ASGIServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.asgi.ASGIServer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#aiofauna.server.server.APIServer" title="aiofauna.server.server.APIServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">APIServer</span></code></a></p>
+<p>An ASGI-compatible API.</p>
+<p>Currently only supports HTTP and is compatible with ASGI 2.0.</p>
+<p>Tested with:
+<cite>uvicorn</cite>
+<cite>mangum</cite></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.asgi.ASGIServer.asgi">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">asgi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/aiofauna/server/asgi.html#ASGIServer.asgi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.asgi.ASGIServer.asgi" title="Link to this definition"></a></dt>
+<dd><p>ASGI Wrapper.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-aiofauna.server.docs">
+<span id="aiofauna-server-docs-module"></span><h2>aiofauna.server.docs module<a class="headerlink" href="#module-aiofauna.server.docs" title="Link to this heading"></a></h2>
+<p>Automatically generate OpenAPI documentation for your AioFauna API.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.server.docs.HTML_STRING">
+<span class="sig-prename descclassname"><span class="pre">aiofauna.server.docs.</span></span><span class="sig-name descname"><span class="pre">HTML_STRING</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiofauna.server.docs.HTML_STRING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.server.docs.extract">
+<span class="sig-prename descclassname"><span class="pre">aiofauna.server.docs.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/docs.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.docs.extract" title="Link to this definition"></a></dt>
+<dd><p>Extract OpenAPI parameters from the function parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>dict</em>) – The parameters of the function.</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – The URL path of the endpoint.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted OpenAPI parameters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.server.docs.load">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.server.docs.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/docs.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.docs.load" title="Link to this definition"></a></dt>
+<dd><p>Shape the endpoint function parameters to match the request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>) – The HTTP request.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – The parameters of the function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated parameters to apply to the function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.server.docs.transform">
+<span class="sig-prename descclassname"><span class="pre">aiofauna.server.docs.</span></span><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">open_api</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">open_api_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/docs.html#transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.docs.transform" title="Link to this definition"></a></dt>
+<dd><p>Update the OpenAPI documentation with the endpoint information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>open_api</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The OpenAPI documentation.</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – The URL path of the endpoint.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – The HTTP method of the endpoint.</p></li>
+<li><p><strong>func</strong> (<em>Any</em>) – The function being documented.</p></li>
+<li><p><strong>open_api_params</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The OpenAPI parameters of the function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-aiofauna.server.router">
+<span id="aiofauna-server-router-module"></span><h2>aiofauna.server.router module<a class="headerlink" href="#module-aiofauna.server.router" title="Link to this heading"></a></h2>
 <p>REST API Module with automatic OpenAPI generation.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.server.</span></span><span class="sig-name descname"><span class="pre">APIServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AioFauna'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">servers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AioFauna</span> <span class="pre">API'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openapi_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/openapi.json'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.server.router.</span></span><span class="sig-name descname"><span class="pre">APIRouter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RouteTableDef</span></code></p>
+<p>Aiohttp Application with automatic OpenAPI generation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.delete" title="Link to this definition"></a></dt>
+<dd><p>DELETE decorator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.document">
+<span class="sig-name descname"><span class="pre">document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.document" title="Link to this definition"></a></dt>
+<dd><p>Decorator to document a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.get" title="Link to this definition"></a></dt>
+<dd><p>GET decorator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.head">
+<span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.head" title="Link to this definition"></a></dt>
+<dd><p>HEAD decorator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.options">
+<span class="sig-name descname"><span class="pre">options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.options" title="Link to this definition"></a></dt>
+<dd><p>OPTIONS decorator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.patch">
+<span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.patch" title="Link to this definition"></a></dt>
+<dd><p>PATCH decorator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.post" title="Link to this definition"></a></dt>
+<dd><p>POST decorator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.put">
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.put" title="Link to this definition"></a></dt>
+<dd><p>PUT decorator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.server.router.APIRouter.route">
+<span class="sig-name descname"><span class="pre">route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/router.html#APIRouter.route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.router.APIRouter.route" title="Link to this definition"></a></dt>
+<dd><p>Decorator to register a new route.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-aiofauna.server.server">
+<span id="aiofauna-server-server-module"></span><h2>aiofauna.server.server module<a class="headerlink" href="#module-aiofauna.server.server" title="Link to this heading"></a></h2>
+<p>REST API Module with automatic OpenAPI generation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.server.server.</span></span><span class="sig-name descname"><span class="pre">APIServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AioFauna'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">servers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'AioFauna</span> <span class="pre">API'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openapi_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/openapi.json'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Application</span></code></p>
 <p>AioFauna APIServer class for handling API operations.</p>
 <dl class="field-list simple">
@@ -126,8 +307,8 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.delete" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.delete" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling DELETE requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -143,8 +324,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.document">
-<span class="sig-name descname"><span class="pre">document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.document" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.document">
+<span class="sig-name descname"><span class="pre">document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.document" title="Link to this definition"></a></dt>
 <dd><p>Decorator to generate OpenAPI documentation for an endpoint handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -163,8 +344,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.get" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.get" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling GET requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -180,8 +361,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.head">
-<span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.head" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.head">
+<span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.head" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling HEAD requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -197,13 +378,13 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.middleware">
-<span class="sig-name descname"><span class="pre">middleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.middleware" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.middleware">
+<span class="sig-name descname"><span class="pre">middleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Request</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.middleware" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.on_event">
-<span class="sig-name descname"><span class="pre">on_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Application</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Application</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.on_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.on_event" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.on_event">
+<span class="sig-name descname"><span class="pre">on_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Application</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Application</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.on_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.on_event" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling startup and shutdown lifecycle events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -213,8 +394,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.options">
-<span class="sig-name descname"><span class="pre">options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.options" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.options">
+<span class="sig-name descname"><span class="pre">options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.options" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling OPTIONS requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -230,8 +411,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.patch">
-<span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.patch" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.patch">
+<span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.patch" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling PATCH requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -247,8 +428,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.post">
-<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.post" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.post" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling POST requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -264,8 +445,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.put">
-<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.put" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.put">
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">StreamResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.put" title="Link to this definition"></a></dt>
 <dd><p>Decorator for handling PUT requests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -281,8 +462,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.sse">
-<span class="sig-name descname"><span class="pre">sse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">EventSourceResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">EventSourceResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.sse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.sse" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.sse">
+<span class="sig-name descname"><span class="pre">sse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">EventSourceResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">EventSourceResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.sse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.sse" title="Link to this definition"></a></dt>
 <dd><p>Server-Sent Events decorator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -315,8 +496,8 @@ await asyncio.sleep(1)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.static">
-<span class="sig-name descname"><span class="pre">static</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#aiofauna.server.APIServer" title="aiofauna.server.APIServer"><span class="pre">APIServer</span></a></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.static"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.static" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.static">
+<span class="sig-name descname"><span class="pre">static</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#aiofauna.server.server.APIServer" title="aiofauna.server.server.APIServer"><span class="pre">APIServer</span></a></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.static"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.static" title="Link to this definition"></a></dt>
 <dd><p>Static files decorator.</p>
 <p>This decorator will serve static files from the <cite>static</cite> directory.
 It will also serve the <cite>index.html</cite> file from the <cite>static</cite> directory when the root path is requested.
@@ -329,14 +510,14 @@ Useful for serving a frontend single-page application.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.use">
-<span class="sig-name descname"><span class="pre">use</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">router</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="aiofauna.router.html#aiofauna.router.APIRouter" title="aiofauna.router.APIRouter"><span class="pre">APIRouter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#aiofauna.server.APIServer" title="aiofauna.server.APIServer"><span class="pre">APIServer</span></a></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.use"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.use" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.use">
+<span class="sig-name descname"><span class="pre">use</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">router</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#aiofauna.server.router.APIRouter" title="aiofauna.server.router.APIRouter"><span class="pre">APIRouter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#aiofauna.server.server.APIServer" title="aiofauna.server.server.APIServer"><span class="pre">APIServer</span></a></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.use"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.use" title="Link to this definition"></a></dt>
 <dd><p>Chainable method to add a router to the server</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="aiofauna.server.APIServer.websocket">
-<span class="sig-name descname"><span class="pre">websocket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">WebSocketResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">WebSocketResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server.html#APIServer.websocket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.APIServer.websocket" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="aiofauna.server.server.APIServer.websocket">
+<span class="sig-name descname"><span class="pre">websocket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">WebSocketResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">WebSocketResponse</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/server/server.html#APIServer.websocket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.server.server.APIServer.websocket" title="Link to this definition"></a></dt>
 <dd><p>Websocket decorator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -352,13 +533,16 @@ Useful for serving a frontend single-page application.</p>
 </dd></dl>
 
 </section>
+<section id="module-aiofauna.server">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-aiofauna.server" title="Link to this heading"></a></h2>
+</section>
+</section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="aiofauna.router.html" class="btn btn-neutral float-left" title="aiofauna.router module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="aiofauna.templates.html" class="btn btn-neutral float-right" title="aiofauna.templates module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+							</div>
+						</div>
+						<footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="aiofauna.faunadb.html" class="btn btn-neutral float-left" title="aiofauna.faunadb package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
@@ -373,15 +557,122 @@ Useful for serving a frontend single-page application.</p>
    
 
 </footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
+					</div>
+				</div>
+		</section>
+	</div>
+	<script>
+		jQuery(function () {
+			SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+	</script>
+	<head>
+	<link rel="stylesheet" href="https://pub-0ce226cdf149453dbcefcf4aa544e42f.r2.dev/main.css" />
+
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<div id="vue-app">
+	<div id="chat-app" class="chat-app" :class="isActive ? 'is-active' : ''">
+		<div class="chat-app_toggle toggle">
+			<div class="icon send">
+				<i class="mdi mdi-send" @click="sendMessage(message)"></i>
+			</div>
+			<div class="icon open">
+				<i class="mdi mdi-chat" @click="isActive = !isActive"></i>
+			</div>
+		</div>
+		<div class="chat-app_box">
+			<div class="chat-app_header">
+				<div class="close" @click="isActive = !isActive">
+				</div>
+				<div class="branding">
+					<div class="avatar is-online">
+						<img src="https://www.aiofauna.com/chatbot.svg" alt="" />
+					</div>
+
+					<div class="content">
+						<p class="title">Docsy</p>
+						<p class="subtitle">You can ask me anything about this website!</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_content">
+				<div class="messages">
+					<div class="message" v-for="message in messages" :class="message.role=='assistant' ? 'reply' : ''">
+						<p class="text">[[ message.content ]]</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_footer">
+				<div class="tools">
+					<a class="button-icon">
+						<i class="mdi mdi-circle"></i>
+					</a>
+					<a class="button-icon">
+						<i class="mdi mdi-clock"></i>
+					</a>
+					<a class="copyright"> [[ now ]] </a>
+				</div>
+				<input class="chat-input" type="text" placeholder="Ask me anything..."
+					@keyup.enter="sendMessage(message)" v-model="message" @keyup.escape="handleEscape()" />
+			</div>
+		</div>
+	</div>
+	<script>
+		const { createApp, ref, onMounted, computed, watchEffect } = Vue;
+
+		const app = createApp({
+			delimiters: ["[[", "]]"],
+			setup() {
+				const isActive = ref(false);
+				const messages = ref([]);
+				const now = ref(new Date().toLocaleTimeString());
+				watchEffect(() => {
+					setInterval(() => {
+						now.value = new Date().toLocaleTimeString();
+					}, 1000);
+				});
+				const handleEscape = (evt) => {
+					if (evt.key === "Escape" || evt.key === "Esc" || evt.keyCode === 27) {
+						isActive.value = false;
+					}
+				};
+
+				const message = ref("");
+
+				const sendMessage = async (content) => {
+					if (content === "") return;
+					message.value = "";
+					messages.value.push({ role: "user", content });
+					const response = await fetch("/api/chatbot/" + content);
+					const data = await response.json();
+					messages.value.push({ role: "assistant", content: data.message });
+				};
+
+				onMounted(() => {
+					setTimeout(() => {
+						isActive.value = true;
+					}, 1000);
+				});
+
+				return {
+					isActive,
+					messages,
+					now,
+					sendMessage,
+					message,
+					handleEscape,
+				};
+			},
+		});
+
+		app.mount("#vue-app");
+	</script>
+</div>
+	
 
 </body>
+
 </html>

@@ -1,37 +1,38 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>aiofauna.faunadb.errors &mdash; aiofauna 0.1.99 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>aiofauna.faunadb.errors &mdash; aiofauna 0.1.99 documentation</title>
+	<link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+	<link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+	<!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=ad8de784"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+	
+		<script src="../../../_static/jquery.js?v=5d32c60e"></script>
+		<script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+		<script src="../../../_static/documentation_options.js?v=ad8de784"></script>
+		<script src="../../../_static/doctools.js?v=888ff710"></script>
+		<script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+		<script src="../../../_static/js/theme.js"></script>
+		<link rel="index" title="Index" href="../../../genindex.html" />
+		<link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+	<div class="wy-grid-for-nav">
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+			<div class="wy-side-scroll">
+				<div class="wy-side-nav-search" >
 
-          
-          
-          <a href="../../../index.html" class="icon icon-home">
-            aiofauna
-          </a>
+					
+					
+					<a href="../../../index.html"  class="icon icon-home" >
+						aiofauna
+					</a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -39,38 +40,29 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+				</div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation"
+					aria-label="Navigation menu">
+					<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.html">aiofauna package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.asgi.html">aiofauna.asgi module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.client.html">aiofauna.client module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.docs.html">aiofauna.docs module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.exceptions.html">aiofauna.exceptions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.data.html">aiofauna.data package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.client.html">aiofauna.client package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.helpers.html">aiofauna.helpers module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.json.html">aiofauna.json module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.markdown.html">aiofauna.markdown module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.odm.html">aiofauna.odm module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.router.html">aiofauna.router module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.server.html">aiofauna.server module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.templates.html">aiofauna.templates module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.typedefs.html">aiofauna.typedefs module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.utils.html">aiofauna.utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../aiofauna.server.html">aiofauna.server package</a></li>
 </ul>
 
-        </div>
-      </div>
-    </nav>
+				</div>
+			</div>
+		</nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">aiofauna</a>
-      </nav>
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+				<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+				<a href="../../../index.html">aiofauna</a>
+			</nav>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+			<div class="wy-nav-content">
+					<div class="rst-content">
+						<div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
@@ -80,15 +72,15 @@
   </ul>
   <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+						<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+							<div itemprop="articleBody">
+								
   <h1>Source code for aiofauna.faunadb.errors</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Error types that methods in the FaunaDB client throw.&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="codes">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.codes">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.codes">[docs]</a>
 <span class="k">class</span> <span class="nc">codes</span><span class="p">:</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP status codes.&quot;&quot;&quot;</span>
@@ -121,7 +113,7 @@
 
 
 <div class="viewcode-block" id="FaunaError">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.FaunaError">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.FaunaError">[docs]</a>
 <span class="k">class</span> <span class="nc">FaunaError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -131,7 +123,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FaunaError.raise_for_status_code">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.FaunaError.raise_for_status_code">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.FaunaError.raise_for_status_code">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">raise_for_status_code</span><span class="p">(</span><span class="n">request_result</span><span class="p">):</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">request_result</span><span class="o">.</span><span class="n">status_code</span>
@@ -173,7 +165,7 @@
 
 
 <div class="viewcode-block" id="UnexpectedError">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.UnexpectedError">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.UnexpectedError">[docs]</a>
 <span class="k">class</span> <span class="nc">UnexpectedError</span><span class="p">(</span><span class="n">FaunaError</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Error for when the server returns an unexpected kind of response.&quot;&quot;&quot;</span>
@@ -183,7 +175,7 @@
 
 
 <div class="viewcode-block" id="HttpError">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.HttpError">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.HttpError">[docs]</a>
 <span class="k">class</span> <span class="nc">HttpError</span><span class="p">(</span><span class="n">FaunaError</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_result</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="n">HttpError</span><span class="o">.</span><span class="n">_get_errors</span><span class="p">(</span><span class="n">request_result</span><span class="p">)</span>
@@ -209,7 +201,7 @@
 
 
 <div class="viewcode-block" id="BadRequest">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.BadRequest">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.BadRequest">[docs]</a>
 <span class="k">class</span> <span class="nc">BadRequest</span><span class="p">(</span><span class="n">HttpError</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP 400 error.&quot;&quot;&quot;</span>
@@ -219,7 +211,7 @@
 
 
 <div class="viewcode-block" id="Unauthorized">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.Unauthorized">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.Unauthorized">[docs]</a>
 <span class="k">class</span> <span class="nc">Unauthorized</span><span class="p">(</span><span class="n">HttpError</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_result</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Unauthorized</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">request_result</span><span class="p">)</span>
@@ -231,7 +223,7 @@
 
 
 <div class="viewcode-block" id="PermissionDenied">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.PermissionDenied">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.PermissionDenied">[docs]</a>
 <span class="k">class</span> <span class="nc">PermissionDenied</span><span class="p">(</span><span class="n">HttpError</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP 403 error.&quot;&quot;&quot;</span>
@@ -241,7 +233,7 @@
 
 
 <div class="viewcode-block" id="NotFound">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.NotFound">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.NotFound">[docs]</a>
 <span class="k">class</span> <span class="nc">NotFound</span><span class="p">(</span><span class="n">HttpError</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP 404 error.&quot;&quot;&quot;</span>
@@ -251,7 +243,7 @@
 
 
 <div class="viewcode-block" id="InternalError">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.InternalError">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.InternalError">[docs]</a>
 <span class="k">class</span> <span class="nc">InternalError</span><span class="p">(</span><span class="n">HttpError</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP 500 error.&quot;&quot;&quot;</span>
@@ -261,7 +253,7 @@
 
 
 <div class="viewcode-block" id="UnavailableError">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.UnavailableError">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.UnavailableError">[docs]</a>
 <span class="k">class</span> <span class="nc">UnavailableError</span><span class="p">(</span><span class="n">HttpError</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP 503 error.&quot;&quot;&quot;</span>
@@ -274,7 +266,7 @@
 
 
 <div class="viewcode-block" id="ErrorData">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.ErrorData">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.ErrorData">[docs]</a>
 <span class="k">class</span> <span class="nc">ErrorData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -282,7 +274,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ErrorData.from_dict">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.ErrorData.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.ErrorData.from_dict">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">request_result</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ErrorData</span><span class="p">(</span>
@@ -295,7 +287,7 @@
 
 
 <div class="viewcode-block" id="ErrorData.get_failures">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.ErrorData.get_failures">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.ErrorData.get_failures">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_failures</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">request_result</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;failures&quot;</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
@@ -308,7 +300,7 @@
 
 
 <div class="viewcode-block" id="ErrorData.get_cause">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.ErrorData.get_cause">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.ErrorData.get_cause">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_cause</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">request_result</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;cause&quot;</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
@@ -373,7 +365,7 @@
 
 
 <div class="viewcode-block" id="Failure">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.Failure">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.Failure">[docs]</a>
 <span class="k">class</span> <span class="nc">Failure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -383,7 +375,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Failure.from_dict">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.Failure.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.Failure.from_dict">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">request_result</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Failure</span><span class="p">(</span>
@@ -428,7 +420,7 @@
 
 
 <div class="viewcode-block" id="FaunaException">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.FaunaException">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.FaunaException">[docs]</a>
 <span class="k">class</span> <span class="nc">FaunaException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="n">STATUS_MAP</span> <span class="o">=</span> <span class="p">{</span>
         <span class="mi">100</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span><span class="p">,</span>
@@ -444,13 +436,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
 
 <div class="viewcode-block" id="FaunaException.json">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.FaunaException.json">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.FaunaException.json">[docs]</a>
     <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">(),</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="FaunaException.raise_for_status">
-<a class="viewcode-back" href="../../../aiofauna.faunadb.errors.html#aiofauna.faunadb.errors.FaunaException.raise_for_status">[docs]</a>
+<a class="viewcode-back" href="../../../aiofauna.faunadb.html#aiofauna.faunadb.errors.FaunaException.raise_for_status">[docs]</a>
     <span class="k">def</span> <span class="nf">raise_for_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">STATUS_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">&lt;</span> <span class="n">key</span> <span class="o">+</span> <span class="mi">100</span><span class="p">:</span>
@@ -460,9 +452,9 @@
 
 </pre></div>
 
-           </div>
-          </div>
-          <footer>
+							</div>
+						</div>
+						<footer>
 
   <hr/>
 
@@ -476,15 +468,122 @@
    
 
 </footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
+					</div>
+				</div>
+		</section>
+	</div>
+	<script>
+		jQuery(function () {
+			SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+	</script>
+	<head>
+	<link rel="stylesheet" href="https://pub-0ce226cdf149453dbcefcf4aa544e42f.r2.dev/main.css" />
+
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<div id="vue-app">
+	<div id="chat-app" class="chat-app" :class="isActive ? 'is-active' : ''">
+		<div class="chat-app_toggle toggle">
+			<div class="icon send">
+				<i class="mdi mdi-send" @click="sendMessage(message)"></i>
+			</div>
+			<div class="icon open">
+				<i class="mdi mdi-chat" @click="isActive = !isActive"></i>
+			</div>
+		</div>
+		<div class="chat-app_box">
+			<div class="chat-app_header">
+				<div class="close" @click="isActive = !isActive">
+				</div>
+				<div class="branding">
+					<div class="avatar is-online">
+						<img src="https://www.aiofauna.com/chatbot.svg" alt="" />
+					</div>
+
+					<div class="content">
+						<p class="title">Docsy</p>
+						<p class="subtitle">You can ask me anything about this website!</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_content">
+				<div class="messages">
+					<div class="message" v-for="message in messages" :class="message.role=='assistant' ? 'reply' : ''">
+						<p class="text">[[ message.content ]]</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_footer">
+				<div class="tools">
+					<a class="button-icon">
+						<i class="mdi mdi-circle"></i>
+					</a>
+					<a class="button-icon">
+						<i class="mdi mdi-clock"></i>
+					</a>
+					<a class="copyright"> [[ now ]] </a>
+				</div>
+				<input class="chat-input" type="text" placeholder="Ask me anything..."
+					@keyup.enter="sendMessage(message)" v-model="message" @keyup.escape="handleEscape()" />
+			</div>
+		</div>
+	</div>
+	<script>
+		const { createApp, ref, onMounted, computed, watchEffect } = Vue;
+
+		const app = createApp({
+			delimiters: ["[[", "]]"],
+			setup() {
+				const isActive = ref(false);
+				const messages = ref([]);
+				const now = ref(new Date().toLocaleTimeString());
+				watchEffect(() => {
+					setInterval(() => {
+						now.value = new Date().toLocaleTimeString();
+					}, 1000);
+				});
+				const handleEscape = (evt) => {
+					if (evt.key === "Escape" || evt.key === "Esc" || evt.keyCode === 27) {
+						isActive.value = false;
+					}
+				};
+
+				const message = ref("");
+
+				const sendMessage = async (content) => {
+					if (content === "") return;
+					message.value = "";
+					messages.value.push({ role: "user", content });
+					const response = await fetch("/api/chatbot/" + content);
+					const data = await response.json();
+					messages.value.push({ role: "assistant", content: data.message });
+				};
+
+				onMounted(() => {
+					setTimeout(() => {
+						isActive.value = true;
+					}, 1000);
+				});
+
+				return {
+					isActive,
+					messages,
+					now,
+					sendMessage,
+					message,
+					handleEscape,
+				};
+			},
+		});
+
+		app.mount("#vue-app");
+	</script>
+</div>
+	
 
 </body>
+
 </html>

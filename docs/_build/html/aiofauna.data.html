@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+
+<head>
+	<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>aiofauna.data package &mdash; aiofauna 0.1.99 documentation</title>
+	<link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+	<link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+	<link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+	<!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+	
+		<script src="_static/jquery.js?v=5d32c60e"></script>
+		<script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+		<script src="_static/documentation_options.js?v=ad8de784"></script>
+		<script src="_static/doctools.js?v=888ff710"></script>
+		<script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+		<script src="_static/js/theme.js"></script>
+		<link rel="index" title="Index" href="genindex.html" />
+		<link rel="search" title="Search" href="search.html" />
+		<link rel="next" title="aiofauna.faunadb package" href="aiofauna.faunadb.html" />
+		<link rel="prev" title="aiofauna.client package" href="aiofauna.client.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+	<div class="wy-grid-for-nav">
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+			<div class="wy-side-scroll">
+				<div class="wy-side-nav-search" >
+
+					
+					
+					<a href="index.html"  class="icon icon-home" >
+						aiofauna
+					</a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+				</div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation"
+					aria-label="Navigation menu">
+					<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.html">aiofauna package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">aiofauna.data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.data.document">aiofauna.data.document module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.document.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.document.Document.Config"><code class="docutils literal notranslate"><span class="pre">Document.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.document.Document.Metadata"><code class="docutils literal notranslate"><span class="pre">Document.Metadata</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.data.exceptions">aiofauna.data.exceptions module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.exceptions.AiofaunaException"><code class="docutils literal notranslate"><span class="pre">AiofaunaException</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.data.json">aiofauna.data.json module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.json.FaunaJSONEncoder"><code class="docutils literal notranslate"><span class="pre">FaunaJSONEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.json.FaunaJSONEncoder.default"><code class="docutils literal notranslate"><span class="pre">FaunaJSONEncoder.default()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.json.JSONModel"><code class="docutils literal notranslate"><span class="pre">JSONModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.json.JSONModel.dict"><code class="docutils literal notranslate"><span class="pre">JSONModel.dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.json.JSONModel.json"><code class="docutils literal notranslate"><span class="pre">JSONModel.json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.json.JSONModel.to_dict"><code class="docutils literal notranslate"><span class="pre">JSONModel.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.json.JSONModel.to_json"><code class="docutils literal notranslate"><span class="pre">JSONModel.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.json.jsonable_encoder"><code class="docutils literal notranslate"><span class="pre">jsonable_encoder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.json.parse_json"><code class="docutils literal notranslate"><span class="pre">parse_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.json.to_json"><code class="docutils literal notranslate"><span class="pre">to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.data.odm">aiofauna.data.odm module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel"><code class="docutils literal notranslate"><span class="pre">FaunaModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.Config"><code class="docutils literal notranslate"><span class="pre">FaunaModel.Config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.Metadata"><code class="docutils literal notranslate"><span class="pre">FaunaModel.Metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.all"><code class="docutils literal notranslate"><span class="pre">FaunaModel.all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.client"><code class="docutils literal notranslate"><span class="pre">FaunaModel.client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.create"><code class="docutils literal notranslate"><span class="pre">FaunaModel.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.create_all"><code class="docutils literal notranslate"><span class="pre">FaunaModel.create_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.delete"><code class="docutils literal notranslate"><span class="pre">FaunaModel.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.delete_one"><code class="docutils literal notranslate"><span class="pre">FaunaModel.delete_one()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.find_many"><code class="docutils literal notranslate"><span class="pre">FaunaModel.find_many()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.find_unique"><code class="docutils literal notranslate"><span class="pre">FaunaModel.find_unique()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.get"><code class="docutils literal notranslate"><span class="pre">FaunaModel.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.logger"><code class="docutils literal notranslate"><span class="pre">FaunaModel.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.provision"><code class="docutils literal notranslate"><span class="pre">FaunaModel.provision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.q"><code class="docutils literal notranslate"><span class="pre">FaunaModel.q()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.ref"><code class="docutils literal notranslate"><span class="pre">FaunaModel.ref</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.save"><code class="docutils literal notranslate"><span class="pre">FaunaModel.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.ts"><code class="docutils literal notranslate"><span class="pre">FaunaModel.ts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aiofauna.data.odm.FaunaModel.update"><code class="docutils literal notranslate"><span class="pre">FaunaModel.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-aiofauna.data">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.client.html">aiofauna.client package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.faunadb.html">aiofauna.faunadb package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aiofauna.server.html">aiofauna.server package</a></li>
+</ul>
+
+				</div>
+			</div>
+		</nav>
+
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+				<i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+				<a href="index.html">aiofauna</a>
+			</nav>
+
+			<div class="wy-nav-content">
+					<div class="rst-content">
+						<div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="aiofauna.html">aiofauna package</a></li>
+      <li class="breadcrumb-item active">aiofauna.data package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/aiofauna.data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+						<div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+							<div itemprop="articleBody">
+								
+  <section id="aiofauna-data-package">
+<h1>aiofauna.data package<a class="headerlink" href="#aiofauna-data-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-aiofauna.data.document">
+<span id="aiofauna-data-document-module"></span><h2>aiofauna.data.document module<a class="headerlink" href="#module-aiofauna.data.document" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.data.document.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/document.html#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.document.Document" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Base document for all FaunaDB documents</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="_modules/aiofauna/data/document.html#Document.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.document.Document.Config" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConfig</span></code></p>
+<p>Configuration defaults for all documents</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document.Config.allow_population_by_field_name">
+<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#aiofauna.data.document.Document.Config.allow_population_by_field_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document.Config.arbitrary_types_allowed">
+<span class="sig-name descname"><span class="pre">arbitrary_types_allowed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#aiofauna.data.document.Document.Config.arbitrary_types_allowed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document.Config.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'allow'</span></em><a class="headerlink" href="#aiofauna.data.document.Document.Config.extra" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document.Config.json_encoders">
+<span class="sig-name descname"><span class="pre">json_encoders</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'aiofauna.faunadb.objects.FaunaTime'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'aiofauna.faunadb.objects.Ref'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'datetime.date'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'datetime.datetime'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'datetime.time'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'datetime.timedelta'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'decimal.Decimal'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'uuid.UUID'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;enum</span> <span class="pre">'Enum'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">Document.Config.&lt;lambda&gt;&gt;}</span></em><a class="headerlink" href="#aiofauna.data.document.Document.Config.json_encoders" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document.Metadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Metadata</span></span><a class="reference internal" href="_modules/aiofauna/data/document.html#Document.Metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.document.Document.Metadata" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.document.Document.Metadata.subclasses">
+<span class="sig-name descname"><span class="pre">subclasses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiofauna.data.document.Document" title="aiofauna.data.document.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;class</span> <span class="pre">'aiofauna.client.api_client.Client'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'aiofauna.client.fauna_client.FaunaClient'&gt;]</span></em><a class="headerlink" href="#aiofauna.data.document.Document.Metadata.subclasses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-aiofauna.data.exceptions">
+<span id="aiofauna-data-exceptions-module"></span><h2>aiofauna.data.exceptions module<a class="headerlink" href="#module-aiofauna.data.exceptions" title="Link to this heading"></a></h2>
+<p>Exceptions for aiofauna</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="aiofauna.data.exceptions.AiofaunaException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.data.exceptions.</span></span><span class="sig-name descname"><span class="pre">AiofaunaException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/exceptions.html#AiofaunaException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.exceptions.AiofaunaException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base exception.</p>
+</dd></dl>
+
+</section>
+<section id="module-aiofauna.data.json">
+<span id="aiofauna-data-json-module"></span><h2>aiofauna.data.json module<a class="headerlink" href="#module-aiofauna.data.json" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.json.FaunaJSONEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.data.json.</span></span><span class="sig-name descname"><span class="pre">FaunaJSONEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/json.html#FaunaJSONEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.FaunaJSONEncoder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.json.FaunaJSONEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/aiofauna/data/json.html#FaunaJSONEncoder.default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.FaunaJSONEncoder.default" title="Link to this definition"></a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.json.JSONModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.data.json.</span></span><span class="sig-name descname"><span class="pre">JSONModel</span></span><a class="reference internal" href="_modules/aiofauna/data/json.html#JSONModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.JSONModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.json.JSONModel.dict">
+<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/data/json.html#JSONModel.dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.JSONModel.dict" title="Link to this definition"></a></dt>
+<dd><p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.json.JSONModel.json">
+<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/aiofauna/data/json.html#JSONModel.json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.JSONModel.json" title="Link to this definition"></a></dt>
+<dd><p>Generate a JSON representation of the model, <cite>include</cite> and <cite>exclude</cite> arguments as per <cite>dict()</cite>.</p>
+<p><cite>encoder</cite> is an optional function to supply as <cite>default</cite> to json.dumps(), other arguments as per <cite>json.dumps()</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.json.JSONModel.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/json.html#JSONModel.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.JSONModel.to_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.json.JSONModel.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/aiofauna/data/json.html#JSONModel.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.JSONModel.to_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.data.json.jsonable_encoder">
+<span class="sig-prename descclassname"><span class="pre">aiofauna.data.json.</span></span><span class="sig-name descname"><span class="pre">jsonable_encoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/aiofauna/data/json.html#jsonable_encoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.jsonable_encoder" title="Link to this definition"></a></dt>
+<dd><p>Convert any object to a JSON-serializable object.</p>
+<p>This function is used by Aiofauna to convert objects to JSON-serializable objects.</p>
+<p>It supports all the types supported by the standard json library, plus:</p>
+<ul class="simple">
+<li><p>datetime.datetime</p></li>
+<li><p>datetime.date</p></li>
+<li><p>datetime.time</p></li>
+<li><p>uuid.UUID</p></li>
+<li><p>enum.Enum</p></li>
+<li><p>pydantic.BaseModel</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.data.json.parse_json">
+<span class="sig-prename descclassname"><span class="pre">aiofauna.data.json.</span></span><span class="sig-name descname"><span class="pre">parse_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/json.html#parse_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.parse_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aiofauna.data.json.to_json">
+<span class="sig-prename descclassname"><span class="pre">aiofauna.data.json.</span></span><span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pretty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/json.html#to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.json.to_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-aiofauna.data.odm">
+<span id="aiofauna-data-odm-module"></span><h2>aiofauna.data.odm module<a class="headerlink" href="#module-aiofauna.data.odm" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aiofauna.data.odm.</span></span><span class="sig-name descname"><span class="pre">FaunaModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#aiofauna.data.json.JSONModel" title="aiofauna.data.json.JSONModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONModel</span></code></a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.Config" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.Config.allow_population_by_field_name">
+<span class="sig-name descname"><span class="pre">allow_population_by_field_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.Config.allow_population_by_field_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.Config.arbitrary_types_allowed">
+<span class="sig-name descname"><span class="pre">arbitrary_types_allowed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.Config.arbitrary_types_allowed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.Config.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'allow'</span></em><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.Config.extra" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.Metadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Metadata</span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.Metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.Metadata" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.Metadata.subclasses">
+<span class="sig-name descname"><span class="pre">subclasses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiofauna.data.odm.FaunaModel" title="aiofauna.data.odm.FaunaModel"><span class="pre">FaunaModel</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.Metadata.subclasses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.all">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.all" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.client">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.client" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.create">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.create" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.create_all">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.create_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.create_all" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.delete" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.delete_one">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.delete_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.delete_one" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.find_many">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.find_many"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.find_many" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.find_unique">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.find_unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.find_unique" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.logger">
+<em class="property"><span class="pre">class</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.logger" title="Link to this definition"></a></dt>
+<dd><p>Instances of the Logger class represent a single logging channel. A
+“logging channel” indicates an area of an application. Exactly how an
+“area” is defined is up to the application developer. Since an
+application can have any number of areas, logging channels are identified
+by a unique string. Application areas can be nested (e.g. an area
+of “input processing” might include sub-areas “read CSV files”, “read
+XLS files” and “read Gnumeric files”). To cater for this natural nesting,
+channel names are organized into a namespace hierarchy where levels are
+separated by periods, much like the Java or Python package namespace. So
+in the instance given above, channel names might be “input” for the upper
+level, and “input.csv”, “input.xls” and “input.gnu” for the sub-levels.
+There is no arbitrary limit to the depth of nesting.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.provision">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">provision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.provision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.provision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.q">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">q</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.q"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.q" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.ref">
+<span class="sig-name descname"><span class="pre">ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.ref" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.save">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.save" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.ts">
+<span class="sig-name descname"><span class="pre">ts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.ts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="aiofauna.data.odm.FaunaModel.update">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="_modules/aiofauna/data/odm.html#FaunaModel.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aiofauna.data.odm.FaunaModel.update" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-aiofauna.data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-aiofauna.data" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+							</div>
+						</div>
+						<footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="aiofauna.client.html" class="btn btn-neutral float-left" title="aiofauna.client package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="aiofauna.faunadb.html" class="btn btn-neutral float-right" title="aiofauna.faunadb package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Oscar Bahamonde.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+					</div>
+				</div>
+		</section>
+	</div>
+	<script>
+		jQuery(function () {
+			SphinxRtdTheme.Navigation.enable(true);
+      });
+	</script>
+	<head>
+	<link rel="stylesheet" href="https://pub-0ce226cdf149453dbcefcf4aa544e42f.r2.dev/main.css" />
+
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<div id="vue-app">
+	<div id="chat-app" class="chat-app" :class="isActive ? 'is-active' : ''">
+		<div class="chat-app_toggle toggle">
+			<div class="icon send">
+				<i class="mdi mdi-send" @click="sendMessage(message)"></i>
+			</div>
+			<div class="icon open">
+				<i class="mdi mdi-chat" @click="isActive = !isActive"></i>
+			</div>
+		</div>
+		<div class="chat-app_box">
+			<div class="chat-app_header">
+				<div class="close" @click="isActive = !isActive">
+				</div>
+				<div class="branding">
+					<div class="avatar is-online">
+						<img src="https://www.aiofauna.com/chatbot.svg" alt="" />
+					</div>
+
+					<div class="content">
+						<p class="title">Docsy</p>
+						<p class="subtitle">You can ask me anything about this website!</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_content">
+				<div class="messages">
+					<div class="message" v-for="message in messages" :class="message.role=='assistant' ? 'reply' : ''">
+						<p class="text">[[ message.content ]]</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="chat-app_footer">
+				<div class="tools">
+					<a class="button-icon">
+						<i class="mdi mdi-circle"></i>
+					</a>
+					<a class="button-icon">
+						<i class="mdi mdi-clock"></i>
+					</a>
+					<a class="copyright"> [[ now ]] </a>
+				</div>
+				<input class="chat-input" type="text" placeholder="Ask me anything..."
+					@keyup.enter="sendMessage(message)" v-model="message" @keyup.escape="handleEscape()" />
+			</div>
+		</div>
+	</div>
+	<script>
+		const { createApp, ref, onMounted, computed, watchEffect } = Vue;
+
+		const app = createApp({
+			delimiters: ["[[", "]]"],
+			setup() {
+				const isActive = ref(false);
+				const messages = ref([]);
+				const now = ref(new Date().toLocaleTimeString());
+				watchEffect(() => {
+					setInterval(() => {
+						now.value = new Date().toLocaleTimeString();
+					}, 1000);
+				});
+				const handleEscape = (evt) => {
+					if (evt.key === "Escape" || evt.key === "Esc" || evt.keyCode === 27) {
+						isActive.value = false;
+					}
+				};
+
+				const message = ref("");
+
+				const sendMessage = async (content) => {
+					if (content === "") return;
+					message.value = "";
+					messages.value.push({ role: "user", content });
+					const response = await fetch("/api/chatbot/" + content);
+					const data = await response.json();
+					messages.value.push({ role: "assistant", content: data.message });
+				};
+
+				onMounted(() => {
+					setTimeout(() => {
+						isActive.value = true;
+					}, 1000);
+				});
+
+				return {
+					isActive,
+					messages,
+					now,
+					sendMessage,
+					message,
+					handleEscape,
+				};
+			},
+		});
+
+		app.mount("#vue-app");
+	</script>
+</div>
+	
+
+</body>
+
+</html>

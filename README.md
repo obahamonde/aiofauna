@@ -46,4 +46,4 @@ title: AioFauna
 
 📦 [GitHub](https://github.com/obahamonde/aiofauna)
 
-📦 [Documentation](https://www.aiofauna.com)
+📦 [Documentation](https://docs.aiofauna.com)

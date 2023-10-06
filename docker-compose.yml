@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+
+  swagchain:
+    image: aiofauna
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8035:8035"
+    volumes:
+      - .:/app
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
