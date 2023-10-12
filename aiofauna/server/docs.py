@@ -7,7 +7,6 @@ from aiohttp.web import Request
 from aiohttp.web_request import FileField
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
-from ..client.api_client import Client
 from ..data.json import parse_json
 
 
@@ -37,30 +36,22 @@ def extract(params: Dict[str, Parameter], path: str):
                 "in": param_location,
                 "name": name,
                 "required": True,
-                "schema": {"type": type_, "default": param.default, "required": True},
+                "schema": {"type": type_},
             }
+
+            if param.default is not param.empty:
+                open_api_params[name]["schema"]["default"] = param.default
 
         elif type_ in [FileField]:
             open_api_params[name] = {
                 "in": "formData",
                 "name": name,
                 "required": True,
-                "schema": {"type": "file", "format": "binary"},
-                "consumes": ["multipart/form-data"],
-                "headers": {
-                    "Content-Type": {"type": "string", "default": "multipart/form-data"}
-                },
+                "schema": {"type": "file"},
+                "consumes": "multipart/form-data"
             }
 
         elif issubclass(type_, (BaseModel)):
-            open_api_params[name] = {
-                "in": "body",
-                "name": name,
-                "required": True,
-                "schema": type_.schema(),
-            }
-
-        elif issubclass(type_, Client):
             open_api_params[name] = {
                 "in": "body",
                 "name": name,
@@ -80,6 +71,7 @@ def transform(
     method: str,
     func: Any,
     open_api_params: Dict[str, Any],
+    tags: List[str] = [],
 ):
     """
     Update the OpenAPI documentation with the endpoint information.
@@ -110,6 +102,16 @@ def transform(
         else:
             continue
 
+    route_info = {
+        "summary": func.__name__,
+        "description": func.__doc__,
+        "parameters": _scalars,
+        "responses": {"200": {"description": "OK"}},
+    }
+
+    if tags:
+        route_info["tags"] = tags
+
     if _body:
         open_api["paths"].setdefault(path, {})[method.lower()] = {
             "summary": func.__name__,
@@ -121,12 +123,10 @@ def transform(
                 "content": {
                     "multipart/form-data": {
                         "schema": {
+                            "type": "object",
                             "properties": {
-                                "file": {
-                                    "type": "array",
-                                    "items": {"type": "string", "format": "binary"},
-                                }
-                            }
+                                "file": {"type": "string", "format": "binary"}
+                            },
                         }
                     }
                 }
@@ -185,9 +185,8 @@ def html_string(base_url: str):
             <head>
                 <meta charset="UTF-8">
                 <title>AioFauna</title>
-                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui.css" >
-                <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-32x32.png" sizes="32x32" />
-                <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-16x16.png" sizes="16x16" />
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" >
+                <link rel="icon" type="image/png" href="https://www.aiofauna.com/logo.png" sizes="32x32" />
                 <style>
                 html
                 {{
@@ -220,8 +219,8 @@ def html_string(base_url: str):
             <body>
                 <div id="swagger-ui"></div>
 
-                <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-bundle.js"> </script>
-                <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-standalone-preset.js"> </script>
+                <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"> </script>
+                <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"> </script>
                 <script>
                 window.onload = function() {{
                 const ui = SwaggerUIBundle({{
