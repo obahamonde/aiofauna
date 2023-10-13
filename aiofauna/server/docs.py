@@ -48,7 +48,7 @@ def extract(params: Dict[str, Parameter], path: str):
                 "name": name,
                 "required": True,
                 "schema": {"type": "file"},
-                "consumes": "multipart/form-data"
+                "consumes": "multipart/form-data",
             }
 
         elif issubclass(type_, (BaseModel)):
@@ -58,7 +58,6 @@ def extract(params: Dict[str, Parameter], path: str):
                 "required": True,
                 "schema": type_.schema(),
             }
-
         else:
             continue
 
@@ -187,38 +186,9 @@ def html_string(base_url: str):
                 <title>AioFauna</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" >
                 <link rel="icon" type="image/png" href="https://www.aiofauna.com/logo.png" sizes="32x32" />
-                <style>
-                html
-                {{
-                    box-sizing: border-box;
-                    overflow: -moz-scrollbars-vertical;
-                    overflow-y: scroll;
-                }}
-                
-                .swagger-ui .topbar
-                {{
-                    display: none;
-                }}
-                    
-                    
-                *,
-                *:before,
-                *:after
-                {{
-                    box-sizing: inherit;
-                }}
-
-                body
-                {{
-                    margin:0;
-                    background: #fafafa;
-                }}
-                </style>
             </head>
-
             <body>
                 <div id="swagger-ui"></div>
-
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"> </script>
                 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"> </script>
                 <script>

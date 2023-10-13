@@ -81,24 +81,27 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span>
+                    <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">aiohttp.typedefs</span> <span class="kn">import</span> <span class="n">Handler</span>
-<span class="kn">from</span> <span class="nn">aiohttp.web</span> <span class="kn">import</span> <span class="n">Application</span><span class="p">,</span> <span class="n">FileResponse</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">StreamResponse</span>
+<span class="kn">from</span> <span class="nn">aiohttp.web</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Application</span><span class="p">,</span> <span class="n">HTTPFound</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span>
+                         <span class="n">StreamResponse</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">aiohttp.web_middlewares</span> <span class="kn">import</span> <span class="n">middleware</span>
 <span class="kn">from</span> <span class="nn">aiohttp.web_ws</span> <span class="kn">import</span> <span class="n">WebSocketResponse</span>
 <span class="kn">from</span> <span class="nn">aiohttp_sse</span> <span class="kn">import</span> <span class="n">EventSourceResponse</span><span class="p">,</span> <span class="n">sse_response</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">ParamSpec</span>
 
-<span class="kn">from</span> <span class="nn">.docs</span> <span class="kn">import</span> <span class="n">HTML_STRING</span><span class="p">,</span> <span class="n">extract</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">transform</span>
 <span class="kn">from</span> <span class="nn">..data.document</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">do_response</span>
 <span class="kn">from</span> <span class="nn">..data.json</span> <span class="kn">import</span> <span class="n">jsonable_encoder</span>
 <span class="kn">from</span> <span class="nn">..data.odm</span> <span class="kn">import</span> <span class="n">FaunaModel</span>
-<span class="kn">from</span> <span class="nn">.router</span> <span class="kn">import</span> <span class="n">APIRouter</span>
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">do_response</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">setup_logging</span>
+<span class="kn">from</span> <span class="nn">.docs</span> <span class="kn">import</span> <span class="n">extract</span><span class="p">,</span> <span class="n">html_string</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">transform</span>
+<span class="kn">from</span> <span class="nn">.router</span> <span class="kn">import</span> <span class="n">APIRouter</span>
 
 <span class="n">P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+<span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
 
 <span class="n">Middleware</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Request</span><span class="p">,</span> <span class="n">Handler</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
 
@@ -106,507 +109,493 @@
 <div class="viewcode-block" id="APIServer">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer">[docs]</a>
 <span class="k">class</span> <span class="nc">APIServer</span><span class="p">(</span><span class="n">Application</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    AioFauna APIServer class for handling API operations.</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	AioFauna APIServer class for handling API operations.</span>
 
-<span class="sd">    :param title: The title of the API.</span>
-<span class="sd">    :type title: str</span>
-<span class="sd">    :param servers: List of server URLs.</span>
-<span class="sd">    :type servers: list[str]</span>
-<span class="sd">    :param description: API description.</span>
-<span class="sd">    :type description: str</span>
-<span class="sd">    :param version: API version.</span>
-<span class="sd">    :type version: str</span>
-<span class="sd">    :param openapi_url: URL for OpenAPI documentation.</span>
-<span class="sd">    :type openapi_url: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">	:param title: The title of the API.</span>
+<span class="sd">	:type title: str</span>
+<span class="sd">	:param servers: List of server URLs.</span>
+<span class="sd">	:type servers: list[str]</span>
+<span class="sd">	:param description: API description.</span>
+<span class="sd">	:type description: str</span>
+<span class="sd">	:param version: API version.</span>
+<span class="sd">	:type version: str</span>
+<span class="sd">	:param openapi_url: URL for OpenAPI documentation.</span>
+<span class="sd">	:type openapi_url: str</span>
+<span class="sd">	&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;AioFauna&quot;</span><span class="p">,</span>
-        <span class="n">servers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;AioFauna API&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
-        <span class="n">openapi_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/openapi.json&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">setup_logging</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">schemas</span> <span class="o">=</span> <span class="n">FaunaModel</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">subclasses</span> <span class="o">+</span> <span class="n">Document</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">subclasses</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">openapi</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;openapi&quot;</span><span class="p">:</span> <span class="s2">&quot;3.0.0&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">},</span>
-            <span class="s2">&quot;paths&quot;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s2">&quot;servers&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">servers</span> <span class="ow">or</span> <span class="p">[]],</span>
-            <span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;schemas&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">schema</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span> <span class="k">for</span> <span class="n">schema</span> <span class="ow">in</span> <span class="n">schemas</span><span class="p">}</span>
-            <span class="p">},</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_route_open_api_params</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">openapi_url</span> <span class="o">=</span> <span class="n">openapi_url</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span>
+		<span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+		<span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;AioFauna&quot;</span><span class="p">,</span>
+		<span class="n">servers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+		<span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+		<span class="n">openapi_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/openapi.json&quot;</span><span class="p">,</span>
+		<span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+	<span class="p">):</span>
+		<span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">setup_logging</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="n">schemas</span> <span class="o">=</span> <span class="n">FaunaModel</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">subclasses</span> <span class="o">+</span> <span class="n">Document</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">subclasses</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">openapi</span> <span class="o">=</span> <span class="p">{</span>
+			<span class="s2">&quot;openapi&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span><span class="p">,</span>
+			<span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">},</span>
+			<span class="s2">&quot;paths&quot;</span><span class="p">:</span> <span class="p">{},</span>
+			<span class="s2">&quot;servers&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">servers</span> <span class="ow">or</span> <span class="p">[]],</span>
+			<span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
+				<span class="s2">&quot;schemas&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">schema</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span> <span class="k">for</span> <span class="n">schema</span> <span class="ow">in</span> <span class="n">schemas</span><span class="p">}</span>
+			<span class="p">},</span>
+		<span class="p">}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_route_open_api_params</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">openapi_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">openapi_url</span>
 
-        <span class="nd">@self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/openapi.json&quot;</span><span class="p">)</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">openapi</span><span class="p">():</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">jsonable_encoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">response</span>
+		<span class="nd">@self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/openapi.json&quot;</span><span class="p">)</span>
+		<span class="k">async</span> <span class="k">def</span> <span class="nf">openapi</span><span class="p">():</span>
+			<span class="n">response</span> <span class="o">=</span> <span class="n">jsonable_encoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">response</span>
 
-        <span class="nd">@self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/docs&quot;</span><span class="p">)</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">docs</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-                <span class="n">text</span><span class="o">=</span><span class="n">HTML_STRING</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi_url</span><span class="p">),</span> <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;text/html&quot;</span>
-            <span class="p">)</span>
+		<span class="nd">@self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/docs&quot;</span><span class="p">)</span>
+		<span class="k">async</span> <span class="k">def</span> <span class="nf">docs</span><span class="p">():</span>
+			<span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+				<span class="n">text</span><span class="o">=</span><span class="n">html_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi_url</span><span class="p">),</span> <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;text/html&quot;</span>
+			<span class="p">)</span>
 
 <div class="viewcode-block" id="APIServer.document">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.document">[docs]</a>
-    <span class="k">def</span> <span class="nf">document</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">document</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
+		<span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">_T</span><span class="p">]]</span>
+	<span class="p">]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Decorator to generate OpenAPI documentation for an endpoint handler.</span>
+<span class="sd">		Decorator to generate OpenAPI documentation for an endpoint handler.</span>
 
-<span class="sd">        :param path: The URL path of the endpoint.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :param method: The HTTP method of the endpoint.</span>
-<span class="sd">        :type method: str</span>
-<span class="sd">        :return: Decorated function for handling the endpoint.</span>
-<span class="sd">        :rtype: Callable</span>
+<span class="sd">		:param path: The URL path of the endpoint.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:param method: The HTTP method of the endpoint.</span>
+<span class="sd">		:type method: str</span>
+<span class="sd">		:return: Decorated function for handling the endpoint.</span>
+<span class="sd">		:rtype: Callable</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="n">sig</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span>
-            <span class="n">open_api_params</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">path</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_route_open_api_params</span><span class="p">[(</span><span class="n">path</span><span class="p">,</span> <span class="n">method</span><span class="p">)]</span> <span class="o">=</span> <span class="n">open_api_params</span>
-            <span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">open_api_params</span><span class="p">)</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">_T</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">_T</span><span class="p">]]:</span>
+			<span class="n">sig</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+			<span class="n">params</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span>
+			<span class="n">open_api_params</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">path</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_route_open_api_params</span><span class="p">[(</span><span class="n">path</span><span class="p">,</span> <span class="n">method</span><span class="p">)]</span> <span class="o">=</span> <span class="n">open_api_params</span>
+			<span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">open_api_params</span><span class="p">)</span>
 
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamResponse</span><span class="p">:</span>
-                <span class="n">request</span><span class="p">:</span> <span class="n">Request</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-                <span class="n">args_to_apply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-                <span class="n">definitive_args</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">args_to_apply</span><span class="p">:</span>
-                        <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                    <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-                        <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Missing parameter </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
-                <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-                    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">definitive_args</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">response</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">definitive_args</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">do_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+			<span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamResponse</span><span class="p">:</span>
+				<span class="n">request</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Request</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+				<span class="n">new_args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+				<span class="n">args_to_apply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+				<span class="n">definitive_args</span> <span class="o">=</span> <span class="p">{}</span>
+				<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+					<span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">args_to_apply</span><span class="p">:</span>
+						<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+					<span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+						<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+							<span class="sa">f</span><span class="s2">&quot;Missing parameter </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+						<span class="p">)</span>
+				<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">new_args</span><span class="p">,</span> <span class="o">**</span><span class="n">definitive_args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+				<span class="k">return</span> <span class="n">do_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 
-            <span class="n">wrapper</span><span class="o">.</span><span class="n">_handler</span> <span class="o">=</span> <span class="n">func</span>
-            <span class="k">return</span> <span class="n">wrapper</span>
+			<span class="n">wrapper</span><span class="o">.</span><span class="n">_handler</span> <span class="o">=</span> <span class="n">func</span>
+			<span class="n">wrapper</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+			<span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">_T</span><span class="p">]],</span> <span class="n">wrapper</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.get">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.get">[docs]</a>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Decorator for handling GET requests.</span>
+	<span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Decorator for handling GET requests.</span>
 
-<span class="sd">        :param path: The API path for the GET request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the GET request.</span>
-<span class="sd">        :rtype: Callable</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		:param path: The API path for the GET request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the GET request.</span>
+<span class="sd">		:rtype: Callable</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.post">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.post">[docs]</a>
-    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Decorator for handling POST requests.</span>
+	<span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Decorator for handling POST requests.</span>
 
-<span class="sd">        :param path: The API path for the POST request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the POST request.</span>
-<span class="sd">        :rtype: Callable</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		:param path: The API path for the POST request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the POST request.</span>
+<span class="sd">		:rtype: Callable</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_post</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_post</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.put">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.put">[docs]</a>
-    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Decorator for handling PUT requests.</span>
+	<span class="k">def</span> <span class="nf">put</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Decorator for handling PUT requests.</span>
 
-<span class="sd">        :param path: The API path for the PUT request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the PUT request.</span>
-<span class="sd">        :rtype: Callable</span>
+<span class="sd">		:param path: The API path for the PUT request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the PUT request.</span>
+<span class="sd">		:rtype: Callable</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_put</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_put</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.delete">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.delete">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Decorator for handling DELETE requests.</span>
+	<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Decorator for handling DELETE requests.</span>
 
-<span class="sd">        :param path: The API path for the DELETE request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the DELETE request.</span>
-<span class="sd">        :rtype: Callable</span>
+<span class="sd">		:param path: The API path for the DELETE request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the DELETE request.</span>
+<span class="sd">		:rtype: Callable</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_delete</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_delete</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.patch">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.patch">[docs]</a>
-    <span class="k">def</span> <span class="nf">patch</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">patch</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Decorator for handling PATCH requests.</span>
+<span class="sd">		Decorator for handling PATCH requests.</span>
 
-<span class="sd">        :param path: The API path for the PATCH request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the PATCH request.</span>
-<span class="sd">        :rtype: Callable</span>
+<span class="sd">		:param path: The API path for the PATCH request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the PATCH request.</span>
+<span class="sd">		:rtype: Callable</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.head">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.head">[docs]</a>
-    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">head</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Decorator for handling HEAD requests.</span>
+<span class="sd">		Decorator for handling HEAD requests.</span>
 
-<span class="sd">        :param path: The API path for the HEAD request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the HEAD request.</span>
-<span class="sd">        :rtype: Callable</span>
+<span class="sd">		:param path: The API path for the HEAD request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the HEAD request.</span>
+<span class="sd">		:rtype: Callable</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_head</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_head</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.options">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.options">[docs]</a>
-    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">options</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">_T</span><span class="p">]]]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Decorator for handling OPTIONS requests.</span>
+<span class="sd">		Decorator for handling OPTIONS requests.</span>
 
-<span class="sd">        :param path: The API path for the OPTIONS request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the OPTIONS request.</span>
-<span class="sd">        :rtype: Callable</span>
+<span class="sd">		:param path: The API path for the OPTIONS request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the OPTIONS request.</span>
+<span class="sd">		:rtype: Callable</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_options</span><span class="p">(</span>
-                <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">StreamResponse</span><span class="p">]]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_options</span><span class="p">(</span>
+				<span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">)(</span><span class="n">func</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span>
+			<span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.on_event">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.on_event">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_event</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]],</span>
-        <span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">on_event</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;startup&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">]</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
+		<span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]],</span>
+		<span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]],</span>
+	<span class="p">]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Decorator for handling startup and shutdown lifecycle events.</span>
+<span class="sd">		Decorator for handling startup and shutdown lifecycle events.</span>
 
-<span class="sd">        :param event: The event to handle (startup or shutdown).</span>
+<span class="sd">		:param event: The event to handle (startup or shutdown).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
-            <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;startup&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Event must be startup or shutdown&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="s2">&quot;startup&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">on_startup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">on_shutdown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Application</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
+			<span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;startup&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">):</span>
+				<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Event must be startup or shutdown&quot;</span><span class="p">)</span>
+			<span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="s2">&quot;startup&quot;</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">on_startup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">on_shutdown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">func</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.sse">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.sse">[docs]</a>
-    <span class="k">def</span> <span class="nf">sse</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]]],</span>
-        <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">sse</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
+		<span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]]],</span>
+		<span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]],</span>
+	<span class="p">]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Server-Sent Events decorator.</span>
+<span class="sd">		Server-Sent Events decorator.</span>
 
-<span class="sd">        :param path: The API path for the SSE request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the SSE request.</span>
+<span class="sd">		:param path: The API path for the SSE request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the SSE request.</span>
 
-<span class="sd">        This decorator will handle SSE connections and pass the response object to the decorated function, be sure to include a parameter with the type annotation `EventSourceResponse` in your function signature.</span>
-<span class="sd">        You can use the `send` method of the response object to send events to the client.</span>
+<span class="sd">		This decorator will handle SSE connections and pass the response object to the decorated function, be sure to include a parameter with the type annotation `EventSourceResponse` in your function signature.</span>
+<span class="sd">		You can use the `send` method of the response object to send events to the client.</span>
 
-<span class="sd">        Example:</span>
+<span class="sd">		Example:</span>
 
-<span class="sd">        .. code-block:: python</span>
+<span class="sd">		.. code-block:: python</span>
 
-<span class="sd">        import asyncio</span>
-<span class="sd">        from aiofauna import FaunaClient, APIServer, EventSourceResponse, to_json,q</span>
+<span class="sd">		import asyncio</span>
+<span class="sd">		from aiofauna import FaunaClient, APIServer, EventSourceResponse, to_json,q</span>
 
-<span class="sd">        app = APIServer()</span>
-<span class="sd">        fauna = FaunaClient()</span>
+<span class="sd">		app = APIServer()</span>
+<span class="sd">		fauna = FaunaClient()</span>
 
-<span class="sd">        @app.sse(&quot;/stream&quot;)</span>
-<span class="sd">        async def stream(sse: EventSourceResponse):</span>
-<span class="sd">                while True:</span>
-<span class="sd">                        now = await fauna.query(q.now())</span>
-<span class="sd">                        await sse.send(to_json(now[&quot;@ts&quot;]))</span>
-<span class="sd">                        await asyncio.sleep(1)</span>
+<span class="sd">		@app.sse(&quot;/stream&quot;)</span>
+<span class="sd">		async def stream(sse: EventSourceResponse):</span>
+<span class="sd">				while True:</span>
+<span class="sd">						now = await fauna.query(q.now())</span>
+<span class="sd">						await sse.send(to_json(now[&quot;@ts&quot;]))</span>
+<span class="sd">						await asyncio.sleep(1)</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]]:</span>
-            <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventSourceResponse</span><span class="p">:</span>
-                <span class="k">async</span> <span class="k">with</span> <span class="n">sse_response</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
-                    <span class="n">args_to_apply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load</span><span class="p">(</span>
-                        <span class="n">request</span><span class="p">,</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="p">)</span>
-                    <span class="n">definitive_args</span> <span class="o">=</span> <span class="p">{}</span>
-                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span> <span class="o">==</span> <span class="n">EventSourceResponse</span><span class="p">:</span>
-                            <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span>
-                        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">args_to_apply</span><span class="p">:</span>
-                            <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                            <span class="n">args_to_apply</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-                        <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-                            <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Missing parameter </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
-                            <span class="p">)</span>
-                    <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">definitive_args</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">resp</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">EventSourceResponse</span><span class="p">]]:</span>
+			<span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+			<span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventSourceResponse</span><span class="p">:</span>
+				<span class="k">async</span> <span class="k">with</span> <span class="n">sse_response</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
+					<span class="n">args_to_apply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load</span><span class="p">(</span>
+						<span class="n">request</span><span class="p">,</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+					<span class="p">)</span>
+					<span class="n">definitive_args</span> <span class="o">=</span> <span class="p">{}</span>
+					<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+						<span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span> <span class="o">==</span> <span class="n">EventSourceResponse</span><span class="p">:</span>
+							<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span>
+						<span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">args_to_apply</span><span class="p">:</span>
+							<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+							<span class="n">args_to_apply</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+						<span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+							<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
+						<span class="k">else</span><span class="p">:</span>
+							<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+								<span class="sa">f</span><span class="s2">&quot;Missing parameter </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+							<span class="p">)</span>
+					<span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">definitive_args</span><span class="p">)</span>
+					<span class="k">return</span> <span class="n">resp</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">wrapper</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">)(</span><span class="n">wrapper</span><span class="p">))</span>
+			<span class="k">return</span> <span class="n">wrapper</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.websocket">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.websocket">[docs]</a>
-    <span class="k">def</span> <span class="nf">websocket</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]]],</span>
-        <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]],</span>
-    <span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">websocket</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span>
+		<span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]]],</span>
+		<span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]],</span>
+	<span class="p">]:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Websocket decorator.</span>
+<span class="sd">		Websocket decorator.</span>
 
-<span class="sd">        :param path: The API path for the websocket request.</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :return: Decorated function for handling the websocket request.</span>
+<span class="sd">		:param path: The API path for the websocket request.</span>
+<span class="sd">		:type path: str</span>
+<span class="sd">		:return: Decorated function for handling the websocket request.</span>
 
-<span class="sd">        This decorator will handle websocket connections and pass the websocket object to the decorated function, be sure to include a parameter with the type annotation `WebSocketResponse` in your function signature and also setup proper error handling, since `PING` and `PONG` messages are handled automatically by the server and will result on a `MessageTypeError` if not handled.</span>
+<span class="sd">		This decorator will handle websocket connections and pass the websocket object to the decorated function, be sure to include a parameter with the type annotation `WebSocketResponse` in your function signature and also setup proper error handling, since `PING` and `PONG` messages are handled automatically by the server and will result on a `MessageTypeError` if not handled.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
-            <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]]:</span>
-            <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-                <span class="n">args_to_apply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-                <span class="n">ws</span> <span class="o">=</span> <span class="n">WebSocketResponse</span><span class="p">()</span>
-                <span class="k">await</span> <span class="n">ws</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-                <span class="n">definitive_args</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span> <span class="o">==</span> <span class="n">WebSocketResponse</span><span class="p">:</span>
-                        <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ws</span>
-                    <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">args_to_apply</span><span class="p">:</span>
-                        <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                        <span class="n">args_to_apply</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-                        <span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Missing parameter </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
-                <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">definitive_args</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">ws</span>
+		<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span>
+			<span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]]</span>
+		<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">WebSocketResponse</span><span class="p">]]:</span>
+			<span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+			<span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+				<span class="n">args_to_apply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">load</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+				<span class="n">ws</span> <span class="o">=</span> <span class="n">WebSocketResponse</span><span class="p">()</span>
+				<span class="k">await</span> <span class="n">ws</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+				<span class="n">definitive_args</span> <span class="o">=</span> <span class="p">{}</span>
+				<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+					<span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span> <span class="o">==</span> <span class="n">WebSocketResponse</span><span class="p">:</span>
+						<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ws</span>
+					<span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">args_to_apply</span><span class="p">:</span>
+						<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+						<span class="n">args_to_apply</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+					<span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+						<span class="n">definitive_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+							<span class="sa">f</span><span class="s2">&quot;Missing parameter </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+						<span class="p">)</span>
+				<span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">definitive_args</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">ws</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">wrapper</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">wrapper</span>
 
-        <span class="k">return</span> <span class="n">decorator</span></div>
+		<span class="k">return</span> <span class="n">decorator</span></div>
 
 
 <div class="viewcode-block" id="APIServer.static">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.static">[docs]</a>
-    <span class="k">def</span> <span class="nf">static</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;APIServer&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+	<span class="k">def</span> <span class="nf">static</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nb">dir</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;APIServer&quot;</span><span class="p">:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Static files decorator.</span>
+<span class="sd">		Static files decorator.</span>
 
-<span class="sd">        This decorator will serve static files from the `static` directory.</span>
-<span class="sd">        It will also serve the `index.html` file from the `static` directory when the root path is requested.</span>
-<span class="sd">        Useful for serving a frontend single-page application.</span>
+<span class="sd">		This decorator will serve static files from the `static` directory.</span>
+<span class="sd">		It will also serve the `index.html` file from the `static` directory when the root path is requested.</span>
+<span class="sd">		Useful for serving a frontend single-page application.</span>
 
-<span class="sd">        :return: The server instance.</span>
+<span class="sd">		:return: The server instance.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
 
-        <span class="nd">@self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">FileResponse</span><span class="p">(</span><span class="s2">&quot;static/index.html&quot;</span><span class="p">)</span>
+		<span class="nd">@self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+		<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span><span class="n">Request</span><span class="p">):</span>
+			<span class="n">base_url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
+			<span class="k">return</span> <span class="n">HTTPFound</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/index.html&quot;</span><span class="p">)</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;static&quot;</span><span class="p">)</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+			<span class="k">pass</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span></div>
+		<span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="APIServer.middleware">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.middleware">[docs]</a>
-    <span class="k">def</span> <span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Middleware</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Middleware</span><span class="p">:</span>
-        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="nd">@middleware</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">Handler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">Response</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">response</span>
-            <span class="k">return</span> <span class="n">do_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+	<span class="k">def</span> <span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Middleware</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Middleware</span><span class="p">:</span>
+		<span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+		<span class="nd">@middleware</span>
+		<span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">Handler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+			<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">Response</span><span class="p">):</span>
+				<span class="k">return</span> <span class="n">response</span>
+			<span class="k">return</span> <span class="n">do_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">middlewares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">wrapper</span></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">middlewares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">wrapper</span></div>
 
 
 <div class="viewcode-block" id="APIServer.use">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.server.APIServer.use">[docs]</a>
-    <span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">router</span><span class="p">:</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;APIServer&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chainable method to add a router to the server&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">router</span><span class="o">.</span><span class="n">routes</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">route</span><span class="o">.</span><span class="n">path</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span>
-                <span class="n">route</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
-                <span class="n">prefix</span> <span class="o">+</span> <span class="n">router</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">path</span><span class="p">,</span>
-                <span class="n">route</span><span class="o">.</span><span class="n">handler</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">route</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
-            <span class="p">)</span>
+	<span class="k">def</span> <span class="nf">use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">router</span><span class="p">:</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;APIServer&quot;</span><span class="p">:</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;Chainable method to add a router to the server&quot;&quot;&quot;</span>
+		<span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">router</span><span class="o">.</span><span class="n">routes</span><span class="p">:</span>
+			<span class="n">path</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">route</span><span class="o">.</span><span class="n">path</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span>
+				<span class="n">route</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+				<span class="n">prefix</span> <span class="o">+</span> <span class="n">router</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">path</span><span class="p">,</span>
+				<span class="n">route</span><span class="o">.</span><span class="n">handler</span><span class="p">,</span>
+				<span class="o">**</span><span class="n">route</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+			<span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">details</span> <span class="ow">in</span> <span class="n">router</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">path</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">details</span>
+		<span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">details</span> <span class="ow">in</span> <span class="n">router</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+			<span class="n">path</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">path</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">details</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;components&quot;</span><span class="p">][</span><span class="s2">&quot;schemas&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="n">router</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;components&quot;</span><span class="p">][</span><span class="s2">&quot;schemas&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+		<span class="bp">self</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;components&quot;</span><span class="p">][</span><span class="s2">&quot;schemas&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+			<span class="n">router</span><span class="o">.</span><span class="n">openapi</span><span class="p">[</span><span class="s2">&quot;components&quot;</span><span class="p">][</span><span class="s2">&quot;schemas&quot;</span><span class="p">]</span>
+		<span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span></div>
 </div>
 
 </pre></div>

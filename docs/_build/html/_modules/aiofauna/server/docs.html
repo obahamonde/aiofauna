@@ -77,20 +77,20 @@
 								
   <h1>Source code for aiofauna.server.docs</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Automatically generate OpenAPI documentation for your AioFauna API.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">Parameter</span>
 <span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">JSONDecoder</span><span class="p">,</span> <span class="n">loads</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">aiohttp.web</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">aiohttp.web_request</span> <span class="kn">import</span> <span class="n">FileField</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>  <span class="c1"># pylint: disable=no-name-in-module</span>
 
-<span class="kn">from</span> <span class="nn">..client.api_client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">..data.json</span> <span class="kn">import</span> <span class="n">parse_json</span>
 
 
 <div class="viewcode-block" id="extract">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.docs.extract">[docs]</a>
-<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract OpenAPI parameters from the function parameters.</span>
 
@@ -101,7 +101,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict[str, Any]: The extracted OpenAPI parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">open_api_params</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">open_api_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">type_</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span>
@@ -116,30 +116,22 @@
                 <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="n">param_location</span><span class="p">,</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">type_</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">type_</span><span class="p">},</span>
             <span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">open_api_params</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;schema&quot;</span><span class="p">][</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
 
         <span class="k">elif</span> <span class="n">type_</span> <span class="ow">in</span> <span class="p">[</span><span class="n">FileField</span><span class="p">]:</span>
             <span class="n">open_api_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="s2">&quot;formData&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;binary&quot;</span><span class="p">},</span>
-                <span class="s2">&quot;consumes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;multipart/form-data&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;multipart/form-data&quot;</span><span class="p">}</span>
-                <span class="p">},</span>
+                <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">},</span>
+                <span class="s2">&quot;consumes&quot;</span><span class="p">:</span> <span class="s2">&quot;multipart/form-data&quot;</span>
             <span class="p">}</span>
 
         <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="p">(</span><span class="n">BaseModel</span><span class="p">)):</span>
-            <span class="n">open_api_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="s2">&quot;body&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">type_</span><span class="o">.</span><span class="n">schema</span><span class="p">(),</span>
-            <span class="p">}</span>
-
-        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">Client</span><span class="p">):</span>
             <span class="n">open_api_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="s2">&quot;body&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
@@ -162,6 +154,7 @@
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="n">open_api_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Update the OpenAPI documentation with the endpoint information.</span>
@@ -176,7 +169,7 @@
     <span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;/openapi.json&quot;</span><span class="p">,</span> <span class="s2">&quot;/docs&quot;</span><span class="p">]:</span>
         <span class="k">return</span>
 
-    <span class="n">_scalars</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_scalars</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">_body</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_is_file_upload</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -192,6 +185,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">continue</span>
 
+    <span class="n">route_info</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+        <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">_scalars</span><span class="p">,</span>
+        <span class="s2">&quot;responses&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;200&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;OK&quot;</span><span class="p">}},</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">tags</span><span class="p">:</span>
+        <span class="n">route_info</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tags</span>
+
     <span class="k">if</span> <span class="n">_body</span><span class="p">:</span>
         <span class="n">open_api</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="p">{})[</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
@@ -203,12 +206,10 @@
                 <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">&quot;multipart/form-data&quot;</span><span class="p">:</span> <span class="p">{</span>
                         <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
                             <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;binary&quot;</span><span class="p">},</span>
-                                <span class="p">}</span>
-                            <span class="p">}</span>
+                                <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;binary&quot;</span><span class="p">}</span>
+                            <span class="p">},</span>
                         <span class="p">}</span>
                     <span class="p">}</span>
                 <span class="p">}</span>
@@ -228,7 +229,7 @@
 
 <div class="viewcode-block" id="load">
 <a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.docs.load">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shape the endpoint function parameters to match the request.</span>
 
@@ -239,7 +240,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict[str, Any]: The updated parameters to apply to the function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">args_to_apply</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">args_to_apply</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">annotation</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span>
@@ -254,7 +255,7 @@
         <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">):</span>
             <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">loads</span><span class="o">=</span><span class="n">JSONDecoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">parse_json</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">parse_json</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
             <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">annotation</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">args_to_apply</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span>
@@ -262,15 +263,19 @@
 
 
 
-<span class="n">HTML_STRING</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
+<div class="viewcode-block" id="html_string">
+<a class="viewcode-back" href="../../../aiofauna.server.html#aiofauna.server.docs.html_string">[docs]</a>
+<span class="k">def</span> <span class="nf">html_string</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a string with the html code to render the swagger ui</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
 <span class="s2">            &lt;html lang=&quot;en&quot;&gt;</span>
 <span class="s2">            &lt;head&gt;</span>
 <span class="s2">                &lt;meta charset=&quot;UTF-8&quot;&gt;</span>
 <span class="s2">                &lt;title&gt;AioFauna&lt;/title&gt;</span>
-<span class="s2">                &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui.css&quot; &gt;</span>
-<span class="s2">                &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-32x32.png&quot; sizes=&quot;32x32&quot; /&gt;</span>
-<span class="s2">                &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/favicon-16x16.png&quot; sizes=&quot;16x16&quot; /&gt;</span>
+<span class="s2">                &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css&quot; &gt;</span>
+<span class="s2">                &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;https://www.aiofauna.com/logo.png&quot; sizes=&quot;32x32&quot; /&gt;</span>
 <span class="s2">                &lt;style&gt;</span>
 <span class="s2">                html</span>
 <span class="s2">                </span><span class="se">{{</span>
@@ -303,12 +308,12 @@
 <span class="s2">            &lt;body&gt;</span>
 <span class="s2">                &lt;div id=&quot;swagger-ui&quot;&gt;&lt;/div&gt;</span>
 
-<span class="s2">                &lt;script src=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-bundle.js&quot;&gt; &lt;/script&gt;</span>
-<span class="s2">                &lt;script src=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.20.3/swagger-ui-standalone-preset.js&quot;&gt; &lt;/script&gt;</span>
+<span class="s2">                &lt;script src=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js&quot;&gt; &lt;/script&gt;</span>
+<span class="s2">                &lt;script src=&quot;https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js&quot;&gt; &lt;/script&gt;</span>
 <span class="s2">                &lt;script&gt;</span>
 <span class="s2">                window.onload = function() </span><span class="se">{{</span>
 <span class="s2">                const ui = SwaggerUIBundle(</span><span class="se">{{</span>
-<span class="s2">                    url: &quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;,</span>
+<span class="s2">                    url: &quot;</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s2">&quot;,</span>
 <span class="s2">                    dom_id: &#39;#swagger-ui&#39;,</span>
 <span class="s2">                    deepLinking: true,</span>
 <span class="s2">                    presets: [</span>
@@ -325,8 +330,8 @@
 <span class="s2">            &lt;/script&gt;</span>
 <span class="s2">            &lt;/body&gt;</span>
 <span class="s2">            &lt;/html&gt;</span>
-<span class="s2">            &quot;&quot;&quot;</span>
-<span class="p">)</span>
+<span class="s2">            &quot;&quot;&quot;</span></div>
+
 </pre></div>
 
 							</div>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="icon" sizes="192x192" href="https://www.aiofauna.com/logo.png" type="image/png" />
+	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.3.67/css/materialdesignicons.min.css" rel="stylesheet">
+	<title>{{ title }}</title>
+	<style>
+		[un-cloak] {
+			display: none;
+		}
+	</style>
+</head>
+
+<body>
+	<main un-cloak>
+		{% block content %}{% endblock %}
+	</main>
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/attributify.global.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.6/htmx.min.js"></script>
+
+</html>

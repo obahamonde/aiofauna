@@ -118,7 +118,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Only HTTP is supported&quot;</span><span class="p">)</span>
 
         <span class="n">raw_headers</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;headers&quot;</span><span class="p">]</span>
-        <span class="n">headers</span> <span class="o">=</span> <span class="n">CIMultiDict</span><span class="p">()</span> <span class="c1"># type: ignore</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">CIMultiDict</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">raw_headers</span><span class="p">:</span>
             <span class="n">headers</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
@@ -126,7 +126,7 @@
             <span class="n">method</span><span class="o">=</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
             <span class="n">path</span><span class="o">=</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
             <span class="n">version</span><span class="o">=</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;http_version&quot;</span><span class="p">],</span>
-            <span class="n">headers</span><span class="o">=</span><span class="n">CIMultiDictProxy</span><span class="p">(</span><span class="n">headers</span><span class="p">),</span> <span class="c1"># type: ignore</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">CIMultiDictProxy</span><span class="p">(</span><span class="n">headers</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
             <span class="n">raw_headers</span><span class="o">=</span><span class="n">raw_headers</span><span class="p">,</span>
             <span class="n">should_close</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

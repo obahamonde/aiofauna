@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" sizes="192x192" href="https://www.aiofauna.com/logo.png" type="image/png" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+	<title>{{ title }}</title>
+	<style>
+		@import url('https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css');
+
+		[un-cloak] {
+			display: none;
+		}
+
+		.markdown-body {
+			box-sizing: border-box;
+			min-width: 200px;
+			max-width: 980px;
+			margin: 0 auto;
+			padding: 2rem;
+			display: flex;
+			flex-direction: column;
+			align-items: start;
+		}
+
+
+		@media (max-width: 767px) {
+			.markdown-body {
+				padding: 15px;
+			}
+		}
+
+		::-webkit-scrollbar-track {
+			background: #1d1f21;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: #373b41;
+			border-radius: 1rem;
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: #c5c8c6;
+		}
+
+		::-webkit-scrollbar-thumb:active {
+			background: #373b41;
+		}
+
+		::-webkit-scrollbar-corner {
+			background: #1d1f21;
+		}
+	</style>
+</head>
+
+<body>
+	<main class="markdown-body" un-cloak>
+		{{ content | safe }}
+	</main>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+	<script defer>hljs.highlightAll();</script>
+</body>
+
+</html>

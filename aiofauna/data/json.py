@@ -94,6 +94,8 @@ class FaunaJSONEncoder(JSONEncoder):
             return obj.value
         elif isinstance(obj, UUID):
             return {"@uuid": str(obj)}
+        elif obj.__class__.__name__ == "Injectable":
+            return obj.result
         else:
             return super().default(obj)
 

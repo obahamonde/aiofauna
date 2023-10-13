@@ -20,10 +20,7 @@ class APIRouter(RouteTableDef):
         super().__init__(**kwargs)
         self.prefix = prefix
         self.tags = tags
-        self.openapi: Dict[str, Any] = {
-            "paths": {},
-            "components": {"schemas": {}}   
-        }
+        self.openapi: Dict[str, Any] = {"paths": {}, "components": {"schemas": {}}}
         self._route_open_api_params: Dict[Tuple[str, str], Dict[str, Any]] = {}
         self.routes: List[RouteDef] = []
 

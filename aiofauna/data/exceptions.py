@@ -4,15 +4,9 @@ Exceptions for aiofauna
 
 from json import JSONDecodeError
 
-from aiohttp import (
-    ClientConnectionError,
-    ClientConnectorError,
-    ClientConnectorSSLError,
-    ClientError,
-    ContentTypeError,
-    ServerTimeoutError,
-    WSServerHandshakeError,
-)
+from aiohttp import (ClientConnectionError, ClientConnectorError,
+                     ClientConnectorSSLError, ClientError, ContentTypeError,
+                     ServerTimeoutError, WSServerHandshakeError)
 from aiohttp.web_exceptions import HTTPException
 
 from ..faunadb.errors import FaunaError, FaunaException
